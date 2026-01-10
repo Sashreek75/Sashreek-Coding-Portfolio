@@ -296,19 +296,21 @@ body{
   height: 140px !important;
 }
 .pyramid-loader {
-  /* center by default; sizing handled elsewhere */
+  /* Desktop positioning restored (original offsets) */
   position: relative;
-  margin: 0 auto;
+  top: -340px;
+  left: 520px;
   width: 380px;
   height: 380px;
-  top: 0;
-  left: 0;
+  display: block;
+  transform-style: preserve-3d;
   transform: rotateX(-20deg) scale(1);
+  z-index: 2;
 }
 
 /* Responsive adjustments */
 @media (max-width: 1024px) {
-  .pyramid-loader { width: 260px; height: 260px; transform: none; margin: 1rem auto; }
+  .pyramid-loader { width: 260px; height: 260px; transform: none; margin: 1rem auto; top: 0; left: 0; }
 }
 
 @media (max-width: 768px){
