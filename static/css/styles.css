@@ -296,10 +296,38 @@ body{
   height: 140px !important;
 }
 .pyramid-loader {
+  /* center by default; sizing handled elsewhere */
   position: relative;
-  top: -340px;      
-  left: 520px;     
+  margin: 0 auto;
+  width: 380px;
+  height: 380px;
+  top: 0;
+  left: 0;
+  transform: rotateX(-20deg) scale(1);
 }
+
+/* Responsive adjustments */
+@media (max-width: 1024px) {
+  .pyramid-loader { width: 260px; height: 260px; transform: none; margin: 1rem auto; }
+}
+
+@media (max-width: 768px){
+  /* Stack nav links, reduce paddings and center visuals */
+  .site-nav .space-x-4{display:flex;flex-direction:column;gap:.5rem}
+  .site-nav .flex.items-center.justify-between.h-16{flex-direction:column;align-items:flex-start;padding:.5rem 0}
+  .site-brand{margin-bottom:.5rem}
+  main{padding:1rem}
+  .logo-track{gap:.75rem}
+  .icons{top:0}
+  .hero-visuals{min-height:0}
+  .pyramid-loader{position:static;margin:1rem auto;width:220px;height:220px}
+  .loader, .pyramid-loader{transform:none}
+  img, .card img{max-width:100%;height:auto}
+}
+
+/* Make cards and images fluid */
+.card{width:100%;box-sizing:border-box}
+.responsive-img{max-width:100%;height:auto;display:block}
 
 /* Logo marquee styles */
 .logo-marquee{overflow:hidden}
