@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1 class="animate__animated animate__fadeInDown text-3xl font-bold mb-4">Projects</h1>
+<div class="card animate__animated animate__fadeInUp animate__delay-1s">
+  {% if projects %}
+    <ul class="space-y-4">
+    {% for p in projects %}
+      <li>
+        <div class="flex justify-between items-start">
+          <div>
+            <h3 class="font-semibold text-lg">{{ p.title }}</h3>
+            <p class="text-sm muted">{{ p.tags|join(' • ') }}</p>
+            <p class="mt-2 text-sm">{{ p.description }}</p>
+          </div>
+          {% if p.link %}
+          <a href="{{ p.link }}" class="btn-primary">Open</a>
+          {% endif %}
+        </div>
+      </li>
+    {% endfor %}
+    </ul>
+  {% else %}
+    <p class="muted">No public projects yet — preparing portfolio-ready repositories.</p>
+  {% endif %}
+</div>
+{% endblock %}

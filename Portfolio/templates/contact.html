@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1 class="animate__animated animate__fadeInDown text-2xl font-bold mb-4">Contact</h1>
+<form method="post" class="card space-y-4 animate__animated animate__fadeInUp animate__delay-1s">
+  <div>
+    <label class="block text-sm">Name</label>
+    <input name="name" class="w-full border rounded px-3 py-2"/>
+  </div>
+  <div>
+    <label class="block text-sm">Email</label>
+    <input name="email" type="email" class="w-full border rounded px-3 py-2"/>
+  </div>
+  <div>
+    <label class="block text-sm">Message</label>
+    <textarea name="message" class="w-full border rounded px-3 py-2"></textarea>
+  </div>
+  <div>
+    <button type="submit" class="btn-primary">Send</button>
+  </div>
+</form>
+{% endblock %}
