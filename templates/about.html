@@ -1,7 +1,145 @@
 {% extends 'base.html' %}
+
 {% block content %}
-<h1 class="animate__animated animate__fadeInDown text-3xl font-bold mb-4">About</h1>
-<div class="animate__animated animate__fadeInUp animate__delay-1s">
-	<p class="text-sm text-gray-700 mb-4">I am a high school technologist passionate about the intersection of machine learning, software development, and neuroscience, driven by a curiosity to explore how advanced computational methods can deepen our understanding of the brain and enhance human potential. I focus on developing AI-driven solutions that are both powerful and ethically grounded, applying machine learning to multimodal data, neural analysis, and intelligent systems that have real-world impact. My goal is to create tools and platforms that bridge technology and neuroscience, amplifying human learning, decision-making, and creativity, while pushing the frontier of brain-inspired computing and AI-assisted cognitive analysis.</p>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700&display=swap');
+  
+  .about-container {
+    min-height: 100vh;
+    background: #191e2e;
+    padding: 6rem 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .about-content {
+    max-width: 800px;
+    width: 100%;
+    opacity: 0;
+    animation: fadeIn 0.8s ease-out 0.2s forwards;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .about-header {
+    margin-bottom: 3rem;
+  }
+
+  .about-title {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(2.5rem, 5vw, 3.5rem);
+    font-weight: 700;
+    color: #ffffff;
+    margin-bottom: 0.5rem;
+    letter-spacing: -0.02em;
+  }
+
+  .about-subtitle {
+    font-family: 'Space Mono', monospace;
+    font-size: 1rem;
+    color: #97affd;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .about-text {
+    font-family: system-ui, -apple-system, sans-serif;
+    font-size: 1.125rem;
+    line-height: 1.9;
+    color: #cbd5e1;
+    margin-bottom: 3rem;
+  }
+
+  .focus-areas {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-top: 3rem;
+    padding-top: 3rem;
+    border-top: 1px solid rgba(151, 175, 253, 0.15);
+  }
+
+  .focus-item {
+    padding: 1.5rem;
+    background: rgba(47, 58, 80, 0.3);
+    border: 1px solid rgba(151, 175, 253, 0.1);
+    border-radius: 4px;
+    transition: all 0.3s ease;
+  }
+
+  .focus-item:hover {
+    background: rgba(47, 58, 80, 0.5);
+    border-color: rgba(151, 175, 253, 0.3);
+    transform: translateY(-2px);
+  }
+
+  .focus-title {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: #97affd;
+    margin-bottom: 0.5rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  .focus-description {
+    font-family: system-ui, -apple-system, sans-serif;
+    font-size: 0.9375rem;
+    line-height: 1.6;
+    color: #94a3b8;
+  }
+</style>
+
+<div class="about-container">
+  <div class="about-content">
+    <div class="about-header">
+      <h1 class="about-title">About Me</h1>
+      <p class="about-subtitle">High School Technologist</p>
+    </div>
+
+    <div class="about-text">
+      <p>I am a high school technologist working at the intersection of machine learning, software engineering, and neuroscience, driven by a deep curiosity about how computational models can meaningfully represent, analyze, and augment human cognition. My interests center on using AI not just as a performance-driven tool, but as a framework for understanding complex neural and cognitive systems.
+
+I focus on developing AI-driven solutions that are both technically rigorous and ethically grounded, applying machine learning to multimodal data, neural signals, and cognitively relevant representations. My work emphasizes interpretability, real-world applicability, and responsible system design, especially in contexts where AI directly interacts with human learning, reasoning, or behavior.
+</p>
+      
+      <p style="margin-top: 1.5rem;">I focus on developing AI-driven solutions that are both powerful and ethically grounded, applying machine learning to multimodal data, neural analysis, and intelligent systems that have real-world impact.</p>
+      
+      <p style="margin-top: 1.5rem;">My long-term goal is to create tools and platforms that bridge technology and neuroscience—amplifying human learning, decision-making, and creativity—while advancing brain-inspired computing, neuro-aligned machine intelligence, and AI-assisted cognitive analysis.</p>
+    </div>
+
+    <div class="focus-areas">
+      <div class="focus-item">
+        <div class="focus-title">Machine Learning</div>
+        <div class="focus-description">Building intelligent systems with multimodal data and neural analysis</div>
+      </div>
+      
+      <div class="focus-item">
+        <div class="focus-title">Neuroscience</div>
+        <div class="focus-description">Exploring brain-inspired computing and cognitive analysis</div>
+      </div>
+      
+      <div class="focus-item">
+        <div class="focus-title">Ethics & Impact</div>
+        <div class="focus-description">Creating AI solutions that are powerful and ethically grounded</div>
+      </div>
+	  <div class="focus-item">
+        <div class="focus-title">Learning from Failure</div>
+        <div class="focus-description">Building a public archive with failed experiments, models, and documenting improvement</div>
+      </div>
+    </div>
+  </div>
 </div>
+
 {% endblock %}
