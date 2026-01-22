@@ -1,100 +1,111 @@
 
-/* Color palette and utilities for the Deep Twilight theme */
+/* Global color variables set to the requested portfolio color scheme */
 :root{
-	--deep-twilight: #03045e;
-	--french-blue: #023e8a;
-	--bright-teal-blue: #0077b6;
-	--blue-green: #0096c7;
-	--turquoise-surf: #00b4d8;
-	--sky-aqua: #48cae4;
-	--frosted-blue-1: #90e0ef;
-	--frosted-blue-2: #ade8f4;
-	--light-cyan: #caf0f8;
+    --primary-dark: #191e2e; /* main background */
+    --muted: #94a3b8;       /* muted text */
+    --light-text: #cbd5e1;  /* lighter text */
+    --accent: #97affd;      /* blue accent */
+    --secondary: #2f3a50;   /* grid / borders */
+
+    /* Backwards-compatible names used elsewhere in the stylesheet */
+    --deep-twilight: var(--primary-dark);
+    --french-blue: var(--secondary);
+    --bright-teal-blue: var(--accent);
+    --blue-green: var(--accent);
+    --turquoise-surf: var(--accent);
+    --sky-aqua: var(--accent);
+    --frosted-blue-1: rgba(151,175,253,0.18);
+    --frosted-blue-2: rgba(151,175,253,0.12);
+    --light-cyan: var(--primary-dark);
 }
 
 body{
-  background: linear-gradient(180deg, var(--light-cyan), #ffffff);
-  color: #06283D;
+  background: var(--primary-dark);
+  color: var(--light-text);
   font-family: 'Poppins', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
 }
 
 .site-nav{
-	background: linear-gradient(90deg, var(--deep-twilight), var(--french-blue));
-	color: var(--light-cyan);
+  background: linear-gradient(90deg, var(--primary-dark), var(--secondary));
+  color: var(--light-text);
 }
 
 .site-brand{
-	color: var(--turquoise-surf);
+  color: var(--accent);
 }
 
 .nav-link{
-	color: var(--frosted-blue-2);
-	text-decoration: none;
+  color: var(--muted);
+  text-decoration: none;
 }
-.nav-link:hover{color: var(--sky-aqua); text-decoration: underline}
+.nav-link:hover{color: var(--light-text); text-decoration: underline}
 
 .btn-primary{
-	display:inline-block;
-	background: linear-gradient(90deg,var(--bright-teal-blue),var(--blue-green));
-	color: white;
-	padding: .5rem 1rem;
-	border-radius: .5rem;
+  display:inline-block;
+  background: linear-gradient(90deg,var(--accent), #6fa7ff);
+  color: var(--primary-dark);
+  padding: .5rem 1rem;
+  border-radius: .5rem;
 }
 
 .btn-secondary{
-	display:inline-block;
-	background: transparent;
-	color: var(--deep-twilight);
-	padding: .5rem 1rem;
-	border-radius: .5rem;
-	border: 2px solid var(--frosted-blue-1);
+  display:inline-block;
+  background: transparent;
+  color: var(--light-text);
+  padding: .5rem 1rem;
+  border-radius: .5rem;
+  border: 2px solid var(--secondary);
 }
 
 .card{
-	background: white;
-	padding: 1rem;
-	border-radius: .5rem;
-	box-shadow: 0 6px 18px rgba(2,6,23,0.08);
+  background: rgba(47,58,80,0.14);
+  padding: 1rem;
+  border-radius: .5rem;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.6);
+  border: 1px solid rgba(47,58,80,0.6);
 }
 
-.muted{color: #475569}
+.muted{color: var(--muted)}
 
-/* Hero layout wrapper for visuals */
+/* Hero layout wrapper for visuals - fill the viewport center */
 .hero-visuals{
   position: relative;
-  min-height: 360px;
-  margin-top: -40px;
+  min-height: 100vh;
+  margin-top: 0;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding: 3rem 2rem;
 }
 
-/* position the uiverse loader toward the left-bottom corner */
+/* position the uiverse loader toward the left side */
 .hero-visuals .loader{
-  position: absolute;
-  left: 4%;
-  bottom: 6%;
-  top: auto;
-  scale: .9;
+  position: relative;
+  left: 2%;
+  bottom: 0;
+  scale: .95;
 }
 
-/* move the pyramid to the right-bottom corner to sit opposite the bird */
+/* move the pyramid to the right side to sit opposite the loader */
 .hero-visuals .pyramid-loader{
-  position: absolute;
-  right: 6%;
-  bottom: 6%;
-  width: 380px;
-  height: 380px;
+  position: relative;
+  right: 0;
+  bottom: 0;
+  width: 360px;
+  height: 360px;
   transform-style: preserve-3d;
-  transform: rotateX(-20deg) scale(1.05);
+  transform: rotateX(-20deg) scale(1);
   z-index: 3;
 }
 
 /* Slightly nicer buttons */
 .btn-primary{transition: transform .18s ease, box-shadow .18s ease}
-.btn-primary:hover{transform: translateY(-3px); box-shadow: 0 10px 25px rgba(3,4,94,0.18)}
+.btn-primary:hover{transform: translateY(-3px); box-shadow: 0 10px 30px rgba(15,20,50,0.45)}
 .btn-secondary{transition: transform .18s ease}
 .btn-secondary:hover{transform: translateY(-2px)}
 
-/* glass-like cards */
-.card{background: rgba(255,255,255,0.86); backdrop-filter: blur(6px); border: 1px solid rgba(10,20,40,0.04)}
+/* glass-like cards adapted to dark theme */
+.card{background: rgba(47,58,80,0.14); backdrop-filter: blur(6px); border: 1px solid rgba(47,58,80,0.6)}
 
 @media (max-width: 768px){
   .hero-visuals .loader, .hero-visuals .pyramid-loader{position: static; margin: 1.25rem auto; display:block; transform:none}
@@ -258,28 +269,28 @@ body{
 
 .pyramid-loader .wrapper .side1 {
   transform: rotateZ(-30deg) rotateY(90deg);
-  background: conic-gradient( #2BDEAC, #F028FD, #D8CCE6, #2F2585);
+  background: conic-gradient(var(--accent), var(--secondary), var(--primary-dark), var(--light-text));
 }
 
 .pyramid-loader .wrapper .side2 {
   transform: rotateZ(30deg) rotateY(90deg);
-  background: conic-gradient( #2F2585, #D8CCE6, #F028FD, #2BDEAC);
+  background: conic-gradient(var(--primary-dark), var(--light-text), var(--accent), var(--secondary));
 }
 
 .pyramid-loader .wrapper .side3 {
   transform: rotateX(30deg);
-  background: conic-gradient( #2F2585, #D8CCE6, #F028FD, #2BDEAC);
+  background: conic-gradient(var(--primary-dark), var(--light-text), var(--accent), var(--secondary));
 }
 
 .pyramid-loader .wrapper .side4 {
   transform: rotateX(-30deg);
-  background: conic-gradient( #2BDEAC, #F028FD, #D8CCE6, #2F2585);
+  background: conic-gradient(var(--accent), var(--secondary), var(--light-text), var(--primary-dark));
 }
 
 .pyramid-loader .wrapper .shadow {
   width: 60px;
   height: 60px;
-  background: #8B5AD5;
+  background: var(--secondary);
   position: absolute;
   top: 0;
   left: 0;
@@ -298,10 +309,10 @@ body{
 .pyramid-loader {
   /* Desktop positioning restored (original offsets) */
   position: relative;
-  top: -340px;
-  left: 520px;
-  width: 380px;
-  height: 380px;
+  top: -240px;
+  left: 340px;
+  width: 360px;
+  height: 360px;
   display: block;
   transform-style: preserve-3d;
   transform: rotateX(-20deg) scale(1);
@@ -385,18 +396,19 @@ ul {
   width: 50px;
   height: 50px;
   border-radius: 50%;
-  color: #4d4d4d;
-  background-color: #fff;
+  color: var(--light-text);
+  background-color: rgba(255,255,255,0.03);
   transition: all 0.3s ease-in-out;
 }
 .example-2 .icon-content a:hover {
-  box-shadow: 3px 2px 45px 0px rgb(0 0 0 / 12%);
+  box-shadow: 0 8px 30px rgba(15,20,35,0.6);
 }
 .example-2 .icon-content a svg {
   position: relative;
   z-index: 1;
-  width: 30px;
-  height: 30px;
+  width: 28px;
+  height: 28px;
+  fill: var(--light-text);
 }
 .example-2 .icon-content a:hover {
   color: white;
