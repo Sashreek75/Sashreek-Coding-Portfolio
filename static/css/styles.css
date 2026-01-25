@@ -1,4 +1,3 @@
-
 /* Global color variables set to the requested portfolio color scheme */
 :root{
     --primary-dark: #191e2e; /* main background */
@@ -106,11 +105,6 @@ body{
 
 /* glass-like cards adapted to dark theme */
 .card{background: rgba(47,58,80,0.14); backdrop-filter: blur(6px); border: 1px solid rgba(47,58,80,0.6)}
-
-@media (max-width: 768px){
-  .hero-visuals .loader, .hero-visuals .pyramid-loader{position: static; margin: 1.25rem auto; display:block; transform:none}
-  .hero-visuals{min-height:0; margin-top: 0}
-}
 
 /* From Uiverse.io by AatreyuShau */ 
 .loader {
@@ -319,25 +313,6 @@ body{
   z-index: 2;
 }
 
-/* Responsive adjustments */
-@media (max-width: 1024px) {
-  .pyramid-loader { width: 260px; height: 260px; transform: none; margin: 1rem auto; top: 0; left: 0; }
-}
-
-@media (max-width: 768px){
-  /* Stack nav links, reduce paddings and center visuals */
-  .site-nav .space-x-4{display:flex;flex-direction:column;gap:.5rem}
-  .site-nav .flex.items-center.justify-between.h-16{flex-direction:column;align-items:flex-start;padding:.5rem 0}
-  .site-brand{margin-bottom:.5rem}
-  main{padding:1rem}
-  .logo-track{gap:.75rem}
-  .icons{top:0}
-  .hero-visuals{min-height:0}
-  .pyramid-loader{position:static;margin:1rem auto;width:220px;height:220px}
-  .loader, .pyramid-loader{transform:none}
-  img, .card img{max-width:100%;height:auto}
-}
-
 /* Make cards and images fluid */
 .card{width:100%;box-sizing:border-box}
 .responsive-img{max-width:100%;height:auto;display:block}
@@ -455,5 +430,329 @@ ul {
 .icons{
   position: relative;
   top: 200px;
+}
 
+/* ===============================================
+   RESPONSIVE BREAKPOINTS - MOBILE OPTIMIZATION
+   =============================================== */
+
+/* Tablet and smaller laptops */
+@media (max-width: 1024px) {
+  .pyramid-loader { 
+    width: 280px; 
+    height: 280px; 
+    top: -100px;
+    left: 200px;
+    transform: rotateX(-20deg) scale(0.9);
+  }
+  
+  .pyramid-loader .wrapper .side{
+    width: 110px !important;
+    height: 110px !important;
+  }
+
+  .hero-visuals {
+    padding: 2rem 1.5rem;
+  }
+
+  .loader {
+    scale: 0.65;
+  }
+
+  .icons {
+    top: 150px;
+  }
+}
+
+/* Mobile devices */
+@media (max-width: 768px){
+  /* Reset body and main container */
+  body {
+    overflow-x: hidden;
+  }
+
+  main {
+    padding: 1rem;
+    max-width: 100%;
+  }
+
+  /* Navigation improvements */
+  .site-nav .space-x-4 {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .site-nav .flex.items-center.justify-between.h-16 {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 1rem;
+    height: auto;
+    min-height: 4rem;
+  }
+  
+  .site-brand {
+    margin-bottom: 0.75rem;
+    font-size: 1.25rem;
+  }
+
+  /* Hero section mobile optimization */
+  .hero-visuals {
+    min-height: auto;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem 1rem;
+    gap: 2rem;
+  }
+
+  /* Center and resize loader for mobile */
+  .hero-visuals .loader {
+    position: static;
+    margin: 0 auto;
+    left: 0;
+    scale: 0.5;
+    transform: none;
+  }
+
+  /* Center and resize pyramid for mobile */
+  .hero-visuals .pyramid-loader {
+    position: static;
+    margin: 0 auto;
+    width: 200px;
+    height: 200px;
+    top: 0;
+    left: 0;
+    right: 0;
+    transform: rotateX(-20deg) scale(0.8);
+  }
+
+  .pyramid-loader .wrapper .side {
+    width: 90px !important;
+    height: 90px !important;
+  }
+
+  /* Icons mobile positioning */
+  .icons {
+    position: static;
+    top: 0;
+    margin-top: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  /* Social icons mobile optimization */
+  .example-2 {
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    padding: 0 1rem;
+  }
+
+  .example-2 .icon-content {
+    margin: 0.25rem;
+  }
+
+  .example-2 .icon-content a {
+    width: 45px;
+    height: 45px;
+  }
+
+  .example-2 .icon-content a svg {
+    width: 24px;
+    height: 24px;
+  }
+
+  /* Disable tooltips on mobile (tap doesn't trigger hover well) */
+  .example-2 .icon-content .tooltip {
+    display: none;
+  }
+
+  /* Logo marquee mobile */
+  .logo-track {
+    gap: 0.75rem;
+  }
+
+  /* Buttons mobile */
+  .btn-primary,
+  .btn-secondary {
+    display: block;
+    width: 100%;
+    text-align: center;
+    margin-bottom: 0.5rem;
+    padding: 0.75rem 1.25rem;
+  }
+
+  /* Cards mobile */
+  .card {
+    padding: 1.25rem;
+    margin-bottom: 1rem;
+  }
+
+  /* Images responsive */
+  img, 
+  .card img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+  }
+}
+
+/* Small mobile devices */
+@media (max-width: 480px) {
+  .site-brand {
+    font-size: 1.125rem;
+  }
+
+  .hero-visuals {
+    padding: 1.5rem 0.75rem;
+  }
+
+  .hero-visuals .loader {
+    scale: 0.4;
+  }
+
+  .hero-visuals .pyramid-loader {
+    width: 160px;
+    height: 160px;
+    transform: rotateX(-20deg) scale(0.7);
+  }
+
+  .pyramid-loader .wrapper .side {
+    width: 70px !important;
+    height: 70px !important;
+  }
+
+  .example-2 .icon-content a {
+    width: 40px;
+    height: 40px;
+  }
+
+  .example-2 .icon-content a svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .card {
+    padding: 1rem;
+  }
+
+  .btn-primary,
+  .btn-secondary {
+    padding: 0.625rem 1rem;
+    font-size: 0.9rem;
+  }
+}
+
+/* Landscape mobile optimization */
+@media (max-width: 768px) and (orientation: landscape) {
+  .hero-visuals {
+    min-height: auto;
+    padding: 1.5rem 1rem;
+  }
+
+  .hero-visuals .loader {
+    scale: 0.45;
+  }
+
+  .hero-visuals .pyramid-loader {
+    width: 180px;
+    height: 180px;
+  }
+
+  .pyramid-loader .wrapper .side {
+    width: 80px !important;
+    height: 80px !important;
+  }
+}
+
+/* Enhanced mobile responsiveness for main content */
+@media (max-width: 768px) {
+  main {
+    max-width: 100%;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  
+  h1, h2, h3 {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+  }
+
+  /* Better grid handling on mobile */
+  .grid {
+    gap: 0.5rem !important;
+  }
+
+  .grid-cols-2 {
+    grid-template-columns: 1fr 1fr !important;
+  }
+
+  .md\:grid-cols-4 {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+
+  /* Text size optimization */
+  h1 {
+    font-size: 1.875rem !important;
+    margin-bottom: 1rem !important;
+  }
+
+  h2 {
+    font-size: 1.5rem !important;
+  }
+
+  h3 {
+    font-size: 1.125rem !important;
+  }
+
+  p {
+    font-size: 0.95rem !important;
+    line-height: 1.5 !important;
+  }
+
+  /* List and card improvements */
+  ul li {
+    margin-bottom: 1rem !important;
+  }
+
+  /* Touch-friendly spacing */
+  a, button, input, select {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  .btn-primary, .btn-secondary, .btn {
+    min-height: 44px !important;
+    padding: 0.75rem 1.25rem !important;
+    font-size: 0.95rem !important;
+  }
+}
+
+@media (max-width: 480px) {
+  main {
+    padding: 0.75rem !important;
+  }
+
+  h1 {
+    font-size: 1.5rem !important;
+  }
+
+  h2 {
+    font-size: 1.25rem !important;
+  }
+
+  .card {
+    padding: 1rem !important;
+    margin-bottom: 0.75rem !important;
+  }
+
+  /* Single column grids */
+  .grid-cols-2,
+  .md\:grid-cols-4 {
+    grid-template-columns: 1fr !important;
+  }
+
+  .btn-primary, .btn-secondary, .btn {
+    font-size: 0.9rem !important;
+    padding: 0.65rem 1rem !important;
+  }
 }
