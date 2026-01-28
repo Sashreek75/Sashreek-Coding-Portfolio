@@ -1,5 +1,68 @@
 {% extends 'base.html' %}
 {% block content %}
+<style>
+  @media (max-width: 768px) {
+    h1 {
+      font-size: 1.5rem !important;
+      margin-bottom: 1.5rem !important;
+    }
+
+    .grid {
+      grid-template-columns: repeat(2, 1fr) !important;
+      gap: 0.75rem !important;
+    }
+
+    .card {
+      padding: 1rem !important;
+      font-size: 0.95rem !important;
+    }
+
+    .icons {
+      top: 100px !important;
+      padding: 0 1rem !important;
+    }
+  }
+
+  @media (max-width: 480px) {
+    h1 {
+      font-size: 1.25rem !important;
+      margin-bottom: 1rem !important;
+    }
+
+    .grid {
+      grid-template-columns: 1fr !important;
+      gap: 0.5rem !important;
+    }
+
+    .card {
+      padding: 0.85rem !important;
+      font-size: 0.9rem !important;
+    }
+
+    .example-2 {
+      gap: 0.5rem !important;
+      justify-content: center;
+      padding: 0 !important;
+    }
+
+    .example-2 .icon-content a {
+      width: 40px !important;
+      height: 40px !important;
+    }
+
+    .example-2 .icon-content a svg {
+      width: 18px !important;
+      height: 18px !important;
+    }
+
+    .icons {
+      top: 80px !important;
+      margin-top: 1rem !important;
+      padding: 0 !important;
+    }
+  }
+</style>
+
 <h1 class="animate__animated animate__fadeInDown text-3xl font-bold mb-4">Skills</h1>
 <div class="grid grid-cols-2 md:grid-cols-4 gap-4 animate__animated animate__fadeInUp animate__delay-1s">
   <div class="card text-center">Python</div>
@@ -14,7 +77,13 @@
   <div class="card text-center">Machine Learning</div>
   <div class="card text-center">Scientific Computing</div>
   <div class="card text-center">Prompt Engineering</div>
-  
+  <div class="card text-center">System Design</div>
+  <div class="card text-center">API Integration</div>
+  <div class="card text-center">OAuth & Security</div>
+  <div class="card text-center">Data Structures</div>
+
+
+
 
 </div>
  <!-- From Uiverse.io by wilsondesouza --> 
