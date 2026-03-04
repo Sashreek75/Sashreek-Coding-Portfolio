@@ -99,6 +99,94 @@
     line-height: 1.6;
     color: #94a3b8;
   }
+
+  @media (max-width: 768px) {
+    .about-container {
+      padding: 3rem 1.5rem;
+      min-height: auto;
+    }
+
+    .about-content {
+      max-width: 100%;
+    }
+
+    .about-title {
+      font-size: clamp(1.75rem, 5vw, 2.5rem);
+      margin-bottom: 0.75rem;
+    }
+
+    .about-subtitle {
+      font-size: 0.9rem;
+    }
+
+    .about-text {
+      font-size: 1rem;
+      line-height: 1.7;
+      margin-bottom: 2rem;
+    }
+
+    .focus-areas {
+      grid-template-columns: 1fr;
+      gap: 1rem;
+      margin-top: 2rem;
+      padding-top: 2rem;
+    }
+
+    .focus-item {
+      padding: 1.25rem;
+    }
+
+    .focus-title {
+      font-size: 0.8rem;
+      margin-bottom: 0.4rem;
+    }
+
+    .focus-description {
+      font-size: 0.875rem;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .about-container {
+      padding: 1.5rem 1rem;
+    }
+
+    .about-title {
+      font-size: clamp(1.5rem, 4vw, 2rem);
+      margin-bottom: 0.5rem;
+    }
+
+    .about-subtitle {
+      font-size: 0.85rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .about-text {
+      font-size: 0.95rem;
+      line-height: 1.6;
+      margin-bottom: 1.5rem;
+    }
+
+    .focus-areas {
+      grid-template-columns: 1fr;
+      gap: 0.75rem;
+      margin-top: 1.5rem;
+      padding-top: 1.5rem;
+    }
+
+    .focus-item {
+      padding: 1rem;
+    }
+
+    .focus-title {
+      font-size: 0.75rem;
+    }
+
+    .focus-description {
+      font-size: 0.8rem;
+      line-height: 1.5;
+    }
+  }
 </style>
 
 <div class="about-container">
@@ -108,13 +196,13 @@
       <p class="about-subtitle">High School Technologist</p>
     </div>
 
-    <div class="about-text">
+        <div class="about-text">
       <p>I am a high school technologist working at the intersection of machine learning, software engineering, and neuroscience, driven by a deep curiosity about how computational models can meaningfully represent, analyze, and augment human cognition. My interests center on using AI not just as a performance-driven tool, but as a framework for understanding complex neural and cognitive systems.
 
-I focus on developing AI-driven solutions that are both technically rigorous and ethically grounded, applying machine learning to multimodal data, neural signals, and cognitively relevant representations. My work emphasizes interpretability, real-world applicability, and responsible system design, especially in contexts where AI directly interacts with human learning, reasoning, or behavior.
-</p>
+    I focus on developing AI-driven solutions that are both technically rigorous and centered on System Design and management, applying machine learning to multimodal data, neural signals, and cognitively relevant representations. My work emphasizes interpretability, real-world applicability, and responsible system design, especially in contexts where AI directly interacts with human learning, reasoning, or behavior.
+    </p>
       
-      <p style="margin-top: 1.5rem;">I focus on developing AI-driven solutions that are both powerful and ethically grounded, applying machine learning to multimodal data, neural analysis, and intelligent systems that have real-world impact.</p>
+      <p style="margin-top: 1.5rem;">I focus on developing AI-driven solutions that are both powerful and focused on System Design and management, applying machine learning to multimodal data, neural analysis, and intelligent systems that have real-world impact.</p>
       
       <p style="margin-top: 1.5rem;">My long-term goal is to create tools and platforms that bridge technology and neuroscience—amplifying human learning, decision-making, and creativity—while advancing brain-inspired computing, neuro-aligned machine intelligence, and AI-assisted cognitive analysis.</p>
     </div>
@@ -131,8 +219,8 @@ I focus on developing AI-driven solutions that are both technically rigorous and
       </div>
       
       <div class="focus-item">
-        <div class="focus-title">Ethics & Impact</div>
-        <div class="focus-description">Creating AI solutions that are powerful and ethically grounded</div>
+        <div class="focus-title">System Design and management</div>
+        <div class="focus-description">Creating AI solutions that emphasize system design and management</div>
       </div>
 	  <div class="focus-item">
         <div class="focus-title">Learning from Failure</div>
