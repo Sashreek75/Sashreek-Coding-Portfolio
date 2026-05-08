@@ -98,10 +98,10 @@ export default function Home() {
             <div>
               <h2 className="text-3xl md:text-4xl font-semibold font-display text-white mb-6">Who I Am</h2>
               <p className="text-gray-400 text-lg leading-relaxed mb-6">
-                I'm a builder obsessed with understanding how systems work—whether that's how humans learn, how AI models reason, or how organizations scale. My background spans neuroscience, software engineering, and product strategy, which gives me a unique lens for solving complex problems.
+                I'm a high school student and builder obsessed with understanding how systems work—whether that's how humans learn, how AI models reason, or how algorithms scale. My journey is rooted in curiosity, software engineering, and a deep interest in cognitive science.
               </p>
               <p className="text-gray-400 text-lg leading-relaxed">
-                I don't just build software. I architect experiences and systems that leverage cognitive science to make learning, decision-making, and human-computer interaction more natural and effective. Every project I work on is grounded in real problems and real impact.
+                I love to architect experiences and systems that leverage cognitive science to make learning, decision-making, and human-computer interaction more natural and effective. I'm focused on building foundational systems that solve real problems.
               </p>
             </div>
           </motion.div>
@@ -113,8 +113,8 @@ export default function Home() {
         <div className="max-w-7xl mx-auto">
           <div className="grid md:grid-cols-4 gap-6">
             {[
-              { number: "50+", label: "Projects Built", description: "Full-stack applications and intelligent systems" },
-              { number: "3+", label: "Years Experience", description: "In software engineering and AI/ML" },
+              { number: "10+", label: "Projects Built", description: "Learning applications and foundational systems" },
+              { number: "2+", label: "Years Coding", description: "In Python, JS/TS, and AI/ML concepts" },
               { number: "100%", label: "Commitment", description: "To excellence and continuous learning" },
               { number: "∞", label: "Potential", description: "Always exploring new frontiers" }
             ].map((stat, i) => (
@@ -228,7 +228,7 @@ export default function Home() {
                  >
                    ⚙️
                  </motion.div>
-                 <p className="text-lg font-semibold text-white leading-relaxed">"Impressive things satisfy ego.<br /> Meaningful things satisfy purpose."</p>
+                 <p className="text-lg font-semibold text-white leading-relaxed">"True engineering satisfies curiosity.<br /> Meaningful building satisfies purpose."</p>
               </div>
             </motion.div>
           </motion.div>

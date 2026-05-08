@@ -23,9 +23,9 @@ export default function About() {
     },
     {
       year: "2026",
-      title: "Multi-AI & Advanced Systems",
+      title: "Exploring Multi-AI & Systems",
       emoji: "🤖",
-      description: "Now fully immersed in complex backend architecture, multi-AI integration, and AI research. Exploring robotics and intelligent systems. Building the future of human-AI collaboration."
+      description: "Exploring foundational backend architecture, AI integration, and intelligent systems. Eager to learn about the future of human-AI collaboration and robotics."
     }
   ]
 
@@ -69,7 +69,7 @@ export default function About() {
       opacity: 1,
       y: 0,
       transition: {
-        type: "spring",
+        type: "spring" as const,
         stiffness: 100,
         damping: 12,
       },
