@@ -1,0 +1,1493 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&display=swap');
+
+  :root {
+    --primary-dark: #191e2e;
+    --secondary-dark: #2f3a50;
+    --accent-blue: #97affd;
+    --text-muted: #94a3b8;
+    --text-light: #cbd5e1;
+    --grid-size: 60px;
+  }
+
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  /* Loading Screen */
+  .loading-screen {
+    position: fixed;
+    inset: 0;
+    background: var(--primary-dark);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    animation: fadeOut 0.6s ease-out 4.2s forwards;
+  }
+
+  @keyframes fadeOut {
+    to {
+      opacity: 0;
+      pointer-events: none;
+    }
+  }
+
+  /* Bouncing Name Animation */
+  .bouncing-name {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(3rem, 12vw, 8rem);
+    font-weight: 800;
+    background: linear-gradient(135deg, var(--accent-blue) 0%, #6b8fff 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    position: absolute;
+    white-space: nowrap;
+    animation: bounceName 3.5s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+    text-shadow: 0 0 60px rgba(151, 175, 253, 0.6),
+      0 0 100px rgba(151, 175, 253, 0.4);
+    filter: drop-shadow(0 0 30px rgba(151, 175, 253, 0.8));
+  }
+
+  @keyframes bounceName {
+    0% {
+      left: -20%;
+      top: 50%;
+      transform: translate(-50%, -50%) scale(0.5) rotate(-15deg);
+      opacity: 0;
+    }
+
+    10% {
+      opacity: 1;
+    }
+
+    15% {
+      left: 60%;
+      top: 20%;
+      transform: translate(-50%, -50%) scale(1.2) rotate(10deg);
+    }
+
+    30% {
+      left: 30%;
+      top: 70%;
+      transform: translate(-50%, -50%) scale(0.9) rotate(-8deg);
+    }
+
+    45% {
+      left: 70%;
+      top: 40%;
+      transform: translate(-50%, -50%) scale(1.1) rotate(5deg);
+    }
+
+    60% {
+      left: 40%;
+      top: 30%;
+      transform: translate(-50%, -50%) scale(1) rotate(-3deg);
+    }
+
+    75% {
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%) scale(1.05) rotate(2deg);
+    }
+
+    85% {
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%) scale(0.95) rotate(-1deg);
+    }
+
+    100% {
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%) scale(1) rotate(0deg);
+    }
+  }
+
+  /* Particle burst effect */
+  .particle {
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    background: var(--accent-blue);
+    border-radius: 50%;
+    opacity: 0;
+    animation: particleBurst 2s ease-out forwards;
+  }
+
+  @keyframes particleBurst {
+    0% {
+      left: 50%;
+      top: 50%;
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1);
+    }
+
+    100% {
+      opacity: 0;
+      transform: translate(-50%, -50%) scale(0);
+    }
+  }
+
+  /* Generate particles with different trajectories */
+  .particle:nth-child(1) {
+    animation-delay: 3.5s;
+    --tx: -200px;
+    --ty: -200px;
+  }
+
+  .particle:nth-child(2) {
+    animation-delay: 3.5s;
+    --tx: 200px;
+    --ty: -200px;
+  }
+
+  .particle:nth-child(3) {
+    animation-delay: 3.5s;
+    --tx: -200px;
+    --ty: 200px;
+  }
+
+  .particle:nth-child(4) {
+    animation-delay: 3.5s;
+    --tx: 200px;
+    --ty: 200px;
+  }
+
+  .particle:nth-child(5) {
+    animation-delay: 3.5s;
+    --tx: 0px;
+    --ty: -250px;
+  }
+
+  .particle:nth-child(6) {
+    animation-delay: 3.5s;
+    --tx: 0px;
+    --ty: 250px;
+  }
+
+  .particle:nth-child(7) {
+    animation-delay: 3.5s;
+    --tx: -250px;
+    --ty: 0px;
+  }
+
+  .particle:nth-child(8) {
+    animation-delay: 3.5s;
+    --tx: 250px;
+    --ty: 0px;
+  }
+
+  .particle:nth-child(9) {
+    animation-delay: 3.55s;
+    --tx: -150px;
+    --ty: -150px;
+  }
+
+  .particle:nth-child(10) {
+    animation-delay: 3.55s;
+    --tx: 150px;
+    --ty: -150px;
+  }
+
+  .particle:nth-child(11) {
+    animation-delay: 3.55s;
+    --tx: -150px;
+    --ty: 150px;
+  }
+
+  .particle:nth-child(12) {
+    animation-delay: 3.55s;
+    --tx: 150px;
+    --ty: 150px;
+  }
+
+  @keyframes particleBurst {
+    0% {
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1);
+    }
+
+    100% {
+      opacity: 0;
+      transform: translate(calc(-50% + var(--tx)), calc(-50% + var(--ty))) scale(0);
+    }
+  }
+
+  /* Energy ring expansion */
+  .energy-ring {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 100px;
+    height: 100px;
+    border: 3px solid var(--accent-blue);
+    border-radius: 50%;
+    opacity: 0;
+    animation: ringExpand 1s ease-out 3.5s forwards;
+  }
+
+  .energy-ring:nth-child(14) {
+    animation-delay: 3.5s;
+  }
+
+  .energy-ring:nth-child(15) {
+    animation-delay: 3.6s;
+  }
+
+  .energy-ring:nth-child(16) {
+    animation-delay: 3.7s;
+  }
+
+  @keyframes ringExpand {
+    0% {
+      width: 100px;
+      height: 100px;
+      opacity: 0.8;
+    }
+
+    100% {
+      width: 600px;
+      height: 600px;
+      opacity: 0;
+    }
+  }
+
+  .hero-container {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    background: var(--primary-dark);
+    width: 100vw;
+    left: 50%;
+    margin-left: -50vw;
+    margin-right: -50vw;
+    padding: 2rem;
+    opacity: 0;
+    animation: heroFadeIn 0.8s ease-out 4s forwards;
+  }
+
+  @keyframes heroFadeIn {
+    to {
+      opacity: 1;
+    }
+  }
+
+  /* Animated grid background */
+  .hero-container::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(var(--secondary-dark) 1px, transparent 1px),
+      linear-gradient(90deg, var(--secondary-dark) 1px, transparent 1px);
+    background-size: var(--grid-size) var(--grid-size);
+    opacity: 0;
+    animation: gridFadeIn 1.5s ease-out 4.3s forwards, gridPulse 20s ease-in-out 6s infinite;
+  }
+
+  @keyframes gridFadeIn {
+    to {
+      opacity: 0.15;
+    }
+  }
+
+  @keyframes gridPulse {
+
+    0%,
+    100% {
+      opacity: 0.15;
+      transform: scale(1);
+    }
+
+    50% {
+      opacity: 0.25;
+      transform: scale(1.02);
+    }
+  }
+
+  /* Floating orbs with entrance animations */
+  .floating-orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0;
+    animation: orbEntrance 1.5s ease-out forwards, floatOrb 15s ease-in-out infinite;
+  }
+
+  .orb-1 {
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, var(--accent-blue) 0%, transparent 70%);
+    top: -10%;
+    left: -10%;
+    animation-delay: 4.5s, 6s;
+  }
+
+  .orb-2 {
+    width: 350px;
+    height: 350px;
+    background: radial-gradient(circle, var(--accent-blue) 0%, transparent 70%);
+    bottom: -10%;
+    right: -5%;
+    animation-delay: 5s, 11s;
+  }
+
+  .orb-3 {
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(circle, var(--accent-blue) 0%, transparent 70%);
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    animation-delay: 5.5s, 16s;
+  }
+
+  @keyframes orbEntrance {
+    from {
+      opacity: 0;
+      transform: scale(0.5);
+    }
+
+    to {
+      opacity: 0.3;
+      transform: scale(1);
+    }
+  }
+
+  @keyframes floatOrb {
+
+    0%,
+    100% {
+      transform: translate(0, 0) scale(1);
+    }
+
+    33% {
+      transform: translate(30px, -30px) scale(1.1);
+    }
+
+    66% {
+      transform: translate(-20px, 20px) scale(0.9);
+    }
+  }
+
+  /* Main content wrapper */
+  .hero-content {
+    position: relative;
+    z-index: 10;
+    max-width: 1400px;
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: center;
+  }
+
+  /* Text content section with staggered animations */
+  .text-content {
+    opacity: 0;
+    animation: fadeInUp 0.8s ease-out 4.6s forwards;
+  }
+
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(40px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .label {
+    display: inline-block;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.875rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--accent-blue);
+    margin-bottom: 1.5rem;
+    padding: 0.5rem 1rem;
+    border: 1px solid var(--accent-blue);
+    border-radius: 2px;
+    background: rgba(151, 175, 253, 0.05);
+    backdrop-filter: blur(10px);
+    opacity: 0;
+    animation: slideInLeft 0.6s ease-out 4.8s forwards, glowPulse 3s ease-in-out 6s infinite;
+  }
+
+  @keyframes slideInLeft {
+    from {
+      opacity: 0;
+      transform: translateX(-30px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  @keyframes glowPulse {
+
+    0%,
+    100% {
+      box-shadow: 0 0 10px rgba(151, 175, 253, 0.2);
+    }
+
+    50% {
+      box-shadow: 0 0 20px rgba(151, 175, 253, 0.4);
+    }
+  }
+
+  h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(2.5rem, 8vw, 5.5rem);
+    font-weight: 800;
+    line-height: 1.1;
+    margin: 0 0 1.5rem 0;
+    color: var(--text-light);
+    letter-spacing: -0.02em;
+    opacity: 0;
+    animation: fadeInUp 0.8s ease-out 5s forwards;
+  }
+
+  .name-highlight {
+    background: linear-gradient(135deg, var(--accent-blue) 0%, #6b8fff 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    display: inline-block;
+    animation: shimmer 3s ease-in-out 6s infinite, textGlow 2s ease-in-out 5.5s infinite;
+  }
+
+  @keyframes shimmer {
+
+    0%,
+    100% {
+      filter: brightness(1);
+    }
+
+    50% {
+      filter: brightness(1.3);
+    }
+  }
+
+  @keyframes textGlow {
+
+    0%,
+    100% {
+      text-shadow: 0 0 20px rgba(151, 175, 253, 0.3),
+        0 0 40px rgba(151, 175, 253, 0.1);
+    }
+
+    50% {
+      text-shadow: 0 0 30px rgba(151, 175, 253, 0.5),
+        0 0 60px rgba(151, 175, 253, 0.2);
+    }
+  }
+
+  .subtitle {
+    font-family: 'Space Mono', monospace;
+    font-size: clamp(1.125rem, 2.5vw, 1.5rem);
+    font-weight: 400;
+    line-height: 1.6;
+    color: var(--text-light);
+    margin-bottom: 2rem;
+    max-width: 600px;
+    opacity: 0;
+    animation: fadeInUp 0.8s ease-out 5.2s forwards;
+  }
+
+  .description {
+    font-size: 1.125rem;
+    line-height: 1.8;
+    color: var(--text-muted);
+    margin-bottom: 3rem;
+    max-width: 550px;
+    opacity: 0;
+    animation: fadeInUp 0.8s ease-out 5.4s forwards;
+  }
+
+  /* Button styles with enhanced hover effects */
+  .cta-buttons {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    opacity: 0;
+    animation: fadeInUp 0.8s ease-out 5.6s forwards;
+  }
+
+  .btn {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.9375rem;
+    font-weight: 700;
+    padding: 1rem 2rem;
+    border-radius: 4px;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    cursor: pointer;
+  }
+
+  .btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, transparent 100%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .btn::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at center, rgba(255, 255, 255, 0.3), transparent 70%);
+    opacity: 0;
+    transform: scale(0);
+    transition: all 0.6s ease;
+  }
+
+  .btn:hover::before {
+    opacity: 1;
+  }
+
+  .btn:hover::after {
+    opacity: 1;
+    transform: scale(2);
+    transition: all 0.6s ease;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, var(--accent-blue) 0%, #6b8fff 100%);
+    color: var(--primary-dark);
+    border: none;
+    box-shadow: 0 10px 30px rgba(151, 175, 253, 0.3);
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 15px 40px rgba(151, 175, 253, 0.5);
+  }
+
+  .btn-primary:active {
+    transform: translateY(-1px) scale(0.98);
+  }
+
+  .btn-secondary {
+    background: transparent;
+    color: var(--accent-blue);
+    border: 2px solid var(--accent-blue);
+  }
+
+  .btn-secondary:hover {
+    background: rgba(151, 175, 253, 0.15);
+    transform: translateY(-3px) scale(1.02);
+    border-color: #6b8fff;
+    box-shadow: 0 10px 30px rgba(151, 175, 253, 0.3);
+  }
+
+  .btn-secondary:active {
+    transform: translateY(-1px) scale(0.98);
+  }
+
+  /* Visual element section */
+  .visual-content {
+    position: relative;
+    min-height: 500px;
+    min-width: 400px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    /* CRITICAL: preserve-3d so the transform animation below does NOT flatten cube children */
+    transform-style: preserve-3d;
+    animation: vcFadeIn 1s ease-out 5s forwards;
+  }
+
+  /* Opacity-only fade — NO transform so we don't create a flattening stacking context */
+  @keyframes vcFadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+
+  /* 3D rotating cube visualization */
+  .visualization-container {
+    width: 100%;
+    height: 500px;
+    perspective: 1000px;
+    perspective-origin: 50% 40%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    /* CRITICAL: must also preserve-3d so .tech-cube's perspective renders correctly */
+    transform-style: preserve-3d;
+  }
+
+  .tech-cube {
+    width: 300px;
+    height: 300px;
+    position: relative;
+    transform-style: preserve-3d;
+    /* Start hidden; cubeEntrance fades+scales in, then rotateCube takes over transform */
+    opacity: 0;
+    animation:
+      cubeShow   1s    ease-out  5.8s  forwards,
+      cubeEntrance 1.5s ease-out 5.8s forwards,
+      rotateCube 18s  linear infinite 7.3s;
+  }
+
+  /* Separate opacity fade-in so it doesn't conflict with the transform animations */
+  @keyframes cubeShow {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+
+  @keyframes cubeEntrance {
+    from { transform: scale(0.3) rotateX(20deg) rotateY(45deg); }
+    to   { transform: scale(1)   rotateX(20deg) rotateY(45deg); }
+  }
+
+  /* Constant 20° X-tilt keeps top face always visible; start at 45° offset
+     so the "edge-on" moments (every 90°) land on corners instead of faces */
+  @keyframes rotateCube {
+    0%   { transform: rotateX(20deg) rotateY(45deg); }
+    100% { transform: rotateX(20deg) rotateY(405deg); }
+  }
+
+  /* ── Glassmorphic cube faces ── */
+  .cube-face {
+    position: absolute;
+    width: 300px;
+    height: 300px;
+    /* Opaque enough to clearly show 3D cube geometry, tinted icy blue */
+    background: linear-gradient(
+      135deg,
+      rgba(60, 80, 130, 0.82) 0%,
+      rgba(30, 40, 72, 0.88) 50%,
+      rgba(50, 70, 120, 0.80) 100%
+    );
+    backdrop-filter: blur(20px) saturate(1.6) brightness(1.15);
+    -webkit-backdrop-filter: blur(20px) saturate(1.6) brightness(1.15);
+    border: 1px solid rgba(151, 175, 253, 0.45);
+    box-shadow:
+      inset 0 0 70px rgba(151, 175, 253, 0.10),
+      inset 0 1px 0 rgba(200, 220, 255, 0.30),
+      0 0 35px rgba(107, 143, 255, 0.15),
+      0 8px 32px rgba(0, 0, 20, 0.4);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    transition: all 0.3s ease;
+    overflow: hidden;
+  }
+
+  /* glossy top-edge highlight — simulates light reflecting off ice */
+  .cube-face::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 45%;
+    background: linear-gradient(
+      to bottom,
+      rgba(200, 220, 255, 0.18) 0%,
+      rgba(151, 175, 253, 0.06) 50%,
+      transparent 100%
+    );
+    pointer-events: none;
+  }
+
+  /* bottom-edge inner shadow for depth */
+  .cube-face::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 35%;
+    background: linear-gradient(
+      to top,
+      rgba(15, 20, 46, 0.55) 0%,
+      transparent 100%
+    );
+    pointer-events: none;
+  }
+
+  .cube-face svg {
+    width: 100px;
+    height: 100px;
+    position: relative;
+    z-index: 1;
+    filter: drop-shadow(0 0 18px rgba(151, 175, 253, 0.65)) drop-shadow(0 2px 6px rgba(0,0,30,0.5));
+    transition: transform 0.3s ease, filter 0.3s ease;
+  }
+
+  .cube-face-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(200, 220, 255, 0.90);
+    text-shadow: 0 0 12px rgba(151, 175, 253, 0.7);
+    position: relative;
+    z-index: 1;
+  }
+
+  .tech-cube:hover .cube-face {
+    border-color: rgba(151, 175, 253, 0.70);
+    box-shadow:
+      inset 0 0 90px rgba(151, 175, 253, 0.16),
+      inset 0 1px 0 rgba(200, 220, 255, 0.40),
+      0 0 50px rgba(107, 143, 255, 0.25),
+      0 8px 32px rgba(0, 0, 20, 0.45);
+  }
+
+  .tech-cube:hover .cube-face svg {
+    filter: drop-shadow(0 0 26px rgba(151, 175, 253, 0.95)) brightness(1.2);
+  }
+
+
+  .front {
+    transform: rotateY(0deg) translateZ(150px);
+  }
+
+  .back {
+    transform: rotateY(180deg) translateZ(150px);
+  }
+
+  .right {
+    transform: rotateY(90deg) translateZ(150px);
+  }
+
+  .left {
+    transform: rotateY(-90deg) translateZ(150px);
+  }
+
+  .top {
+    transform: rotateX(90deg) translateZ(150px);
+  }
+
+  .bottom {
+    transform: rotateX(-90deg) translateZ(150px);
+  }
+
+  /* Floating tech keywords with staggered entrance */
+  .floating-keywords {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+  }
+
+  .keyword {
+    position: absolute;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.875rem;
+    color: var(--accent-blue);
+    opacity: 0;
+    white-space: nowrap;
+    animation: keywordEntrance 0.8s ease-out forwards, floatKeyword 8s ease-in-out infinite;
+  }
+
+  .keyword:nth-child(1) {
+    top: 10%;
+    left: 5%;
+    animation-delay: 6s, 7s;
+  }
+
+  .keyword:nth-child(2) {
+    top: 20%;
+    right: 10%;
+    animation-delay: 6.2s, 8s;
+  }
+
+  .keyword:nth-child(3) {
+    bottom: 30%;
+    left: 10%;
+    animation-delay: 6.4s, 9s;
+  }
+
+  .keyword:nth-child(4) {
+    bottom: 15%;
+    right: 5%;
+    animation-delay: 6.6s, 10s;
+  }
+
+  .keyword:nth-child(5) {
+    top: 50%;
+    left: 0%;
+    animation-delay: 6.8s, 11s;
+  }
+
+  .keyword:nth-child(6) {
+    top: 60%;
+    right: 0%;
+    animation-delay: 7s, 12s;
+  }
+
+  @keyframes keywordEntrance {
+    from {
+      opacity: 0;
+      transform: translateY(20px) scale(0.8);
+    }
+
+    to {
+      opacity: 0.4;
+      transform: translateY(0) scale(1);
+    }
+  }
+
+  @keyframes floatKeyword {
+
+    0%,
+    100% {
+      transform: translateY(0) scale(1);
+      opacity: 0.3;
+    }
+
+    50% {
+      transform: translateY(-20px) scale(1.05);
+      opacity: 0.6;
+    }
+  }
+
+  /* Stats counter with entrance animations */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+    margin-top: 3rem;
+    padding-top: 3rem;
+    border-top: 1px solid rgba(151, 175, 253, 0.2);
+  }
+
+  .stat-item {
+    opacity: 0;
+    transform: translateY(20px);
+    animation: statEntrance 0.6s ease-out forwards;
+  }
+
+  .stat-item:nth-child(1) {
+    animation-delay: 5.8s;
+  }
+
+  .stat-item:nth-child(2) {
+    animation-delay: 6s;
+  }
+
+  .stat-item:nth-child(3) {
+    animation-delay: 6.2s;
+  }
+
+  @keyframes statEntrance {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .stat-number {
+    font-family: 'Syne', sans-serif;
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--accent-blue);
+    margin-bottom: 0.5rem;
+    display: block;
+    text-shadow: 0 0 20px rgba(151, 175, 253, 0.3);
+  }
+
+  .stat-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.875rem;
+    color: var(--text-light);
+    letter-spacing: 0.05em;
+  }
+
+  /* Scroll indicator */
+  .scroll-indicator {
+    position: absolute;
+    bottom: 3rem;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 20;
+    opacity: 0;
+    animation: fadeIn 1s ease-out 6.5s forwards, bounce 2s ease-in-out 7.5s infinite;
+  }
+
+  @keyframes fadeIn {
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes bounce {
+
+    0%,
+    100% {
+      transform: translateX(-50%) translateY(0);
+    }
+
+    50% {
+      transform: translateX(-50%) translateY(10px);
+    }
+  }
+
+  .scroll-indicator span {
+    display: block;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--accent-blue);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+    text-align: center;
+  }
+
+  .scroll-arrow {
+    width: 2px;
+    height: 40px;
+    background: linear-gradient(to bottom, var(--accent-blue), transparent);
+    margin: 0 auto;
+    animation: arrowPulse 2s ease-in-out infinite;
+  }
+
+  @keyframes arrowPulse {
+
+    0%,
+    100% {
+      opacity: 1;
+    }
+
+    50% {
+      opacity: 0.5;
+    }
+  }
+
+  /* Responsive Design - Tablet */
+  @media (max-width: 968px) {
+    .hero-content {
+      grid-template-columns: 1fr;
+      gap: 3rem;
+      text-align: center;
+    }
+
+    .text-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .subtitle,
+    .description {
+      max-width: 100%;
+    }
+
+    .cta-buttons {
+      justify-content: center;
+    }
+
+    .stats-grid {
+      justify-items: center;
+    }
+
+    .visual-content {
+      height: 500px;
+    }
+  }
+
+  /* Responsive Design - Mobile */
+  @media (max-width: 768px) {
+    .bouncing-name {
+      font-size: clamp(2.5rem, 10vw, 5rem);
+    }
+
+    .hero-container {
+      padding: 3rem 1.5rem;
+      min-height: auto;
+    }
+
+    .hero-content {
+      gap: 2.5rem;
+    }
+
+    h1 {
+      font-size: clamp(2rem, 10vw, 3rem);
+      margin-bottom: 1rem;
+    }
+
+    .subtitle {
+      font-size: clamp(1rem, 3vw, 1.25rem);
+      margin-bottom: 1.5rem;
+    }
+
+    .description {
+      font-size: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .label {
+      font-size: 0.75rem;
+      padding: 0.4rem 0.8rem;
+      margin-bottom: 1rem;
+    }
+
+    .cta-buttons {
+      gap: 0.75rem;
+      width: 100%;
+    }
+
+    .btn {
+      font-size: 0.875rem;
+      padding: 0.85rem 1.75rem;
+      min-height: 48px;
+      flex: 1;
+      justify-content: center;
+    }
+
+    .visual-content {
+      height: 400px;
+    }
+
+    .tech-cube {
+      width: 240px;
+      height: 240px;
+    }
+
+    .cube-face {
+      width: 240px;
+      height: 240px;
+      font-size: 1rem;
+    }
+
+    .front {
+      transform: rotateY(0deg) translateZ(120px);
+    }
+
+    .back {
+      transform: rotateY(180deg) translateZ(120px);
+    }
+
+    .right {
+      transform: rotateY(90deg) translateZ(120px);
+    }
+
+    .left {
+      transform: rotateY(-90deg) translateZ(120px);
+    }
+
+    .top {
+      transform: rotateX(90deg) translateZ(120px);
+    }
+
+    .bottom {
+      transform: rotateX(-90deg) translateZ(120px);
+    }
+
+    .keyword {
+      font-size: 0.75rem;
+    }
+
+    .stats-grid {
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+      margin-top: 2rem;
+      padding-top: 2rem;
+    }
+
+    .stat-number {
+      font-size: 2rem;
+    }
+
+    .stat-label {
+      font-size: 0.8rem;
+    }
+
+    .scroll-indicator {
+      bottom: 1.5rem;
+    }
+
+    .floating-orb {
+      filter: blur(60px);
+    }
+
+    .orb-1 {
+      width: 250px;
+      height: 250px;
+    }
+
+    .orb-2 {
+      width: 200px;
+      height: 200px;
+    }
+
+    .orb-3 {
+      width: 150px;
+      height: 150px;
+    }
+  }
+
+  /* Extra Small Mobile */
+  @media (max-width: 480px) {
+    .bouncing-name {
+      font-size: clamp(2rem, 9vw, 4rem);
+    }
+
+    .hero-container {
+      padding: 2rem 1rem;
+    }
+
+    .hero-content {
+      gap: 2rem;
+    }
+
+    h1 {
+      font-size: clamp(1.75rem, 9vw, 2.5rem);
+      line-height: 1.2;
+      margin-bottom: 0.75rem;
+    }
+
+    .subtitle {
+      font-size: clamp(0.9rem, 2.5vw, 1.1rem);
+      margin-bottom: 1.25rem;
+    }
+
+    .description {
+      font-size: 0.95rem;
+      margin-bottom: 1.75rem;
+      line-height: 1.7;
+    }
+
+    .label {
+      font-size: 0.7rem;
+      padding: 0.35rem 0.75rem;
+      margin-bottom: 0.875rem;
+    }
+
+    .cta-buttons {
+      flex-direction: column;
+      gap: 0.625rem;
+      width: 100%;
+    }
+
+    .btn {
+      font-size: 0.8125rem;
+      padding: 0.75rem 1.5rem;
+      width: 100%;
+      min-height: 44px;
+    }
+
+    .visual-content {
+      height: 320px;
+    }
+
+
+    .tech-cube {
+      width: 180px;
+      height: 180px;
+    }
+
+    .cube-face {
+      width: 180px;
+      height: 180px;
+    }
+
+    .cube-face svg {
+      width: 72px;
+      height: 72px;
+    }
+
+    .cube-face-label {
+      font-size: 0.65rem;
+    }
+
+    .front {
+      transform: rotateY(0deg) translateZ(90px);
+    }
+
+    .back {
+      transform: rotateY(180deg) translateZ(90px);
+    }
+
+    .right {
+      transform: rotateY(90deg) translateZ(90px);
+    }
+
+    .left {
+      transform: rotateY(-90deg) translateZ(90px);
+    }
+
+    .top {
+      transform: rotateX(90deg) translateZ(90px);
+    }
+
+    .bottom {
+      transform: rotateX(-90deg) translateZ(90px);
+    }
+
+    .keyword {
+      font-size: 0.7rem;
+    }
+
+    .stats-grid {
+      gap: 1.25rem;
+      margin-top: 1.75rem;
+      padding-top: 1.75rem;
+    }
+
+    .stat-number {
+      font-size: 1.75rem;
+    }
+
+    .stat-label {
+      font-size: 0.75rem;
+    }
+
+    .scroll-indicator {
+      bottom: 1rem;
+    }
+
+    .scroll-indicator span {
+      font-size: 0.7rem;
+    }
+
+    .scroll-arrow {
+      height: 30px;
+    }
+
+    .floating-orb {
+      filter: blur(50px);
+      opacity: 0.15;
+    }
+
+    .orb-1 {
+      width: 180px;
+      height: 180px;
+    }
+
+    .orb-2 {
+      width: 140px;
+      height: 140px;
+    }
+
+    .orb-3 {
+      width: 100px;
+      height: 100px;
+    }
+  }
+
+  /* Accessibility - Reduced Motion */
+  @media (prefers-reduced-motion: reduce) {
+    .bouncing-name {
+      animation: simpleFadeIn 1s ease-out forwards;
+      left: 50%;
+      top: 50%;
+    }
+
+    @keyframes simpleFadeIn {
+      from {
+        opacity: 0;
+      }
+
+      to {
+        opacity: 1;
+      }
+    }
+
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+</style>
+
+<!-- Loading Screen with Bouncing Name Animation -->
+<div class="loading-screen">
+  <div class="bouncing-name">Sashreek</div>
+
+  <!-- Particle effects -->
+  <div class="particle"></div>
+  <div class="particle"></div>
+  <div class="particle"></div>
+  <div class="particle"></div>
+  <div class="particle"></div>
+  <div class="particle"></div>
+  <div class="particle"></div>
+  <div class="particle"></div>
+  <div class="particle"></div>
+  <div class="particle"></div>
+  <div class="particle"></div>
+  <div class="particle"></div>
+
+  <!-- Energy rings -->
+  <div class="energy-ring"></div>
+  <div class="energy-ring"></div>
+  <div class="energy-ring"></div>
+</div>
+
+<div class="hero-container">
+  <!-- Floating orb backgrounds -->
+  <div class="floating-orb orb-1"></div>
+  <div class="floating-orb orb-2"></div>
+  <div class="floating-orb orb-3"></div>
+
+  <div class="hero-content">
+    <!-- Text Content -->
+    <div class="text-content">
+      <div class="label">Aspiring AI/ML Engineer</div>
+
+      <h1>
+        Hi, I'm <span class="name-highlight">Sashreek</span>
+      </h1>
+
+      <p class="subtitle">
+        Building AI that amplifies the unique strengths of each individual mind.
+      </p>
+
+      <p class="description">
+        I build at the intersection of machine learning, software engineering, and human-centered design — creating adaptive AI systems that learn about people, not just from data.
+      </p>
+
+      <div class="cta-buttons">
+        <a href="{{ url_for('projects') }}" class="btn btn-primary">
+          View Projects →
+        </a>
+        <a href="{{ url_for('about') }}" class="btn btn-secondary">
+          About Me
+        </a>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-item">
+          <span class="stat-number">AI Systems</span>
+          <span class="stat-label">Systems that learn about you</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-number">Neuroscience</span>
+          <span class="stat-label">End-to-end system building</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-number">SaaS Builder</span>
+          <span class="stat-label">Research through prototyping</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Visual Content -->
+    <div class="visual-content">
+      <div class="visualization-container">
+        <!-- 3D Cube -->
+        <div class="tech-cube">
+          <!-- FRONT – Python -->
+          <div class="cube-face front">
+            <svg viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg">
+              <linearGradient id="py-g1" x1="70.252" y1="1237.476" x2="170.659" y2="1151.089" gradientUnits="userSpaceOnUse" gradientTransform="matrix(.563 0 0 -.568 -29.215 707.817)">
+                <stop offset="0" stop-color="#5a9fd4"/><stop offset="1" stop-color="#306998"/>
+              </linearGradient>
+              <linearGradient id="py-g2" x1="209.474" y1="1098.811" x2="173.62" y2="1158.564" gradientUnits="userSpaceOnUse" gradientTransform="matrix(.563 0 0 -.568 -29.215 707.817)">
+                <stop offset="0" stop-color="#ffd43b"/><stop offset="1" stop-color="#ffe873"/>
+              </linearGradient>
+              <path fill="url(#py-g1)" d="M63.391 1.988c-4.222.02-8.252.379-11.8 1.007-10.45 1.846-12.346 5.71-12.346 12.837v9.411h24.69v3.137H29.977c-7.176 0-13.46 4.313-15.426 12.521-2.268 9.405-2.368 15.275 0 25.096 1.755 7.311 5.947 12.519 13.124 12.519h8.491V67.234c0-8.151 7.051-15.34 15.426-15.34h24.665c6.866 0 12.346-5.654 12.346-12.548V15.833c0-6.693-5.646-11.72-12.346-12.837-4.244-.706-8.645-1.027-12.866-1.008zM50.037 9.557c2.55 0 4.634 2.117 4.634 4.721 0 2.593-2.083 4.69-4.634 4.69-2.56 0-4.633-2.097-4.633-4.69-.001-2.604 2.073-4.721 4.633-4.721z" transform="translate(0 10.26)"/>
+              <path fill="url(#py-g2)" d="M91.682 28.38v10.966c0 8.5-7.208 15.655-15.426 15.655H51.591c-6.756 0-12.346 5.783-12.346 12.549v23.515c0 6.691 5.818 10.628 12.346 12.547 7.816 2.297 15.312 2.713 24.665 0 6.216-1.801 12.346-5.423 12.346-12.547v-9.412H63.938v-3.138h37.012c7.176 0 9.852-5.005 12.348-12.519 2.678-7.484 2.491-14.7 0-25.096-1.774-7.145-5.161-12.521-12.348-12.521H91.682zm-13.637 59.017c2.561 0 4.634 2.097 4.634 4.692 0 2.602-2.074 4.719-4.634 4.719-2.55 0-4.633-2.117-4.633-4.719 0-2.595 2.083-4.692 4.633-4.692z" transform="translate(0 10.26)"/>
+            </svg>
+            <span class="cube-face-label">Python</span>
+          </div>
+
+          <!-- BACK – JavaScript -->
+          <div class="cube-face back">
+            <svg viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg">
+              <rect x="2" y="2" width="124" height="124" fill="rgba(151,175,253,0.18)" rx="6"/>
+              <path fill="#97affd" d="M116 2H12C6.477 2 2 6.477 2 12v104c0 5.523 4.477 10 10 10h104c5.523 0 10-4.477 10-10V12c0-5.523-4.477-10-10-10zM77.086 95.232c0 11.166-6.554 16.249-16.12 16.249-8.638 0-13.643-4.476-16.187-9.87l8.773-5.302c1.692 2.998 3.228 5.542 6.932 5.542 3.538 0 5.78-1.384 5.78-6.773V56.506h10.822v38.726zm23.348 15.938c-10.026 0-16.511-4.784-19.669-11.085l8.773-5.073c2.306 3.765 5.302 6.532 10.604 6.532 4.457 0 7.297-2.229 7.297-5.302 0-3.687-2.922-4.994-7.839-7.145l-2.689-1.155c-7.762-3.304-12.912-7.451-12.912-16.208 0-8.063 6.149-14.212 15.749-14.212 6.84 0 11.749 2.382 15.28 8.603l-8.372 5.38c-1.843-3.304-3.843-4.611-6.908-4.611-3.149 0-5.149 1.997-5.149 4.611 0 3.227 1.999 4.534 6.625 6.532l2.689 1.152c9.149 3.919 14.295 7.916 14.295 16.896-.001 9.69-7.604 14.885-17.774 14.885z"/>
+            </svg>
+            <span class="cube-face-label">JavaScript</span>
+          </div>
+
+          <!-- RIGHT – Java -->
+          <div class="cube-face right">
+            <svg viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg">
+              <path fill="#97affd" d="M47.617 98.12c-14.705 3.32-8.995 10.173.919 8.135 2.877-.578 5.668-1.888 8.492-2.787 4.229 6.099 9.68 9.428 16.08 9.428C94.958 112.896 109 97.23 109 79.6c0-9.822-4.206-17.896-11.19-23.24 2.1-2.3 3.4-5.3 3.4-8.85 0-7.19-4.62-12.37-10.65-12.37-2.79 0-5.39 1.04-7.38 2.76-3.55-1.43-6.39-2.06-9.6-2.06-18.17 0-28.93 15.31-28.93 32.71 0 11.73 5.36 22.3 12.965 28.57z"/>
+              <path fill="rgba(151,175,253,0.5)" d="M54.29 84.13c-5.09-1.38-9.44-4.64-12.66-8.75-1.84 3.33-2.83 7.1-2.83 11.09 0 13.61 11.03 24.64 24.63 24.64 5.44 0 10.37-1.77 14.37-4.72-7.78-4.71-18.63-10.28-23.51-22.26z"/>
+              <path fill="#97affd" d="M44.09 65.66c0-14.36 8.67-26.14 20.48-30.01-2.03 3.04-3.21 6.66-3.21 10.57 0 10.37 8.41 18.79 18.79 18.79 2.79 0 5.44-.61 7.82-1.7.07 1.08.11 2.18.11 3.29 0 21.11-17.11 38.22-38.22 38.22-21.11 0-38.22-17.11-38.22-38.22 0-7.74 2.32-14.94 6.3-20.94-3.29 5.51-5.19 11.95-5.19 18.84 0 20.38 16.52 36.9 36.9 36.9s36.9-16.52 36.9-36.9c0-7.23-2.08-13.98-5.67-19.7-10.17 3.48-17.5 13.07-17.5 24.36 0 14.26 11.56 25.82 25.82 25.82 2.52 0 4.96-.36 7.27-1.03C97.31 103.56 83.7 112.9 68 112.9c-19.87 0-35.98-16.11-35.98-35.98 0-9.63 3.79-18.38 9.97-24.83-.68 4.42-1.06 8.95-1.06 13.57l3.16-.02z"/>
+            </svg>
+            <span class="cube-face-label">Java</span>
+          </div>
+
+          <!-- LEFT – React -->
+          <div class="cube-face left">
+            <svg viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg">
+              <g fill="none"><circle cx="64" cy="64" r="11.4" fill="#97affd"/>
+              <path d="M107.3 45.2c-2.2-.8-4.5-1.6-6.9-2.3.6-2.4 1.1-4.8 1.5-7.1 2.1-13-1.2-22.3-9.6-27.2-17.4-10-45.8 4.9-62.4 32.5-4.7 8.1-8.1 16.5-9.9 24.5-2.2 9.6-1.7 18 1.2 23.8 3.1 6.1 8.1 9.8 15.5 11.2 1.5.3 3.1.4 4.7.4 7.3 0 15.6-2.5 23.7-7 1.3.9 2.6 1.8 4 2.7 12.7 8.5 27.5 12.7 39.4 12.7 5.7 0 10.9-.9 15.3-2.7 9.3-3.6 15.2-11.5 16.8-22.5 1.1-7.7-.3-16.9-4.3-26.4-.9-1.8-1.8-3.5-2.8-5.1.9-1.2 1.7-2.4 2.5-3.7 11.2-19.5 12.7-36.3 4.2-47.7-8.1-10.9-23.4-14.1-41.7-10.2-2.4.5-4.8 1.1-7.2 1.8-.8-2.5-1.7-4.9-2.7-7.3-8.5-19.2-22.4-27-34.7-20.7-12.3 6.3-16.3 23.3-11 43.7.8 3.1 1.8 6.2 3 9.2-2.8 1-5.6 2.1-8.2 3.1-15 6.6-23.6 16.2-23.6 26.1 0 9.9 8.5 19.5 23.5 26.1 2.8 1.2 5.6 2.3 8.5 3.3-.7 2.2-1.3 4.5-1.8 6.9-1.8 10.5-.7 20.1 3.2 27 3.6 6.5 9.4 10.5 16.4 11.2 1.3.1 2.5.2 3.8.2 4.7 0 9.5-1.3 14.4-3.9 8.1-4.4 16.7-13.5 23-26.4 6.4 1.6 13 2.5 19.6 2.5 5.7 0 11.5-.8 17-2.3 11-2.9 18.6-9.8 20.7-19.4 1.6-7.3-.1-15.8-5.2-24.5-1.1-1.8-2.3-3.6-3.6-5.3zM96.7 79.5c1.6.9 3.2 1.9 4.7 3.1 2.8 2.2 4.7 4.5 5.4 6.6.6 1.8.2 3.4-1.4 5.1-2.6 2.5-5.9 3.6-9.2 3.6-2.8 0-5.8-.8-8.8-2.2.8-.4 1.5-.9 2.3-1.3 4.7-2.8 9.2-6.9 13-12.2 1.2.6 2.4 1.2 3.5 1.8l-9.5-4.5zM60.1 14.5c1.1-1.4 2.3-2.6 3.6-3.6.8-.6 1.7-1 2.6-1.3 1.1 1.4 1.9 3.3 2.3 5.7.3 1.5.4 3.1.4 4.9 0 4.8-.9 10.3-2.5 16.2-2.6-1.1-5.3-1.9-8.1-2.5-1.1-5.6-.7-11.8 1.7-19.4zM64 54.3c3.3-4.5 6.9-8.5 10.3-11.8 3.5.6 7 1.5 10.3 2.7-3.4 3.8-6.5 8.3-9.2 13.3-3.2-1.7-7.2-3.2-11.4-4.2zM64 74.8c-3.5-4.7-6.4-9.7-8.5-14.7 4.1-1.1 8.3-1.8 12.4-2.2 2.6 5 4.7 10.3 6 16.1-3.1.5-6.4.9-9.9 0.8zM57.6 85.3c2.7 3.7 5.7 7 8.8 9.7-3.2-1.2-6.3-3-9.2-5.5-.9-.8-1.8-1.6-2.6-2.5.9-.6 2-.1 3-.7zM83.7 92.1c.6.2 1.2.4 1.8.5-2 1.2-4 2.2-6.1 3-1.6.6-3.2 1.1-4.8 1.5.5-.3 1-.6 1.5-1l7.6-4z" fill="#97affd"/></g>
+            </svg>
+            <span class="cube-face-label">React</span>
+          </div>
+
+          <!-- TOP – SQL -->
+          <div class="cube-face top">
+            <svg viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg">
+              <!-- Simple DB cylinder icon -->
+              <ellipse cx="64" cy="28" rx="46" ry="16" fill="rgba(151,175,253,0.25)" stroke="#97affd" stroke-width="3"/>
+              <rect x="18" y="28" width="92" height="52" fill="rgba(151,175,253,0.10)" stroke="#97affd" stroke-width="0"/>
+              <line x1="18" y1="28" x2="18" y2="80" stroke="#97affd" stroke-width="3"/>
+              <line x1="110" y1="28" x2="110" y2="80" stroke="#97affd" stroke-width="3"/>
+              <ellipse cx="64" cy="54" rx="46" ry="16" fill="rgba(151,175,253,0.15)" stroke="#97affd" stroke-width="2.5"/>
+              <ellipse cx="64" cy="80" rx="46" ry="16" fill="rgba(151,175,253,0.20)" stroke="#97affd" stroke-width="3"/>
+              <text x="64" y="84" text-anchor="middle" fill="#97affd" font-family="Space Mono,monospace" font-size="10" font-weight="700" letter-spacing="2">SQL</text>
+            </svg>
+            <span class="cube-face-label">SQL</span>
+          </div>
+
+          <!-- BOTTOM – TypeScript -->
+          <div class="cube-face bottom">
+            <svg viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg">
+              <rect x="2" y="2" width="124" height="124" fill="rgba(151,175,253,0.18)" rx="6"/>
+              <path fill="#97affd" d="M116.3 2H11.7C6.3 2 2 6.3 2 11.7v104.6c0 5.4 4.3 9.7 9.7 9.7h104.6c5.4 0 9.7-4.3 9.7-9.7V11.7c0-5.4-4.3-9.7-9.7-9.7zM72.9 64H51.3v55.4H38.8V64H17.5V53h55.4v11zm30 53.8c-3.1 0-5.9-.5-8.3-1.9-2.4-1.3-4.3-3.2-5.7-5.6-1.4-2.4-2.1-5.2-2.1-8.3h12c.1 1.8.5 3.2 1.2 4.4.7 1.2 1.6 2.1 2.7 2.7 1.1.6 2.4 1 3.8 1 1.4 0 2.7-.4 3.8-1.1 1.1-.7 1.9-1.7 2.5-3 .6-1.3 1-2.8 1-4.6 0-1.8-.3-3.3-1-4.6-.7-1.3-1.6-2.3-2.8-3-1.2-.7-2.5-1-4-1h-3.5v-9h3.5c1.3 0 2.5-.3 3.5-.9 1-.6 1.8-1.5 2.4-2.6.6-1.1.9-2.4.9-3.9 0-1.5-.3-2.8-.8-3.9-.5-1.1-1.3-2-2.2-2.6-.9-.6-2-.9-3.2-.9-1.2 0-2.3.3-3.3.9-1 .6-1.7 1.5-2.3 2.6-.6 1.1-.9 2.4-.9 3.9h-12c0-3.2.7-6 2-8.4 1.4-2.4 3.3-4.3 5.7-5.6 2.4-1.3 5.2-2 8.3-2 3.1 0 5.9.7 8.3 2 2.4 1.3 4.3 3.2 5.7 5.6 1.4 2.4 2.1 5.2 2.1 8.4 0 2.8-.5 5.2-1.6 7.3-1.1 2.1-2.7 3.7-4.8 4.9v.3c2.5 1.1 4.5 2.8 5.8 5.1 1.4 2.3 2.1 5.1 2.1 8.4 0 3.2-.7 6-2.1 8.4-1.4 2.4-3.3 4.2-5.8 5.6-2.5 1.3-5.4 1.9-8.6 1.9z"/>
+            </svg>
+            <span class="cube-face-label">TypeScript</span>
+          </div>
+        </div>
+
+        <!-- Floating Keywords -->
+        <div class="floating-keywords">
+          <div class="keyword">Adaptive Systems</div>
+          <div class="keyword">Python + ML</div>
+          <div class="keyword">Dataset Reliability</div>
+          <div class="keyword">LLM Integration</div>
+          <div class="keyword">End-to-End Platforms</div>
+          <div class="keyword">AI Infrastructure</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scroll Indicator -->
+  <div class="scroll-indicator">
+    <span>Scroll</span>
+    <div class="scroll-arrow"></div>
+  </div>
+</div>
+
+{% endblock %}

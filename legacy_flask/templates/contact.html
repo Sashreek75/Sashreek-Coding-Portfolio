@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+{% block content %}
+<style>
+  @media (max-width: 768px) {
+    h1 {
+      font-size: 1.5rem !important;
+      margin-bottom: 1.5rem !important;
+    }
+
+    .card {
+      padding: 1.25rem !important;
+    }
+
+    .card input,
+    .card textarea {
+      font-size: 16px !important;
+      min-height: 44px !important;
+      padding: 0.75rem !important;
+    }
+
+    .card label {
+      margin-bottom: 0.5rem !important;
+      font-size: 0.95rem !important;
+    }
+
+    .card textarea {
+      min-height: 120px !important;
+    }
+  }
+
+  @media (max-width: 480px) {
+    h1 {
+      font-size: 1.25rem !important;
+    }
+
+    .card {
+      padding: 1rem !important;
+      margin-bottom: 0 !important;
+    }
+
+    .card div {
+      margin-bottom: 1rem !important;
+    }
+
+    .card input,
+    .card textarea {
+      font-size: 16px !important;
+      padding: 0.65rem !important;
+    }
+
+    .btn-primary {
+      width: 100% !important;
+      text-align: center !important;
+      min-height: 44px !important;
+    }
+  }
+</style>
+
+<h1 class="animate__animated animate__fadeInDown text-2xl font-bold mb-2">Let's Connect</h1>
+<p class="animate__animated animate__fadeIn animate__delay-1s" style="color: #94a3b8; margin-bottom: 1.5rem; line-height: 1.7;">I'm always open to conversations about adaptive AI, cognitive science, research collaboration, or unconventional ideas worth exploring. If something here resonated with you, reach out.</p>
+<form method="post" class="card space-y-4 animate__animated animate__fadeInUp animate__delay-1s">
+  <div>
+    <label class="block text-sm">Name</label>
+    <input name="name" class="w-full border rounded px-3 py-2"/>
+  </div>
+  <div>
+    <label class="block text-sm">Email</label>
+    <input name="email" type="email" class="w-full border rounded px-3 py-2"/>
+  </div>
+  <div>
+    <label class="block text-sm">Message</label>
+    <textarea name="message" class="w-full border rounded px-3 py-2"></textarea>
+  </div>
+  <div>
+    <button type="submit" class="btn-primary">Send</button>
+  </div>
+</form>
+{% endblock %}
