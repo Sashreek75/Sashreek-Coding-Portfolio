@@ -1,384 +1,223 @@
-import { motion } from 'framer-motion'
+import { useRef } from 'react'
 import { Link } from 'react-router-dom'
+import { motion, useScroll, useTransform, useSpring } from 'framer-motion'
+import { ArrowUpRight, Target, Hammer, Brain, Repeat } from 'lucide-react'
+import { SplitText, Reveal, TiltCard, SectionLabel, Magnetic } from '../components/motion'
+import { EASE } from '../lib/ease'
+import { TIMELINE } from '../data'
+
+const BELIEFS = [
+  { icon: Target, color: '#6d9cff', title: 'Start with a real problem', body: "Every project I'm proud of started because something annoyed me or someone I knew was struggling. Never because a framework looked cool." },
+  { icon: Hammer, color: '#ffb36b', title: 'Build it, then learn', body: 'Tutorials only got me so far. Shipping something broken and fixing it taught me more than anything else.' },
+  { icon: Brain, color: '#5ef2c2', title: 'Be honest about results', body: "In research and in products. If something didn't work, I'd rather know, and say so, than pretend it did." },
+  { icon: Repeat, color: '#b477ff', title: 'Stay curious', body: "Cognitive science, AI, business, sales. I'm into way too many things, and that's how the best ideas end up connecting." },
+]
+
+function Timeline() {
+  const ref = useRef<HTMLDivElement>(null)
+  const { scrollYProgress } = useScroll({ target: ref, offset: ['start 70%', 'end 60%'] })
+  const h = useSpring(scrollYProgress, { stiffness: 80, damping: 20 })
+  return (
+    <div ref={ref} className="relative">
+      <div className="absolute left-[11px] top-2 h-full w-px bg-white/[0.07] md:left-1/2" />
+      <motion.div className="absolute left-[11px] top-2 h-full w-px origin-top bg-gradient-to-b from-brand-blue via-brand-purple to-brand-amber md:left-1/2" style={{ scaleY: h }} />
+      <div className="space-y-14 md:space-y-20">
+        {TIMELINE.map((t, i) => {
+          const left = i % 2 === 0
+          return (
+            <div key={i} className="relative grid md:grid-cols-2 md:gap-16">
+              <motion.span
+                className="absolute left-[5px] top-2 z-10 h-[13px] w-[13px] rounded-full border-2 border-dark-surface bg-brand-blue md:left-1/2 md:-translate-x-1/2"
+                initial={{ scale: 0 }}
+                whileInView={{ scale: 1 }}
+                viewport={{ once: true, margin: '-30%' }}
+                transition={{ type: 'spring', stiffness: 400, damping: 14 }}
+              >
+                <motion.span className="absolute inset-0 rounded-full bg-brand-blue" animate={{ scale: [1, 2.4], opacity: [0.6, 0] }} transition={{ duration: 2, repeat: Infinity }} />
+              </motion.span>
+              <motion.div
+                className={`pl-10 md:pl-0 ${left ? 'md:pr-4 md:text-right' : 'md:col-start-2 md:pl-4'}`}
+                initial={{ opacity: 0, x: left ? -60 : 60, filter: 'blur(8px)' }}
+                whileInView={{ opacity: 1, x: 0, filter: 'blur(0px)' }}
+                viewport={{ once: true, margin: '-20%' }}
+                transition={{ duration: 0.9, ease: EASE }}
+              >
+                <div className="font-mono text-sm text-brand-blue">{t.when}</div>
+                <h3 className="mt-2 text-2xl md:text-3xl">{t.title}</h3>
+                <p className="mt-3 leading-relaxed text-gray-400">{t.body}</p>
+              </motion.div>
+            </div>
+          )
+        })}
+      </div>
+    </div>
+  )
+}
+
+function Basketball() {
+  return (
+    <div className="relative h-40 w-40">
+      <motion.div
+        className="absolute left-1/2 top-0 h-16 w-16 -translate-x-1/2 rounded-full bg-gradient-to-br from-[#ff9a4d] to-[#c4561c] shadow-[0_0_40px_rgba(255,154,77,0.35)]"
+        animate={{ y: [0, 88, 0], scaleY: [1, 1, 0.8, 1], scaleX: [1, 1, 1.15, 1], rotate: [0, 180, 360] }}
+        transition={{ duration: 1.1, repeat: Infinity, ease: [0.33, 0, 0.67, 1], times: [0, 0.48, 0.5, 1] }}
+      >
+        <svg viewBox="0 0 64 64" className="h-full w-full opacity-60">
+          <path d="M32 0v64M0 32h64M10 10c12 12 12 32 0 44M54 10c-12 12-12 32 0 44" stroke="#3a1a08" strokeWidth="2" fill="none" />
+        </svg>
+      </motion.div>
+      <motion.div
+        className="absolute bottom-2 left-1/2 h-3 w-16 -translate-x-1/2 rounded-full bg-black/60 blur-sm"
+        animate={{ scaleX: [0.5, 1, 0.5], opacity: [0.3, 0.8, 0.3] }}
+        transition={{ duration: 1.1, repeat: Infinity, ease: [0.33, 0, 0.67, 1] }}
+      />
+    </div>
+  )
+}
 
 export default function About() {
-  const milestones = [
-    {
-      year: "2022",
-      title: "The First Line of Code",
-      emoji: "🐦",
-      description: "Started learning JavaScript from scratch. Built my first ever project—a scrappy Flappy Bird game. It was rough, but it ignited something: the love of coding and the hunger to solve problems from the ground up."
-    },
-    {
-      year: "2024",
-      title: "Python & Professional Foundations",
-      emoji: "🐍",
-      description: "Dove deep into Python. Earned my PCEP certification from the official Python Institute. Started building real full-stack applications designed to solve genuine problems in my community."
-    },
-    {
-      year: "2024",
-      title: "PyQuest: Learning Reimagined",
-      emoji: "🎮",
-      description: "Built PyQuest—a gamified learning app that transforms how people learn programming. Full-stack implementation with AI-powered features. This project crystallized my vision: technology should make learning irresistible."
-    },
-    {
-      year: "2026",
-      title: "Exploring Multi-AI & Systems",
-      emoji: "🤖",
-      description: "Exploring foundational backend architecture, AI integration, and intelligent systems. Eager to learn about the future of human-AI collaboration and robotics."
-    }
-  ]
-
-  const values = [
-    {
-      title: "Intent Over Cleverness",
-      icon: "🎯",
-      description: "Every line of code should serve a clear purpose. Complexity without purpose is the enemy of good design."
-    },
-    {
-      title: "Deep Work",
-      icon: "⚡",
-      description: "Meaningful progress comes from sustained focus. I prioritize depth over breadth in both learning and building."
-    },
-    {
-      title: "Problem-Driven Building",
-      icon: "🔧",
-      description: "Start with real problems, not technologies. Build solutions that matter to people, not solutions looking for problems."
-    },
-    {
-      title: "Continuous Evolution",
-      icon: "🌱",
-      description: "Curiosity is non-negotiable. Always learning, always experimenting, always pushing boundaries in tech."
-    }
-  ]
-
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.15,
-        delayChildren: 0.1,
-      },
-    },
-  }
-
-  const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: {
-        type: "spring" as const,
-        stiffness: 100,
-        damping: 12,
-      },
-    },
-  }
+  const heroRef = useRef<HTMLDivElement>(null)
+  const { scrollYProgress } = useScroll({ target: heroRef, offset: ['start start', 'end start'] })
+  const bigY = useTransform(scrollYProgress, [0, 1], ['0%', '40%'])
 
   return (
-    <div className="pt-32 px-6 min-h-screen pb-20 bg-dark-surface">
+    <div className="pb-32">
       {/* Header */}
-      <motion.div
-        initial={{ opacity: 0, y: 30 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8, ease: "easeOut" }}
-        className="max-w-4xl mx-auto mb-20 text-center"
-      >
-        <motion.div
-          animate={{ y: [0, -10, 0] }}
-          transition={{ duration: 4, repeat: Infinity }}
-          className="text-6xl mb-6"
-        >
-          🚀
+      <section ref={heroRef} className="relative overflow-hidden px-6 pb-24 pt-36 md:pt-48">
+        <motion.div style={{ y: bigY }} className="pointer-events-none absolute -right-10 top-24 select-none font-display text-[30vw] font-extrabold leading-none text-white/[0.025]">
+          me.
         </motion.div>
-        <h1 className="text-5xl md:text-6xl font-semibold font-display mb-6 text-white">
-          From <span className="text-brand-blue">Zero</span> to <span className="text-gradient">Hero</span> 
-        </h1>
-        <p className="text-gray-400 text-lg leading-relaxed max-w-2xl mx-auto">
-          A story of curiosity, problem-solving, and the relentless pursuit of building systems that matter.
-        </p>
-      </motion.div>
-
-      <div className="max-w-6xl mx-auto space-y-32">
-        {/* Journey Section */}
-        <motion.section
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true, margin: "-100px" }}
-          className="space-y-16"
-        >
-          <motion.h2 
-            initial={{ opacity: 0, x: -30 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            className="text-4xl md:text-5xl font-semibold font-display text-white"
-          >
-            The Journey
-          </motion.h2>
-          
-          <motion.div 
-            className="space-y-12"
-            variants={containerVariants}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-100px" }}
-          >
-            {milestones.map((milestone, i) => (
-              <motion.div
-                key={milestone.year}
-                variants={itemVariants}
-                whileHover={{ x: 8 }}
-                className="flex gap-8 group"
-              >
-                {/* Timeline Dot */}
-                <div className="flex flex-col items-center relative">
-                  <motion.div 
-                    className="w-5 h-5 rounded-full bg-gradient-to-r from-brand-blue to-brand-purple relative z-10 shadow-lg shadow-brand-blue/50"
-                    whileHover={{ scale: 1.8, boxShadow: "0 0 30px rgba(109, 156, 255, 0.8)" }}
-                    animate={{ 
-                      boxShadow: [
-                        "0 0 10px rgba(109, 156, 255, 0.5)",
-                        "0 0 20px rgba(109, 156, 255, 0.8)",
-                        "0 0 10px rgba(109, 156, 255, 0.5)"
-                      ]
-                    }}
-                    transition={{ duration: 3, repeat: Infinity }}
-                  />
-                  {i < milestones.length - 1 && (
-                    <motion.div 
-                      className="w-1 bg-gradient-to-b from-brand-blue via-brand-purple to-transparent mt-6"
-                      style={{ height: "150px" }}
-                      initial={{ scaleY: 0, opacity: 0 }}
-                      whileInView={{ scaleY: 1, opacity: 1 }}
+        <div className="relative mx-auto max-w-7xl">
+          <Reveal y={16}>
+            <span className="label">About</span>
+          </Reveal>
+          <h1 className="mt-6 max-w-5xl text-6xl leading-[0.95] md:text-8xl">
+            <SplitText text="The longer" stagger={0.03} />{' '}
+            <span className="text-gradient">
+              <SplitText text="version." delay={0.3} stagger={0.04} />
+            </span>
+          </h1>
+          <div className="mt-16 grid gap-10 md:grid-cols-12">
+            <Reveal delay={0.4} className="md:col-span-7">
+              <div className="space-y-6 text-lg leading-relaxed text-gray-300 md:text-xl">
+                <p>
+                  I'm Sashreek. I started coding in 2022 with a Flappy Bird clone that barely worked, and I've been building ever since. Somewhere along the way I realized the thing I actually care about isn't code. It's people, and why they do (or don't do) what they set out to do.
+                </p>
+                <p className="text-gray-400">
+                  That's why I'm researching self-regulation with Stanford professor Ashish Mehta. It's why I started Synapse, because I get distracted way too easily myself. And it's why NeuroLabs exists: in an emergency, knowing what to do isn't enough if you freeze.
+                </p>
+                <p className="text-gray-400">This summer I also got my first real taste of industry, building agentic AI for healthcare credentialing and learning sales and business from people who've launched 100+ startups.</p>
+              </div>
+            </Reveal>
+            <Reveal delay={0.55} className="md:col-span-5">
+              <div className="card-border relative overflow-hidden rounded-3xl bg-dark-card/70 p-8">
+                <div className="label mb-6">Quick facts</div>
+                <dl className="space-y-5">
+                  {[
+                    ['Building', 'Synapse Adaptive'],
+                    ['Researching', 'DISCERN · Stanford'],
+                    ['Shipping', 'NeuroLabs'],
+                    ['Interning', 'Universal Tech Movement'],
+                    ['Certified', 'PCEP (Python Institute)'],
+                    ['Off-screen', 'Basketball'],
+                  ].map(([k, v], i) => (
+                    <motion.div
+                      key={k}
+                      initial={{ opacity: 0, x: 20 }}
+                      whileInView={{ opacity: 1, x: 0 }}
                       viewport={{ once: true }}
-                      transition={{ delay: 0.2, duration: 0.6 }}
-                    />
-                  )}
-                </div>
+                      transition={{ delay: 0.6 + i * 0.07, ease: EASE }}
+                      className="flex items-baseline justify-between gap-4 border-b border-white/[0.06] pb-4 last:border-0 last:pb-0"
+                    >
+                      <dt className="text-sm text-gray-500">{k}</dt>
+                      <dd className="text-right text-sm font-medium text-white">{v}</dd>
+                    </motion.div>
+                  ))}
+                </dl>
+              </div>
+            </Reveal>
+          </div>
+        </div>
+      </section>
 
-                {/* Content */}
-                <div className="flex-1 pb-12 pt-1">
+      {/* Timeline */}
+      <section className="px-6 py-24">
+        <div className="mx-auto max-w-5xl">
+          <SectionLabel index="01">Timeline</SectionLabel>
+          <h2 className="mb-20 text-5xl md:text-6xl">
+            <SplitText text="How it's gone so far" inView stagger={0.02} />
+          </h2>
+          <Timeline />
+        </div>
+      </section>
+
+      {/* Beliefs */}
+      <section className="px-6 py-24">
+        <div className="mx-auto max-w-7xl">
+          <SectionLabel index="02">What I care about</SectionLabel>
+          <h2 className="mb-14 text-5xl md:text-6xl">
+            <SplitText text="A few things I believe" inView stagger={0.02} />
+          </h2>
+          <div className="grid gap-6 md:grid-cols-2">
+            {BELIEFS.map((b, i) => (
+              <Reveal key={b.title} delay={i * 0.08} y={50}>
+                <TiltCard glow={b.color} className="card-border h-full overflow-hidden rounded-3xl bg-dark-card/70 p-8 md:p-10">
                   <motion.div
-                    className="p-6 rounded-xl bg-white/[0.03] border border-white/5 group-hover:border-brand-blue/30 transition-all"
-                    whileHover={{ 
-                      backgroundColor: "rgba(255,255,255,0.05)",
-                      y: -4
-                    }}
+                    className="mb-8 flex h-14 w-14 items-center justify-center rounded-2xl"
+                    style={{ background: `${b.color}18`, color: b.color }}
+                    whileHover={{ rotate: [0, -12, 12, 0], scale: 1.1 }}
+                    transition={{ duration: 0.6 }}
                   >
-                    <div className="flex items-center gap-4 mb-3">
-                      <motion.div 
-                        className="text-4xl"
-                        animate={{ scale: [1, 1.2, 1], rotate: [0, 5, -5, 0] }}
-                        transition={{ duration: 3, repeat: Infinity }}
-                      >
-                        {milestone.emoji}
-                      </motion.div>
-                      <div>
-                        <motion.div 
-                          className="text-xs font-bold text-brand-blue uppercase tracking-widest"
-                          initial={{ opacity: 0 }}
-                          whileInView={{ opacity: 1 }}
-                          viewport={{ once: true }}
-                          transition={{ delay: 0.1 }}
-                        >
-                          {milestone.year}
-                        </motion.div>
-                        <h3 className="text-2xl font-semibold text-white group-hover:text-brand-blue transition-colors">
-                          {milestone.title}
-                        </h3>
-                      </div>
-                    </div>
-                    <p className="text-gray-400 leading-relaxed text-sm">{milestone.description}</p>
+                    <b.icon size={24} />
                   </motion.div>
-                </div>
-              </motion.div>
+                  <h3 className="text-2xl">{b.title}</h3>
+                  <p className="mt-3 leading-relaxed text-gray-400">{b.body}</p>
+                  <div className="absolute bottom-6 right-8 font-display text-6xl font-bold text-white/[0.03]">0{i + 1}</div>
+                </TiltCard>
+              </Reveal>
             ))}
-          </motion.div>
-        </motion.section>
-
-        {/* Values Section */}
-        <motion.section
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true, margin: "-100px" }}
-          className="space-y-16"
-        >
-          <motion.h2 
-            initial={{ opacity: 0, x: -30 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            className="text-4xl md:text-5xl font-semibold font-display text-white"
-          >
-            What Drives Me
-          </motion.h2>
-          
-          <motion.div 
-            className="grid md:grid-cols-2 gap-8"
-            variants={containerVariants}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-100px" }}
-          >
-            {values.map((value, i) => (
-              <motion.div
-                key={value.title}
-                variants={itemVariants}
-                whileHover={{ y: -8, scale: 1.02 }}
-                className="p-8 rounded-2xl bg-gradient-to-br from-white/[0.05] to-white/[0.02] border border-white/5 hover:border-brand-blue/50 transition-all group relative overflow-hidden"
-              >
-                {/* Animated background gradient */}
-                <motion.div
-                  className="absolute inset-0 bg-gradient-to-br from-brand-blue/0 to-brand-purple/0 group-hover:from-brand-blue/10 group-hover:to-brand-purple/10"
-                  transition={{ duration: 0.3 }}
-                />
-                
-                <motion.div 
-                  className="text-5xl mb-4 relative z-10"
-                  animate={{ y: [0, -6, 0], rotate: [0, 3, -3, 0] }}
-                  transition={{ duration: 4, repeat: Infinity, delay: i * 0.2 }}
-                >
-                  {value.icon}
-                </motion.div>
-                <h3 className="text-xl font-semibold text-white mb-3 relative z-10">{value.title}</h3>
-                <p className="text-gray-400 leading-relaxed text-sm relative z-10">{value.description}</p>
-              </motion.div>
-            ))}
-          </motion.div>
-        </motion.section>
-
-        {/* Philosophy Section */}
-        <motion.section
-          initial={{ opacity: 0, scale: 0.95 }}
-          whileInView={{ opacity: 1, scale: 1 }}
-          viewport={{ once: true, margin: "-100px" }}
-          transition={{ duration: 0.6 }}
-          className="relative p-12 md:p-16 rounded-3xl border border-white/10 overflow-hidden"
-        >
-          {/* Animated background */}
-          <motion.div
-            className="absolute inset-0 bg-gradient-to-br from-brand-blue/5 via-dark-muted/5 to-brand-purple/5"
-            animate={{
-              backgroundPosition: ["0% 0%", "100% 100%"],
-            }}
-            transition={{ duration: 15, repeat: Infinity, repeatType: "reverse" }}
-          />
-
-          {/* Animated border glow */}
-          <motion.div
-            className="absolute inset-0 bg-gradient-to-r from-brand-blue/20 via-transparent to-brand-purple/20 opacity-0"
-            animate={{ opacity: [0, 0.5, 0] }}
-            transition={{ duration: 4, repeat: Infinity }}
-          />
-
-          <div className="relative z-10">
-            <motion.h2 
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              className="text-4xl md:text-5xl font-semibold font-display text-white mb-10"
-            >
-              My Philosophy
-            </motion.h2>
-            
-            <motion.div 
-              className="space-y-8 text-gray-400 leading-relaxed text-lg"
-              variants={containerVariants}
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true }}
-            >
-              <motion.p variants={itemVariants}>
-                I started with a Flappy Bird game that was "really scrappy." That first project taught me something invaluable: the act of building is the best teacher. Not reading documentation, not watching tutorials—actually building something and making it work.
-              </motion.p>
-              
-              <motion.p variants={itemVariants}>
-                That love of coding, born from that humble beginning, led me to Python, to certifications, and ultimately to PyQuest. Each step wasn't about chasing technologies or frameworks. It was about solving genuine problems for my community and refusing to stop until the solution was elegant and functional.
-              </motion.p>
-              
-              <motion.p variants={itemVariants}>
-                Today, I'm exploring multi-AI systems and robotics not because they're trendy—but because they represent the frontier of solving complex human problems. I want to be at the intersection where AI amplifies human capability rather than replacing it.
-              </motion.p>
-              
-              <motion.p 
-                variants={itemVariants}
-                className="text-white text-xl font-semibold bg-gradient-to-r from-brand-blue/20 to-brand-purple/20 p-6 rounded-xl border border-brand-blue/30"
-              >
-                Every project is a conversation between code, intention, and impact. I build to make someone's life better, smarter, or easier.
-              </motion.p>
-            </motion.div>
           </div>
-        </motion.section>
+        </div>
+      </section>
 
-        {/* Call to Action */}
-        <motion.section
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-100px" }}
-          className="relative text-center p-12 md:p-16 rounded-3xl border border-white/10 overflow-hidden"
-        >
-          {/* Animated gradient background */}
-          <motion.div
-            className="absolute inset-0 bg-gradient-to-r from-brand-blue/10 via-transparent to-brand-purple/10"
-            animate={{ 
-              backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"],
-            }}
-            transition={{ duration: 8, repeat: Infinity }}
-          />
-
-          <div className="relative z-10">
-            <motion.h3 
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              className="text-3xl md:text-4xl font-semibold text-white mb-6"
-            >
-              Ready to Build Something Great?
-            </motion.h3>
-            <motion.p 
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.1 }}
-              className="text-gray-400 mb-10 max-w-2xl mx-auto text-lg"
-            >
-              Whether it's a collaboration, a wild idea, or just a conversation about the future of tech—let's connect.
-            </motion.p>
-            
-            <motion.div
-              initial={{ opacity: 0, scale: 0.8 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.2 }}
-              className="flex flex-col sm:flex-row gap-4 justify-center"
-            >
-              <motion.div
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <Link
-                  to="/contact"
-                  className="inline-block px-10 py-4 bg-gradient-to-r from-brand-blue to-brand-purple text-white font-semibold rounded-xl hover:shadow-lg hover:shadow-brand-blue/50 transition-all"
-                >
-                  Get in Touch
-                </Link>
-              </motion.div>
-              
-              <motion.div
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <Link
-                  to="/projects"
-                  className="inline-block px-10 py-4 bg-white/[0.03] text-white font-semibold rounded-xl border border-white/10 hover:bg-white/[0.08] transition-all"
-                >
-                  See My Work
-                </Link>
-              </motion.div>
-            </motion.div>
+      {/* Off the keyboard */}
+      <section className="px-6 py-24">
+        <Reveal className="mx-auto max-w-7xl">
+          <div className="card-border relative grid items-center gap-10 overflow-hidden rounded-[2rem] bg-dark-card/70 p-10 md:grid-cols-[auto_1fr] md:p-14">
+            <div className="absolute -right-24 -top-24 h-72 w-72 rounded-full bg-brand-amber/10 blur-3xl" />
+            <div className="mx-auto">
+              <Basketball />
+            </div>
+            <div className="relative">
+              <span className="label">Off the keyboard</span>
+              <h3 className="mt-4 text-4xl md:text-5xl">Usually on a basketball court.</h3>
+              <p className="mt-4 max-w-xl text-lg leading-relaxed text-gray-400">
+                It's where I go to think less. Also where I learned that showing up when you don't feel like it is most of the game.
+              </p>
+            </div>
           </div>
-        </motion.section>
-      </div>
+        </Reveal>
+      </section>
+
+      {/* CTA */}
+      <section className="px-6 pt-16">
+        <Reveal className="mx-auto max-w-7xl text-center">
+          <h2 className="text-5xl md:text-7xl">That's me.</h2>
+          <p className="mt-4 text-lg text-gray-400">Now come see the stuff.</p>
+          <div className="mt-10 flex flex-wrap justify-center gap-4">
+            <Magnetic>
+              <Link to="/projects" className="group inline-flex items-center gap-2 rounded-full bg-white px-7 py-4 text-sm font-semibold text-dark-surface">
+                See my work <ArrowUpRight size={16} className="transition-transform duration-500 group-hover:rotate-45" />
+              </Link>
+            </Magnetic>
+            <Magnetic>
+              <Link to="/contact" className="inline-flex items-center rounded-full border border-white/15 px-7 py-4 text-sm font-semibold text-white hover:bg-white/5">
+                Say hi
+              </Link>
+            </Magnetic>
+          </div>
+        </Reveal>
+      </section>
     </div>
   )
 }

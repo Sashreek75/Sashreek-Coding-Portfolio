@@ -1,221 +1,148 @@
-import { motion } from 'framer-motion'
+import { useState } from 'react'
+import { motion, AnimatePresence, LayoutGroup } from 'framer-motion'
+import { ArrowUpRight } from 'lucide-react'
+import { PROJECTS } from '../data'
+import type { Project, Category } from '../data'
+import { SplitText, Reveal, TiltCard } from '../components/motion'
+import { EASE } from '../lib/ease'
+import { ProjectCard, ProjectModal, StatusPill } from '../components/ProjectBits'
+import { ProjectVisual } from '../components/Visuals'
+import { cn } from '../lib/utils'
+
+const FILTERS: ('All' | Category)[] = ['All', 'Building', 'Research', 'Work']
 
 export default function Projects() {
-  const mainProject = {
-    title: "PyQuest",
-    category: "Learning Platform",
-    description: "A professional learning ecosystem that bridges syntax learning and real-world engineering. Features adaptive challenges powered by GPT-4, real-time code analysis, and personalized learning paths based on cognitive science principles.",
-    tags: ["React", "TypeScript", "Node.js", "GPT-4", "Framer Motion"],
-    image: "/pyquest.png",
-    link: "#",
-    github: "https://github.com/Sashr/PyQuest"
-  }
-
-  const otherProjects = [
-    {
-      title: "Neural Career Ecosystem",
-      description: "An AI-driven platform for career guidance that applies neuroscience principles to personalize professional development.",
-      tags: ["Python", "Flask", "ML"],
-      icon: "🧠"
-    },
-    {
-      title: "Adaptive Learning Engine",
-      description: "Real-time learning optimization system that adjusts difficulty and pacing based on cognitive load theory.",
-      tags: ["TypeScript", "React", "Node.js"],
-      icon: "⚡"
-    }
-  ]
+  const [filter, setFilter] = useState<(typeof FILTERS)[number]>('All')
+  const [open, setOpen] = useState<Project | null>(null)
+  const hero = PROJECTS[0]
+  const list = PROJECTS.slice(1).filter((p) => filter === 'All' || p.category === filter)
+  const showHero = filter === 'All' || filter === hero.category
 
   return (
-    <div className="pt-32 px-6 min-h-screen pb-20">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="max-w-7xl mx-auto mb-16 text-center text-white"
-      >
-        <h1 className="text-5xl md:text-6xl font-semibold font-display mb-4">
-          Selected <span className="text-brand-blue">Work</span>
-        </h1>
-        <p className="text-gray-400 max-w-2xl mx-auto text-base">High-impact systems and platforms I've built.</p>
-      </motion.div>
-
-      <div className="max-w-7xl mx-auto space-y-16">
-        {/* Featured Project */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-          className="group relative bg-dark-muted/30 rounded-2xl border border-white/5 overflow-hidden hover:border-brand-blue/20 transition-colors"
-        >
-          <div className="grid md:grid-cols-5 gap-0">
-            <div className="relative overflow-hidden md:col-span-2 aspect-square md:aspect-auto">
-              <div className="absolute inset-0 bg-gradient-to-br from-brand-blue/20 to-brand-purple/20 group-hover:scale-110 transition-transform duration-700" />
-              <div className="h-full w-full flex items-center justify-center">
-                <div className="text-5xl opacity-10">📚</div>
-              </div>
-              <img 
-                src={mainProject.image} 
-                alt={mainProject.title} 
-                className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 mix-blend-overlay opacity-80"
-              />
-            </div>
-
-            <div className="md:col-span-3 p-8 md:p-10 flex flex-col justify-center">
-              <motion.div 
-                className="inline-block text-xs font-medium text-brand-blue px-3 py-1 rounded bg-brand-blue/10 border border-brand-blue/20 mb-4 w-fit"
-                whileHover={{ scale: 1.05 }}
-              >
-                Featured Project
-              </motion.div>
-              
-              <h2 className="text-3xl md:text-4xl font-semibold font-display mb-4 group-hover:text-brand-blue transition-colors text-white">
-                {mainProject.title}
-              </h2>
-              <p className="text-gray-400 text-sm leading-relaxed mb-6">
-                {mainProject.description}
-              </p>
-              
-              <div className="flex flex-wrap gap-2 mb-8">
-                {mainProject.tags.map(tag => (
-                  <motion.span 
-                    key={tag} 
-                    className="px-3 py-1 bg-white/5 border border-white/10 rounded-full text-xs font-medium text-gray-400"
-                    whileHover={{ borderColor: "rgba(109, 156, 255, 0.5)" }}
-                  >
-                    {tag}
-                  </motion.span>
-                ))}
-              </div>
-
-              <div className="flex items-center gap-4 flex-wrap">
-                <motion.a 
-                  href={mainProject.link} 
-                  className="px-6 py-2.5 bg-white text-dark-surface font-semibold text-sm rounded-lg hover:bg-gray-100 transition-all"
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  View Project
-                </motion.a>
-                <motion.a 
-                  href={mainProject.github} 
-                  className="font-medium text-gray-400 hover:text-brand-blue transition-colors text-sm flex items-center gap-2 group/link"
-                  whileHover={{ x: 4 }}
-                >
-                  GitHub <span className="group-hover/link:translate-x-1 transition-transform">→</span>
-                </motion.a>
-              </div>
-            </div>
+    <div className="px-6 pb-32 pt-36 md:pt-44">
+      <div className="mx-auto max-w-7xl">
+        {/* Header */}
+        <div className="mb-16 grid gap-8 md:grid-cols-12 md:items-end">
+          <div className="md:col-span-8">
+            <Reveal y={16}>
+              <span className="label">Projects & activities · {PROJECTS.length}</span>
+            </Reveal>
+            <h1 className="mt-6 text-6xl leading-[0.95] md:text-8xl">
+              <SplitText text="Stuff I've" stagger={0.03} />
+              <br />
+              <span className="text-gradient">
+                <SplitText text="built & done." delay={0.3} stagger={0.03} />
+              </span>
+            </h1>
           </div>
-        </motion.div>
-
-        {/* Other Projects */}
-        <div>
-          <motion.h3 
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            className="text-2xl font-semibold font-display text-white mb-8"
-          >
-            Other <span className="text-gradient">Projects</span>
-          </motion.h3>
-
-          <div className="grid md:grid-cols-2 gap-6">
-            {otherProjects.map((project, i) => (
-              <motion.div
-                key={project.title}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.1 }}
-                whileHover={{ y: -4 }}
-                className="p-8 rounded-xl bg-dark-muted/30 border border-white/5 group hover:border-brand-blue/30 transition-all"
-              >
-                <motion.div 
-                  className="text-4xl mb-4"
-                  whileHover={{ scale: 1.2, rotate: 12 }}
-                  transition={{ type: "spring", stiffness: 400, damping: 10 }}
-                >
-                  {project.icon}
-                </motion.div>
-                <h4 className="text-xl font-semibold text-white mb-3">{project.title}</h4>
-                <p className="text-gray-400 text-sm leading-relaxed mb-4">{project.description}</p>
-                <div className="flex flex-wrap gap-2">
-                  {project.tags.map(tag => (
-                    <span key={tag} className="px-2 py-1 text-xs font-medium text-gray-500 bg-white/5 rounded border border-white/5">
-                      {tag}
-                    </span>
-                  ))}
-                </div>
-              </motion.div>
-            ))}
-          </div>
+          <Reveal delay={0.5} className="md:col-span-4">
+            <p className="text-lg leading-relaxed text-gray-400">
+              A startup, a research project, an emergency app, and two internships. Click anything to dig in.
+            </p>
+          </Reveal>
         </div>
 
-        {/* Open Source Contributions */}
-        <div>
-          <motion.h3 
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            className="text-2xl font-semibold font-display text-white mb-8"
-          >
-            Open Source <span className="text-gradient">Contributions</span>
-          </motion.h3>
+        {/* Filters */}
+        <Reveal delay={0.6} y={20} className="mb-10">
+          <LayoutGroup>
+            <div className="inline-flex flex-wrap gap-1 rounded-full border border-white/[0.07] bg-white/[0.02] p-1.5">
+              {FILTERS.map((f) => (
+                <button
+                  key={f}
+                  onClick={() => setFilter(f)}
+                  className={cn('relative rounded-full px-5 py-2 text-sm font-medium transition-colors', filter === f ? 'text-dark-surface' : 'text-gray-400 hover:text-white')}
+                >
+                  {filter === f && <motion.span layoutId="filter-pill" className="absolute inset-0 rounded-full bg-white" transition={{ type: 'spring', stiffness: 400, damping: 32 }} />}
+                  <span className="relative">{f}</span>
+                </button>
+              ))}
+            </div>
+          </LayoutGroup>
+        </Reveal>
 
-          <div className="grid md:grid-cols-2 gap-6">
-            {[
-              {
-                name: "TensorFlow",
-                description: "Contributed performance improvements to neural network optimization modules.",
-                role: "Contributor",
-                link: "https://github.com/tensorflow/tensorflow"
-              },
-              {
-                name: "React Documentation",
-                description: "Enhanced learning materials and examples for advanced patterns and hooks.",
-                role: "Contributor",
-                link: "https://github.com/facebook/react"
-              }
-            ].map((contrib, i) => (
-              <motion.a
-                key={contrib.name}
-                href={contrib.link}
-                target="_blank"
-                rel="noopener noreferrer"
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.1 }}
-                whileHover={{ y: -4, borderColor: "rgba(109, 156, 255, 0.3)" }}
-                className="p-6 rounded-xl bg-dark-muted/20 border border-white/5 hover:border-brand-blue/30 transition-all"
-              >
-                <div className="flex items-start justify-between mb-3">
-                  <h4 className="text-lg font-semibold text-white flex-1">{contrib.name}</h4>
-                  <span className="text-xs font-medium text-brand-blue px-2.5 py-1 bg-brand-blue/10 rounded-full whitespace-nowrap ml-3">
-                    {contrib.role}
-                  </span>
+        {/* Hero card */}
+        <AnimatePresence mode="popLayout">
+          {showHero && (
+            <motion.div
+              key="hero"
+              layout
+              initial={{ opacity: 0, y: 80, scale: 0.97 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.96 }}
+              transition={{ duration: 0.9, ease: EASE, delay: 0.2 }}
+              className="mb-6"
+            >
+              <TiltCard glow={hero.accent} max={2.5} onClick={() => setOpen(hero)} className="card-border cursor-pointer overflow-hidden rounded-[2rem] bg-dark-card/70">
+                <div className="relative grid lg:grid-cols-12">
+                  {/* animated gradient wash */}
+                  <motion.div
+                    className="pointer-events-none absolute -inset-1/2 opacity-60"
+                    style={{ background: 'conic-gradient(from 0deg at 30% 40%, #ffb36b14, transparent 25%, #6d9cff14 50%, transparent 75%, #ffb36b14)' }}
+                    animate={{ rotate: 360 }}
+                    transition={{ duration: 30, repeat: Infinity, ease: 'linear' }}
+                  />
+                  <div className="relative flex flex-col p-8 md:p-12 lg:col-span-5">
+                    <div className="flex flex-wrap items-center gap-3">
+                      <StatusPill p={hero} />
+                      <span className="rounded-full bg-brand-amber/10 px-3 py-1 font-mono text-[10px] uppercase tracking-widest text-brand-amber">Featured</span>
+                    </div>
+                    <h2 className="mt-8 text-5xl leading-none md:text-7xl">
+                      Synapse
+                      <br />
+                      <span className="text-gray-500">Adaptive</span>
+                    </h2>
+                    <p className="mt-6 text-2xl leading-snug text-white">{hero.tagline}</p>
+                    <p className="mt-5 leading-relaxed text-gray-400">{hero.summary}</p>
+                    <div className="mt-8 grid grid-cols-3 gap-3 border-t border-white/[0.07] pt-6">
+                      {[
+                        ['Role', 'Founder'],
+                        ['Since', 'Jul 2026'],
+                        ['Platform', 'Desktop'],
+                      ].map(([k, v]) => (
+                        <div key={k}>
+                          <div className="label text-[9px]">{k}</div>
+                          <div className="mt-1 text-sm text-white">{v}</div>
+                        </div>
+                      ))}
+                    </div>
+                    <div className="mt-auto flex items-center gap-3 pt-10 text-sm font-medium text-white">
+                      How it works
+                      <span className="flex h-10 w-10 items-center justify-center rounded-full bg-white text-dark-surface transition-transform duration-500 group-hover:rotate-45">
+                        <ArrowUpRight size={18} />
+                      </span>
+                    </div>
+                  </div>
+                  <div className="relative h-96 p-3 lg:col-span-7 lg:h-auto lg:min-h-[560px]">
+                    <ProjectVisual kind="synapse" big />
+                  </div>
                 </div>
-                <p className="text-gray-400 text-sm leading-relaxed">{contrib.description}</p>
-                <div className="mt-4 text-xs text-gray-500 flex items-center gap-1 group">
-                  View on GitHub <span className="group-hover:translate-x-1 transition-transform">→</span>
-                </div>
-              </motion.a>
+              </TiltCard>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Grid */}
+        <motion.div layout className="grid gap-6 md:grid-cols-2">
+          <AnimatePresence mode="popLayout">
+            {list.map((p, i) => (
+              <ProjectCard key={p.id} p={p} index={i} onOpen={() => setOpen(p)} />
             ))}
-          </div>
-        </div>
-
-        {/* In Progress */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="p-10 rounded-xl bg-gradient-to-r from-brand-blue/5 via-transparent to-brand-purple/5 border border-dashed border-white/10 text-center"
-        >
-          <div className="text-4xl mb-4">🚀</div>
-          <h3 className="text-2xl font-semibold text-white mb-2">More Coming Soon</h3>
-          <p className="text-gray-400 text-sm">Currently architecting next-generation systems. Details coming soon.</p>
+          </AnimatePresence>
         </motion.div>
+
+        <Reveal className="mt-20">
+          <div className="relative overflow-hidden rounded-3xl border border-dashed border-white/10 p-10 text-center">
+            <motion.div
+              className="absolute inset-y-0 w-1/3 bg-gradient-to-r from-transparent via-white/[0.04] to-transparent"
+              animate={{ x: ['-100%', '400%'] }}
+              transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut', repeatDelay: 1 }}
+            />
+            <div className="relative font-display text-2xl text-white">There's always something new in the works.</div>
+            <p className="relative mt-2 text-gray-500">The rough versions live on my GitHub first.</p>
+          </div>
+        </Reveal>
       </div>
+      <ProjectModal p={open} onClose={() => setOpen(null)} />
     </div>
   )
 }

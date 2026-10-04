@@ -1,8 +1,10 @@
-import { useEffect } from 'react'
+import { useCallback, useEffect, useState } from 'react'
+import type { ReactNode } from 'react'
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion, AnimatePresence, MotionConfig } from 'framer-motion'
 import { Navbar } from './components/Navbar'
-import { ScrollProgress } from './components/ScrollProgress'
+import { Footer } from './components/Footer'
+import { Cursor, Preloader, ScrollProgress, Ambient } from './components/Chrome'
 import Home from './pages/Home'
 import Projects from './pages/Projects'
 import Skills from './pages/Skills'
@@ -10,133 +12,106 @@ import Contact from './pages/Contact'
 import About from './pages/About'
 import NotFound from './pages/NotFound'
 
-// ── Components ──
+const TITLES: Record<string, string> = {
+  '/': 'Home',
+  '/projects': 'Work',
+  '/about': 'About',
+  '/skills': 'Toolbox',
+  '/contact': 'Contact',
+}
 
-const ScrollToTop = () => {
-  const { pathname } = useLocation()
+const CURTAIN = [0.76, 0, 0.24, 1] as const
+let firstPage = true
+
+function Page({ children, title }: { children: ReactNode; title: string }) {
+  // the very first page load already has the preloader, so skip the curtain there
+  const [isFirst] = useState(() => firstPage)
   useEffect(() => {
-    window.scrollTo(0, 0)
-  }, [pathname])
-  return null
-}
-
-const Footer = () => {
-  const socialLinks = [
-    { name: 'GitHub', url: 'https://github.com/Sashreek75?tab=repositories' },
-    { name: 'LinkedIn', url: 'https://www.linkedin.com/in/sashreek-pinjala-948685365/' },
-    { name: 'Devpost', url: 'https://devpost.com/sashforapps/challenges' },
-  ]
-
+    firstPage = false
+  }, [])
   return (
-    <motion.footer 
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      className="py-16 border-t border-white/5 px-6"
-    >
-      <div className="max-w-7xl mx-auto">
-        <div className="grid md:grid-cols-2 gap-12 mb-8 pb-8 border-b border-white/5">
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            className="flex flex-col gap-3"
-          >
-            <motion.div className="text-xl font-semibold font-display text-white flex items-center gap-2" whileHover={{ scale: 1.05 }}>
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-brand-blue to-brand-purple flex items-center justify-center text-dark-surface text-sm font-bold">S</div>
-              <span>Sashreek</span>
-            </motion.div>
-            <p className="text-gray-500 max-w-sm text-sm leading-relaxed">Building systems that bridge intelligence and intention.</p>
-          </motion.div>
-          
-          <motion.div 
-            initial={{ opacity: 0, x: 20 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            className="flex flex-col md:items-end gap-4"
-          >
-            <div className="flex gap-6">
-              {socialLinks.map((link, i) => (
-                <motion.a
-                  key={link.name}
-                  href={link.url}
-                  initial={{ opacity: 0, y: -10 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: i * 0.1 }}
-                  whileHover={{ color: '#6d9cff', y: -2 }}
-                  className="text-sm font-medium text-gray-500 transition-colors"
-                >
-                  {link.name}
-                </motion.a>
-              ))}
-            </div>
-            <motion.div 
-              className="flex items-center gap-2 opacity-50 text-xs"
-              animate={{ opacity: [0.5, 0.7, 0.5] }}
-              transition={{ duration: 3, repeat: Infinity }}
-            >
-              <motion.div 
-                className="w-2 h-2 rounded-full bg-emerald-400"
-                animate={{ scale: [1, 1.2, 1] }}
-                transition={{ duration: 2, repeat: Infinity }}
-              />
-              <span className="font-medium">Available for work</span>
-            </motion.div>
-          </motion.div>
-        </div>
-
-        <motion.div 
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          className="text-center text-xs text-gray-600"
+    <>
+      <motion.div initial={{ opacity: isFirst ? 1 : 0 }} animate={{ opacity: 1, transition: { delay: 0.35, duration: 0.4 } }} exit={{ opacity: 0, transition: { duration: 0.3 } }}>
+        {children}
+      </motion.div>
+      {/* curtain that sweeps up over the old page */}
+      <motion.div
+        className="pointer-events-none fixed inset-0 z-[90] origin-bottom bg-[#0d0f17]"
+        initial={{ scaleY: 0 }}
+        animate={{ scaleY: 0 }}
+        exit={{ scaleY: 1 }}
+        transition={{ duration: 0.6, ease: CURTAIN }}
+      />
+      {/* curtain that lifts off the new page, with its name */}
+      <motion.div
+        className="pointer-events-none fixed inset-0 z-[90] flex origin-top items-center justify-center bg-[#0d0f17]"
+        initial={{ scaleY: isFirst ? 0 : 1 }}
+        animate={{ scaleY: 0 }}
+        exit={{ scaleY: 0 }}
+        transition={{ duration: 0.6, ease: CURTAIN, delay: 0.15 }}
+      >
+        <motion.span
+          className="font-display text-5xl font-semibold text-white md:text-7xl"
+          initial={{ opacity: 1, y: 0 }}
+          animate={{ opacity: 0, y: -40 }}
+          transition={{ duration: 0.35 }}
         >
-          <p>© 2024 Sashreek. Crafted with intent and code.</p>
-        </motion.div>
-      </div>
-    </motion.footer>
+          {title}
+        </motion.span>
+      </motion.div>
+    </>
   )
 }
 
-function PageWrapper({ children }: { children: React.ReactNode }) {
+function AnimatedRoutes() {
+  const location = useLocation()
+  const title = TITLES[location.pathname] ?? '404'
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -10 }}
-      transition={{ duration: 0.4, ease: "easeInOut" }}
-    >
-      {children}
-    </motion.div>
+    <AnimatePresence mode="wait" onExitComplete={() => window.scrollTo(0, 0)}>
+      <Routes location={location} key={location.pathname}>
+        <Route path="/" element={<Page title={title}><Home /></Page>} />
+        <Route path="/projects" element={<Page title={title}><Projects /></Page>} />
+        <Route path="/skills" element={<Page title={title}><Skills /></Page>} />
+        <Route path="/about" element={<Page title={title}><About /></Page>} />
+        <Route path="/contact" element={<Page title={title}><Contact /></Page>} />
+        <Route path="*" element={<Page title={title}><NotFound /></Page>} />
+      </Routes>
+    </AnimatePresence>
   )
 }
 
-// ── Main App ──
+export default function App() {
+  const [loading, setLoading] = useState(() => {
+    try {
+      return !sessionStorage.getItem('sp-loaded')
+    } catch {
+      return true
+    }
+  })
+  const done = useCallback(() => {
+    try {
+      sessionStorage.setItem('sp-loaded', '1')
+    } catch {
+      /* ignore */
+    }
+    setLoading(false)
+  }, [])
 
-function App() {
   return (
-    <Router>
-      <ScrollToTop />
-      <ScrollProgress />
-      <div className="min-h-screen bg-dark-surface text-gray-300 selection:bg-brand-blue selection:text-white flex flex-col">
-        <Navbar />
-        <main className="flex-grow">
-          <AnimatePresence mode="wait">
-            <Routes>
-              <Route path="/" element={<PageWrapper><Home /></PageWrapper>} />
-              <Route path="/projects" element={<PageWrapper><Projects /></PageWrapper>} />
-              <Route path="/skills" element={<PageWrapper><Skills /></PageWrapper>} />
-              <Route path="/about" element={<PageWrapper><About /></PageWrapper>} />
-              <Route path="/contact" element={<PageWrapper><Contact /></PageWrapper>} />
-              <Route path="*" element={<PageWrapper><NotFound /></PageWrapper>} />
-            </Routes>
-          </AnimatePresence>
-        </main>
-        <Footer />
-      </div>
-    </Router>
+    <MotionConfig reducedMotion="user">
+      <Router>
+        <AnimatePresence>{loading && <Preloader key="pre" onDone={done} />}</AnimatePresence>
+        <Ambient />
+        <Cursor />
+        <ScrollProgress />
+        <div className="relative flex min-h-screen flex-col text-gray-300">
+          <Navbar />
+          <main className="flex-grow">
+            {!loading && <AnimatedRoutes />}
+          </main>
+          <Footer />
+        </div>
+      </Router>
+    </MotionConfig>
   )
 }
-
-export default App

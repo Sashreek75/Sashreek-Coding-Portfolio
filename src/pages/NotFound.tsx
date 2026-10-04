@@ -1,43 +1,49 @@
-import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
+import { motion } from 'framer-motion'
+import { Magnetic } from '../components/motion'
 
 export default function NotFound() {
   return (
-    <div className="min-h-screen pt-32 px-6 pb-20 flex items-center justify-center">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="max-w-2xl text-center"
-      >
-        <motion.h1 
-          className="text-7xl md:text-8xl font-bold font-display text-transparent bg-clip-text bg-gradient-to-r from-brand-blue to-brand-purple mb-6"
-          animate={{ y: [0, -10, 0] }}
-          transition={{ duration: 3, repeat: Infinity }}
+    <div className="flex min-h-screen flex-col items-center justify-center px-6 pt-24 text-center">
+      <div className="relative font-display text-[38vw] font-extrabold leading-none tracking-tighter text-white md:text-[16rem]">
+        {['4', '0', '4'].map((d, i) => (
+          <motion.span
+            key={i}
+            className="inline-block"
+            initial={{ y: 120, opacity: 0, rotate: -20 }}
+            animate={{ y: [0, -18, 0], opacity: 1, rotate: 0 }}
+            transition={{
+              y: { duration: 2.4, repeat: Infinity, delay: i * 0.2, ease: 'easeInOut' },
+              opacity: { delay: i * 0.1 },
+              rotate: { type: 'spring', delay: i * 0.1 },
+            }}
+          >
+            {i === 1 ? <span className="text-gradient">{d}</span> : d}
+          </motion.span>
+        ))}
+        <motion.span
+          className="absolute inset-0 text-brand-rose mix-blend-screen"
+          animate={{ x: [0, -4, 3, 0], opacity: [0, 0.6, 0, 0] }}
+          transition={{ duration: 0.4, repeat: Infinity, repeatDelay: 2.2 }}
+          aria-hidden
         >
           404
-        </motion.h1>
-        
-        <h2 className="text-3xl md:text-4xl font-semibold text-white mb-4">Page Not Found</h2>
-        
-        <p className="text-gray-400 text-lg mb-10 leading-relaxed">
-          The page you're looking for doesn't exist. But hey, let's get you back on track.
-        </p>
-
-        <div className="flex flex-wrap justify-center gap-4">
-          <Link
-            to="/"
-            className="px-8 py-3 bg-white text-dark-surface font-semibold rounded-lg hover:bg-gray-100 transition-all active:scale-95 hover:scale-105"
-          >
-            Back Home
+        </motion.span>
+      </div>
+      <h1 className="mt-4 text-3xl md:text-4xl">This page wandered off.</h1>
+      <p className="mt-3 max-w-md text-gray-400">Synapse would've closed this tab by now. Let's get you somewhere real.</p>
+      <div className="mt-10 flex gap-4">
+        <Magnetic>
+          <Link to="/" className="rounded-full bg-white px-7 py-3.5 text-sm font-semibold text-dark-surface">
+            Take me home
           </Link>
-          <Link
-            to="/projects"
-            className="px-8 py-3 bg-white/[0.03] text-white font-semibold rounded-lg border border-white/10 hover:bg-white/[0.08] transition-all active:scale-95 hover:scale-105"
-          >
-            View Projects
+        </Magnetic>
+        <Magnetic>
+          <Link to="/projects" className="rounded-full border border-white/15 px-7 py-3.5 text-sm font-semibold text-white hover:bg-white/5">
+            See projects
           </Link>
-        </div>
-      </motion.div>
+        </Magnetic>
+      </div>
     </div>
   )
 }

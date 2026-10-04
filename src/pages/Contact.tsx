@@ -1,271 +1,249 @@
 import { useState } from 'react'
-import { motion } from 'framer-motion'
+import type { ChangeEvent, FormEvent } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { ArrowUpRight, Check, Copy, Github, Linkedin, Mail, Trophy, Send } from 'lucide-react'
+import { SplitText, Reveal, Magnetic } from '../components/motion'
+import { EASE } from '../lib/ease'
+import { LINKS } from '../data'
 import { cn } from '../lib/utils'
 
+const ROWS = [
+  { icon: Mail, label: 'Email', value: LINKS.email, href: `mailto:${LINKS.email}`, color: '#6d9cff' },
+  { icon: Linkedin, label: 'LinkedIn', value: 'sashreek-pinjala', href: LINKS.linkedin, color: '#b477ff' },
+  { icon: Github, label: 'GitHub', value: 'Sashreek75', href: LINKS.github, color: '#5ef2c2' },
+  { icon: Trophy, label: 'Devpost', value: 'sashforapps', href: LINKS.devpost, color: '#ffb36b' },
+]
+
 export default function Contact() {
-  const [formState, setFormState] = useState({
-    name: '',
-    email: '',
-    message: '',
-  })
-  const [submitted, setSubmitted] = useState(false)
+  const [copied, setCopied] = useState(false)
+  const [form, setForm] = useState({ name: '', email: '', message: '' })
   const [errors, setErrors] = useState<Record<string, string>>({})
-  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [sent, setSent] = useState(false)
 
-  const contactInfo = [
-    { title: "EMAIL", value: "sashforapps@gmail.com", link: "mailto:sashforapps@gmail.com" },
-    { title: "GITHUB", value: "github.com/Sashreek75", link: "https://github.com/Sashreek75?tab=repositories" },
-    { title: "LINKEDIN", value: "sashreek-pinjala", link: "https://www.linkedin.com/in/sashreek-pinjala-948685365/" },
-    { title: "DEVPOST", value: "sashforapps", link: "https://devpost.com/sashforapps/challenges" },
-  ]
-
-  const validateForm = () => {
-    const newErrors: Record<string, string> = {}
-    
-    if (!formState.name.trim()) {
-      newErrors.name = 'Name is required'
-    }
-    if (!formState.email.trim()) {
-      newErrors.email = 'Email is required'
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formState.email)) {
-      newErrors.email = 'Please enter a valid email'
-    }
-    if (!formState.message.trim()) {
-      newErrors.message = 'Message is required'
-    } else if (formState.message.trim().length < 10) {
-      newErrors.message = 'Message should be at least 10 characters'
-    }
-    
-    setErrors(newErrors)
-    return Object.keys(newErrors).length === 0
-  }
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target
-    setFormState(prev => ({ ...prev, [name]: value }))
-    if (errors[name]) {
-      setErrors(prev => ({ ...prev, [name]: '' }))
+  const copy = async () => {
+    try {
+      await navigator.clipboard.writeText(LINKS.email)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    } catch {
+      /* clipboard blocked; the mailto link still works */
     }
   }
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const onChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setForm((f) => ({ ...f, [e.target.name]: e.target.value }))
+    if (errors[e.target.name]) setErrors((er) => ({ ...er, [e.target.name]: '' }))
+  }
+
+  const onSubmit = (e: FormEvent) => {
     e.preventDefault()
-    
-    if (!validateForm()) return
-
-    setIsSubmitting(true)
-    
-    // Simulate form submission
-    setTimeout(() => {
-      setSubmitted(true)
-      setIsSubmitting(false)
-      setFormState({ name: '', email: '', message: '' })
-      
-      // Reset success message after 5 seconds
-      setTimeout(() => {
-        setSubmitted(false)
-      }, 5000)
-    }, 800)
-  }
-
-  const copyToClipboard = (text: string) => {
-    navigator.clipboard.writeText(text)
+    const er: Record<string, string> = {}
+    if (!form.name.trim()) er.name = "What's your name?"
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) er.email = 'That email looks off'
+    if (form.message.trim().length < 10) er.message = 'Say a little more'
+    setErrors(er)
+    if (Object.keys(er).length) return
+    // Opens the visitor's email app with everything filled in
+    const subject = encodeURIComponent(`Hey Sashreek, it's ${form.name}`)
+    const body = encodeURIComponent(`${form.message}\n\n${form.name}\n${form.email}`)
+    window.location.href = `mailto:${LINKS.email}?subject=${subject}&body=${body}`
+    setSent(true)
+    setTimeout(() => setSent(false), 6000)
   }
 
   return (
-    <div className="pt-32 px-6 min-h-screen pb-20">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="max-w-7xl mx-auto mb-16 text-center"
-      >
-        <h1 className="text-5xl md:text-6xl font-semibold font-display mb-4 text-white">
-          Let's <span className="text-gradient">Talk</span>
+    <div className="px-6 pb-32 pt-36 md:pt-44">
+      <div className="mx-auto max-w-7xl">
+        <Reveal y={16}>
+          <span className="label">Contact</span>
+        </Reveal>
+        <h1 className="mt-6 text-[17vw] font-bold leading-[0.85] tracking-[-0.05em] md:text-[11rem]">
+          <SplitText text="Say" stagger={0.05} />{' '}
+          <span className="text-gradient">
+            <SplitText text="hi." delay={0.2} stagger={0.06} />
+          </span>
+          <motion.span
+            className="ml-4 inline-block origin-[70%_70%]"
+            initial={{ opacity: 0, scale: 0 }}
+            animate={{ opacity: 1, scale: 1, rotate: [0, 18, -8, 18, -4, 10, 0] }}
+            transition={{ opacity: { delay: 0.6 }, scale: { delay: 0.6, type: 'spring' }, rotate: { delay: 1, duration: 1.6, repeat: Infinity, repeatDelay: 2.5 } }}
+          >
+            👋
+          </motion.span>
         </h1>
-        <p className="text-gray-400 max-w-2xl mx-auto text-base leading-relaxed">
-          Whether you're exploring a new idea, need strategic consulting, or want to collaborate—I'm interested in meaningful conversations.
-        </p>
-      </motion.div>
+        <Reveal delay={0.4}>
+          <p className="mt-8 max-w-xl text-xl leading-relaxed text-gray-400">
+            Research, startups, internships, or just a good conversation about how brains work. My inbox is open and I actually read it.
+          </p>
+        </Reveal>
 
-      <div className="max-w-6xl mx-auto grid md:grid-cols-5 gap-8 items-start">
-        {/* Contact Methods */}
-        <motion.div 
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.1 }}
-          className="md:col-span-2 space-y-6"
-        >
-          <div>
-            <h3 className="text-lg font-semibold font-display text-white mb-2">Reach out</h3>
-            <p className="text-gray-400 text-sm">Choose your preferred way to connect.</p>
-          </div>
-          
-          <div className="space-y-3">
-            {contactInfo.map((item, i) => (
-              <motion.div
-                key={item.title}
-                initial={{ opacity: 0, x: -15 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.2 + i * 0.08 }}
-                whileHover={{ x: 4 }}
-                className="group"
+        <div className="mt-20 grid gap-12 lg:grid-cols-12">
+          {/* Big link rows */}
+          <div className="min-w-0 lg:col-span-7">
+            {ROWS.map((r, i) => (
+              <motion.a
+                key={r.label}
+                href={r.href}
+                target={r.label === 'Email' ? undefined : '_blank'}
+                rel="noopener noreferrer"
+                initial={{ opacity: 0, y: 40 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.5 + i * 0.1, ease: EASE }}
+                className="group relative flex items-center justify-between gap-4 overflow-hidden border-b border-white/[0.08] py-7 first:border-t"
               >
-                <a
-                  href={item.link}
-                  className="block p-4 rounded-lg bg-white/[0.02] border border-white/5 hover:border-brand-blue/30 hover:bg-white/[0.05] transition-all"
-                >
-                  <div className="text-xs font-medium text-gray-500 mb-1">{item.title}</div>
-                  <div className="text-sm font-semibold text-white group-hover:text-brand-blue transition-colors flex items-center justify-between">
-                    {item.value}
-                    {item.title === "EMAIL" && (
-                      <motion.button
-                        whileHover={{ scale: 1.2 }}
-                        whileTap={{ scale: 0.9 }}
-                        onClick={(e) => {
-                          e.preventDefault()
-                          copyToClipboard(item.value)
-                        }}
-                        className="text-xs opacity-0 group-hover:opacity-100"
-                        title="Copy to clipboard"
-                      >
-                        📋
-                      </motion.button>
-                    )}
+                <span
+                  className="absolute inset-0 origin-bottom scale-y-0 transition-transform duration-500 ease-[cubic-bezier(.22,1,.36,1)] group-hover:scale-y-100"
+                  style={{ background: `linear-gradient(90deg, ${r.color}14, transparent)` }}
+                />
+                <div className="relative flex min-w-0 items-center gap-4 transition-transform duration-500 group-hover:translate-x-4 md:gap-5">
+                  <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-white/10 transition-colors duration-500" style={{ color: r.color }}>
+                    <r.icon size={20} />
+                  </span>
+                  <div className="min-w-0">
+                    <div className="label text-[10px]">{r.label}</div>
+                    <div className="mt-1 truncate font-display text-lg text-white sm:text-xl md:text-3xl">{r.value}</div>
                   </div>
-                </a>
-              </motion.div>
+                </div>
+                <div className="relative flex shrink-0 items-center gap-2">
+                  {r.label === 'Email' && (
+                    <button
+                      onClick={(e) => {
+                        e.preventDefault()
+                        copy()
+                      }}
+                      className="hidden h-11 w-11 items-center justify-center rounded-full border border-white/10 text-gray-400 sm:flex transition-colors hover:text-white"
+                      aria-label="Copy email"
+                    >
+                      <AnimatePresence mode="wait" initial={false}>
+                        {copied ? (
+                          <motion.span key="c" initial={{ scale: 0 }} animate={{ scale: 1 }} exit={{ scale: 0 }}>
+                            <Check size={16} className="text-emerald-400" />
+                          </motion.span>
+                        ) : (
+                          <motion.span key="n" initial={{ scale: 0 }} animate={{ scale: 1 }} exit={{ scale: 0 }}>
+                            <Copy size={16} />
+                          </motion.span>
+                        )}
+                      </AnimatePresence>
+                    </button>
+                  )}
+                  <span className="flex h-11 w-11 items-center justify-center rounded-full bg-white/[0.04] text-white transition-all duration-500 group-hover:rotate-45 group-hover:bg-white group-hover:text-dark-surface">
+                    <ArrowUpRight size={18} />
+                  </span>
+                </div>
+              </motion.a>
             ))}
           </div>
 
+          {/* Form */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 60 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4 }}
-            className="pt-6 border-t border-white/5"
+            transition={{ duration: 0.9, delay: 0.7, ease: EASE }}
+            className="min-w-0 lg:col-span-5"
           >
-            <div className="flex items-center gap-2 mb-3">
-              <motion.div 
-                className="w-2 h-2 rounded-full bg-green-400"
-                animate={{ scale: [1, 1.2, 1] }}
-                transition={{ duration: 2, repeat: Infinity }}
-              />
-              <div className="text-xs font-medium text-gray-500">Available</div>
-            </div>
-            <p className="text-xs text-gray-600">Actively exploring collaborations and building interesting systems.</p>
+            <form onSubmit={onSubmit} className="card-border relative overflow-hidden rounded-3xl bg-dark-card/70 p-8" noValidate>
+              <div className="absolute -right-20 -top-20 h-56 w-56 rounded-full bg-brand-purple/10 blur-3xl" />
+              <h3 className="relative text-2xl">Or write it here</h3>
+              <p className="relative mt-1 text-sm text-gray-500">It'll open your email app with this filled in.</p>
+              <div className="relative mt-8 space-y-6">
+                {(
+                  [
+                    ['name', 'Your name', 'text'],
+                    ['email', 'Your email', 'email'],
+                  ] as const
+                ).map(([k, ph, type]) => (
+                  <Field key={k} error={errors[k]}>
+                    <input
+                      name={k}
+                      type={type}
+                      value={form[k]}
+                      onChange={onChange}
+                      placeholder=" "
+                      className="peer w-full border-b border-white/10 bg-transparent pb-3 pt-6 text-white outline-none transition-colors focus:border-transparent"
+                    />
+                    <FloatingLabel>{ph}</FloatingLabel>
+                  </Field>
+                ))}
+                <Field error={errors.message}>
+                  <textarea
+                    name="message"
+                    rows={4}
+                    value={form.message}
+                    onChange={onChange}
+                    placeholder=" "
+                    className="peer w-full resize-none border-b border-white/10 bg-transparent pb-3 pt-6 text-white outline-none transition-colors focus:border-transparent"
+                  />
+                  <FloatingLabel>What's on your mind?</FloatingLabel>
+                </Field>
+              </div>
+              <Magnetic className="relative mt-8 w-full" strength={0.15}>
+                <button type="submit" className="group relative flex w-full items-center justify-center gap-2 overflow-hidden rounded-full bg-white py-4 text-sm font-semibold text-dark-surface">
+                  <span className="absolute inset-0 -translate-x-full bg-gradient-to-r from-brand-blue to-brand-purple transition-transform duration-500 ease-out group-hover:translate-x-0" />
+                  <span className="relative transition-colors group-hover:text-white">Send it</span>
+                  <Send size={15} className="relative transition-all duration-500 group-hover:translate-x-1 group-hover:-translate-y-1 group-hover:text-white" />
+                </button>
+              </Magnetic>
+              <AnimatePresence>
+                {sent && (
+                  <motion.p
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0 }}
+                    className="relative mt-4 text-center text-sm text-emerald-400"
+                  >
+                    Your email app should be opening. Talk soon!
+                  </motion.p>
+                )}
+              </AnimatePresence>
+            </form>
           </motion.div>
-        </motion.div>
-
-        {/* Contact Form */}
-        <motion.div 
-          initial={{ opacity: 0, x: 20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.2 }}
-          className="md:col-span-3 p-8 rounded-2xl bg-dark-muted/30 border border-white/5"
-        >
-          <h3 className="text-lg font-semibold font-display text-white mb-6">Send a message</h3>
-          
-          {submitted && (
-            <motion.div
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              className="mb-6 p-4 rounded-lg bg-green-500/10 border border-green-500/30 text-green-400 text-sm"
-            >
-              ✓ Thank you! I'll get back to you soon.
-            </motion.div>
-          )}
-
-          <form onSubmit={handleSubmit} className="space-y-5">
-            <motion.div 
-              className="grid gap-2"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
-            >
-              <label className="text-xs font-medium text-gray-500">Name</label>
-              <input 
-                type="text"
-                name="name"
-                value={formState.name}
-                onChange={handleChange}
-                placeholder="Your name" 
-                className={cn(
-                  "p-3 bg-white/[0.02] border rounded-lg focus:border-brand-blue focus:ring-1 focus:ring-brand-blue/20 bg-transparent outline-none transition-all placeholder:text-gray-600 text-white text-sm",
-                  errors.name ? "border-red-500/50" : "border-white/5"
-                )}
-              />
-              {errors.name && (
-                <motion.p className="text-xs text-red-400" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-                  {errors.name}
-                </motion.p>
-              )}
-            </motion.div>
-
-            <motion.div 
-              className="grid gap-2"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.35 }}
-            >
-              <label className="text-xs font-medium text-gray-500">Email</label>
-              <input 
-                type="email"
-                name="email"
-                value={formState.email}
-                onChange={handleChange}
-                placeholder="your@email.com" 
-                className={cn(
-                  "p-3 bg-white/[0.02] border rounded-lg focus:border-brand-blue focus:ring-1 focus:ring-brand-blue/20 bg-transparent outline-none transition-all placeholder:text-gray-600 text-white text-sm",
-                  errors.email ? "border-red-500/50" : "border-white/5"
-                )}
-              />
-              {errors.email && (
-                <motion.p className="text-xs text-red-400" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-                  {errors.email}
-                </motion.p>
-              )}
-            </motion.div>
-
-            <motion.div 
-              className="grid gap-2"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4 }}
-            >
-              <label className="text-xs font-medium text-gray-500">Message</label>
-              <textarea 
-                name="message"
-                value={formState.message}
-                onChange={handleChange}
-                rows={4} 
-                placeholder="What's on your mind?" 
-                className={cn(
-                  "p-3 bg-white/[0.02] border rounded-lg focus:border-brand-blue focus:ring-1 focus:ring-brand-blue/20 bg-transparent outline-none transition-all placeholder:text-gray-600 resize-none text-white text-sm leading-relaxed",
-                  errors.message ? "border-red-500/50" : "border-white/5"
-                )}
-              />
-              {errors.message && (
-                <motion.p className="text-xs text-red-400" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-                  {errors.message}
-                </motion.p>
-              )}
-            </motion.div>
-
-            <motion.button
-              type="submit"
-              disabled={isSubmitting}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.45 }}
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              className="w-full py-3 bg-white text-dark-surface font-semibold rounded-lg hover:bg-gray-100 transition-all text-sm disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {isSubmitting ? 'Sending...' : 'Send Message'}
-            </motion.button>
-          </form>
-        </motion.div>
+        </div>
       </div>
+
+      <AnimatePresence>
+        {copied && (
+          <motion.div
+            initial={{ opacity: 0, y: 40, x: '-50%' }}
+            animate={{ opacity: 1, y: 0, x: '-50%' }}
+            exit={{ opacity: 0, y: 40, x: '-50%' }}
+            className="glass fixed bottom-8 left-1/2 z-50 flex items-center gap-2 rounded-full px-5 py-3 text-sm text-white"
+          >
+            <Check size={15} className="text-emerald-400" /> Email copied
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
+  )
+}
+
+function Field({ children, error }: { children: React.ReactNode; error?: string }) {
+  return (
+    <div className="relative">
+      <div className="group relative">
+        {children}
+        <span
+          className={cn(
+            'pointer-events-none absolute bottom-0 left-0 h-px w-full origin-left scale-x-0 bg-gradient-to-r from-brand-blue to-brand-purple transition-transform duration-500 peer-focus:scale-x-100',
+            error && 'scale-x-100 from-rose-500 to-rose-400',
+          )}
+        />
+      </div>
+      <AnimatePresence>
+        {error && (
+          <motion.p initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="mt-2 text-xs text-rose-400">
+            {error}
+          </motion.p>
+        )}
+      </AnimatePresence>
+    </div>
+  )
+}
+
+function FloatingLabel({ children }: { children: React.ReactNode }) {
+  return (
+    <label className="pointer-events-none absolute left-0 top-6 origin-left text-gray-500 transition-all duration-300 peer-focus:top-0 peer-focus:scale-75 peer-focus:text-brand-blue peer-[:not(:placeholder-shown)]:top-0 peer-[:not(:placeholder-shown)]:scale-75">
+      {children}
+    </label>
   )
 }

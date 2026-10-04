@@ -1,432 +1,374 @@
-import { motion } from 'framer-motion'
+import { useEffect, useRef, useState } from 'react'
+import type { MouseEvent } from 'react'
 import { Link } from 'react-router-dom'
+import { motion, useScroll, useTransform, useSpring, useMotionValue } from 'framer-motion'
+import { ArrowRight, ArrowUpRight, Sparkles } from 'lucide-react'
+import { NeuralField } from '../components/NeuralField'
+import { SplitText, RotatingWords, Magnetic, Marquee, ScrollWords, Reveal, CountUp, SectionLabel, TiltCard } from '../components/motion'
+import { EASE } from '../lib/ease'
+import { ProjectCard, ProjectModal, StatusPill } from '../components/ProjectBits'
+import { SynapseViz } from '../components/Visuals'
+import { PROJECTS, TIMELINE } from '../data'
+import type { Project } from '../data'
 
-export default function Home() {
-  const interests = [
-    { label: "Neurocognitive Systems", icon: "🧠" },
-    { label: "AI-Powered Learning", icon: "🤖" },
-    { label: "Systems Architecture", icon: "🏗️" },
-    { label: "Human-AI Interaction", icon: "🔗" },
-  ]
+const CHIPS = [
+  { t: 'Stanford research', x: '8%', y: '24%', d: 1.2 },
+  { t: 'React Native', x: '82%', y: '20%', d: 0.6 },
+  { t: 'Agentic AI', x: '86%', y: '66%', d: 1.4 },
+  { t: 'Cognitive science', x: '5%', y: '70%', d: 0.9 },
+  { t: 'Founder @ Synapse', x: '70%', y: '84%', d: 1.1 },
+]
+
+function Hero() {
+  const ref = useRef<HTMLElement>(null)
+  const { scrollYProgress } = useScroll({ target: ref, offset: ['start start', 'end start'] })
+  const y = useTransform(scrollYProgress, [0, 1], [0, 220])
+  const scale = useTransform(scrollYProgress, [0, 1], [1, 0.9])
+  const opacity = useTransform(scrollYProgress, [0, 0.8], [1, 0])
+
+  const mx = useMotionValue(0)
+  const my = useMotionValue(0)
+  const sx = useSpring(mx, { stiffness: 60, damping: 20 })
+  const sy = useSpring(my, { stiffness: 60, damping: 20 })
+  const onMove = (e: MouseEvent) => {
+    mx.set(e.clientX / window.innerWidth - 0.5)
+    my.set(e.clientY / window.innerHeight - 0.5)
+  }
 
   return (
-    <div className="pt-20">
-      {/* Hero Section */}
-      <section className="relative min-h-[100vh] flex items-center justify-center overflow-hidden px-6">
-        <div className="absolute inset-0 z-0">
-          <img 
-            src="/systems_builder.png" 
-            alt="Systems Architecture" 
-            className="w-full h-full object-cover opacity-20 mix-blend-screen"
-          />
-          <div className="absolute inset-0 bg-gradient-to-b from-dark-surface via-transparent to-dark-surface" />
-        </div>
+    <section ref={ref} onMouseMove={onMove} className="relative flex min-h-[100svh] items-center justify-center overflow-hidden px-6">
+      <NeuralField className="absolute inset-0 h-full w-full" />
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_20%,#07080c_75%)]" />
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-dark-surface to-transparent" />
 
-        <div className="container mx-auto relative z-10 text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-          >
-            <motion.div 
-              className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/[0.03] border border-white/10 text-brand-blue text-xs font-medium mb-8 backdrop-blur-md"
-              animate={{ y: [0, -4, 0] }}
-              transition={{ duration: 3, repeat: Infinity }}
-            >
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-blue opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-brand-blue"></span>
-              </span>
-              Builder with intent
-            </motion.div>
-            
-            <h1 className="text-6xl md:text-8xl font-semibold leading-tight mb-6 font-display text-white">
-              I build <span className="text-gradient">intelligent systems</span> <br /> that amplify human potential.
-            </h1>
-            
-            <p className="text-gray-400 text-lg md:text-xl max-w-3xl mx-auto mb-4 leading-relaxed px-4">
-              Combining neuroscience, AI, and systems thinking to architect platforms that genuinely matter. I focus on the intersection of cognitive science and technology—where elegant engineering meets human understanding.
-            </p>
+      {/* floating chips with parallax */}
+      {CHIPS.map((c, i) => (
+        <FloatingChip key={c.t} chip={c} sx={sx} sy={sy} depth={(i % 3) + 1} />
+      ))}
 
-            <p className="text-gray-500 text-base md:text-lg max-w-2xl mx-auto mb-12 leading-relaxed px-4">
-              Currently exploring: adaptive learning systems, human-AI collaboration patterns, and scaling intelligence.
-            </p>
-
-            <motion.div 
-              className="flex flex-wrap justify-center gap-4"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3, duration: 0.6 }}
-            >
-              <Link
-                to="/projects"
-                className="px-8 py-3 bg-white text-dark-surface font-semibold text-sm rounded-xl hover:bg-gray-100 transition-all shadow-lg hover:shadow-xl active:scale-95 hover:scale-105"
-              >
-                Explore My Work →
-              </Link>
-              <Link
-                to="/contact"
-                className="px-8 py-3 bg-white/[0.03] text-white font-semibold text-sm rounded-xl border border-white/10 hover:bg-white/[0.08] transition-all backdrop-blur-md active:scale-95 hover:scale-105"
-              >
-                Get in Touch
-              </Link>
-            </motion.div>
-          </motion.div>
-        </div>
-
-        {/* Scroll indicator */}
+      <motion.div style={{ y, scale, opacity }} className="relative z-10 mx-auto max-w-5xl text-center">
         <motion.div
-          className="absolute bottom-10 left-1/2 -translate-x-1/2 text-gray-600"
-          animate={{ y: [0, 10, 0] }}
-          transition={{ duration: 2, repeat: Infinity }}
+          initial={{ opacity: 0, y: 20, filter: 'blur(8px)' }}
+          animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+          transition={{ duration: 0.8, delay: 0.1, ease: EASE }}
+          className="mb-8 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-4 py-1.5 text-xs text-gray-300 backdrop-blur-md"
         >
-          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-          </svg>
+          <span className="relative flex h-2 w-2">
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
+            <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-400" />
+          </span>
+          Student, founder, researcher. Usually building something.
         </motion.div>
-      </section>
 
-      {/* About Section */}
-      <section className="py-20 px-6 bg-dark-muted/20">
-        <div className="max-w-5xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="space-y-8"
-          >
-            <div>
-              <h2 className="text-3xl md:text-4xl font-semibold font-display text-white mb-6">Who I Am</h2>
-              <p className="text-gray-400 text-lg leading-relaxed mb-6">
-                I'm a high school student and builder obsessed with understanding how systems work—whether that's how humans learn, how AI models reason, or how algorithms scale. My journey is rooted in curiosity, software engineering, and a deep interest in cognitive science.
-              </p>
-              <p className="text-gray-400 text-lg leading-relaxed">
-                I love to architect experiences and systems that leverage cognitive science to make learning, decision-making, and human-computer interaction more natural and effective. I'm focused on building foundational systems that solve real problems.
-              </p>
-            </div>
-          </motion.div>
-        </div>
-      </section>
+        <h1 className="font-display text-[15vw] font-bold leading-[0.9] tracking-[-0.05em] text-white sm:text-8xl md:text-[9rem]">
+          <SplitText text="Hi, I'm" delay={0.2} stagger={0.04} />
+          <br />
+          <span className="text-gradient">
+            <SplitText text="Sashreek." delay={0.5} stagger={0.05} />
+          </span>
+        </h1>
 
-      {/* Stats Section */}
-      <section className="py-20 px-6">
-        <div className="max-w-7xl mx-auto">
-          <div className="grid md:grid-cols-4 gap-6">
-            {[
-              { number: "10+", label: "Projects Built", description: "Learning applications and foundational systems" },
-              { number: "2+", label: "Years Coding", description: "In Python, JS/TS, and AI/ML concepts" },
-              { number: "100%", label: "Commitment", description: "To excellence and continuous learning" },
-              { number: "∞", label: "Potential", description: "Always exploring new frontiers" }
-            ].map((stat, i) => (
-              <motion.div
-                key={stat.label}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.1 }}
-                whileHover={{ y: -4 }}
-                className="p-6 rounded-xl bg-white/[0.02] border border-white/5 hover:border-brand-blue/30 transition-all text-center group"
-              >
-                <motion.div 
-                  className="text-4xl md:text-5xl font-bold font-display text-brand-blue mb-2 group-hover:scale-110 transition-transform"
-                  whileHover={{ scale: 1.15 }}
-                >
-                  {stat.number}
-                </motion.div>
-                <h3 className="text-lg font-semibold text-white mb-1">{stat.label}</h3>
-                <p className="text-gray-500 text-sm">{stat.description}</p>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
+        <motion.p
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 1.1, ease: EASE }}
+          className="mx-auto mt-10 max-w-3xl text-xl leading-snug text-gray-300 md:text-3xl"
+        >
+          I build things that help people{' '}
+          <RotatingWords
+            className="font-medium text-white"
+            words={['actually follow through.', 'stay calm in an emergency.', 'understand why they\'re stuck.', 'skip the busywork.']}
+          />
+        </motion.p>
 
-      {/* Core Focus Areas */}
-      <section className="py-20 px-6">
-        <div className="max-w-7xl mx-auto">
-          <motion.h2 
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            className="text-3xl md:text-4xl font-semibold font-display text-white mb-12 text-center"
-          >
-            Areas of <span className="text-gradient">Focus</span>
-          </motion.h2>
-
-          <div className="grid md:grid-cols-2 gap-6 mb-16">
-            {interests.map((item, i) => (
-              <motion.div
-                key={item.label}
-                initial={{ opacity: 0, x: -20 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.1 }}
-                className="p-6 rounded-xl bg-white/[0.02] border border-white/5 hover:border-brand-blue/30 transition-all group cursor-default flex items-center gap-4"
-              >
-                <div className="text-4xl group-hover:scale-110 transition-transform">{item.icon}</div>
-                <div>
-                  <h3 className="text-lg font-semibold text-white group-hover:text-brand-blue transition-colors">{item.label}</h3>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Core Philosophy Section */}
-      <section className="py-24 px-6 bg-dark-muted/20">
-        <div className="max-w-7xl mx-auto grid md:grid-cols-2 gap-16 items-center">
-          <motion.div
-            initial={{ opacity: 0, x: -30 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            className="space-y-8"
-          >
-            <h2 className="text-4xl md:text-5xl font-semibold font-display text-white leading-tight">Philosophy of a <br /><span className="text-brand-purple">Systems Builder</span></h2>
-            <p className="text-gray-400 text-base leading-relaxed">
-              At my core, I think like an architect. I break down problems, question their existence, and design something fundamentally better. Whether it's healthcare, career development, or learning, I'm drawn to meaningful complexity.
-            </p>
-            <div className="space-y-6 pt-6">
-              <motion.div 
-                className="flex items-start gap-4 border-l-2 border-brand-purple/50 pl-5 group cursor-default"
-                whileHover={{ x: 8 }}
-              >
-                <div>
-                  <h4 className="font-semibold text-white mb-1 text-brand-purple text-sm">Strategic Design</h4>
-                  <p className="text-gray-500 text-sm leading-relaxed">Solutions that rethink entire ecosystems, prioritizing intent over ego.</p>
-                </div>
-              </motion.div>
-              <motion.div 
-                className="flex items-start gap-4 border-l-2 border-brand-blue/50 pl-5 group cursor-default"
-                whileHover={{ x: 8 }}
-              >
-                <div>
-                  <h4 className="font-semibold text-white mb-1 text-brand-blue text-sm">Operational Scaling</h4>
-                  <p className="text-gray-500 text-sm leading-relaxed">Every solution designed to perform under real-world pressure and scale.</p>
-                </div>
-              </motion.div>
-            </div>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, x: 30 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            className="relative"
-          >
-            <motion.div 
-              className="aspect-square glass rounded-3xl overflow-hidden relative group"
-              whileHover={{ scale: 1.02 }}
-              transition={{ type: "spring", stiffness: 300, damping: 30 }}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 1.35, ease: EASE }}
+          className="mt-12 flex flex-wrap items-center justify-center gap-4"
+        >
+          <Magnetic>
+            <Link
+              to="/projects"
+              className="group relative inline-flex items-center gap-3 overflow-hidden rounded-full bg-white px-7 py-4 text-sm font-semibold text-dark-surface"
             >
-              <div className="absolute inset-0 bg-gradient-to-br from-brand-blue/20 to-brand-purple/20 group-hover:scale-110 transition-transform duration-700" />
-              <div className="absolute inset-0 flex flex-col items-center justify-center p-12 text-center">
-                 <motion.div 
-                   className="text-7xl mb-8 opacity-50 group-hover:opacity-100 transition-opacity"
-                   animate={{ rotate: [0, 5, -5, 0] }}
-                   transition={{ duration: 4, repeat: Infinity }}
-                 >
-                   ⚙️
-                 </motion.div>
-                 <p className="text-lg font-semibold text-white leading-relaxed">"True engineering satisfies curiosity.<br /> Meaningful building satisfies purpose."</p>
-              </div>
-            </motion.div>
-          </motion.div>
-        </div>
-      </section>
+              <span className="absolute inset-0 translate-y-full rounded-full bg-gradient-to-r from-brand-blue to-brand-purple transition-transform duration-500 ease-out group-hover:translate-y-0" />
+              <span className="relative transition-colors group-hover:text-white">See what I'm building</span>
+              <ArrowRight size={16} className="relative transition-all duration-300 group-hover:translate-x-1 group-hover:text-white" />
+            </Link>
+          </Magnetic>
+          <Magnetic>
+            <Link to="/about" className="inline-flex items-center gap-2 rounded-full border border-white/15 px-7 py-4 text-sm font-semibold text-white backdrop-blur transition-colors hover:border-white/40 hover:bg-white/5">
+              The longer story
+            </Link>
+          </Magnetic>
+        </motion.div>
+      </motion.div>
 
-      {/* The Arena (Basketball & Life) */}
-      <section className="py-24 px-6">
-        <div className="max-w-7xl mx-auto text-center mb-16">
-          <motion.h2 
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            className="text-4xl md:text-5xl font-semibold font-display mb-6 text-white">
-            In <span className="text-gradient">The Arena</span>
-          </motion.h2>
-          <p className="text-gray-400 max-w-2xl mx-auto text-base">Where strategy meets execution. Beyond the code, I find drive in competition and elite performance.</p>
+      {/* scroll cue */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 2 }}
+        className="absolute bottom-8 left-1/2 flex -translate-x-1/2 flex-col items-center gap-3"
+      >
+        <div className="flex h-10 w-6 justify-center rounded-full border border-white/20 pt-2">
+          <motion.span className="h-2 w-1 rounded-full bg-white" animate={{ y: [0, 12, 0], opacity: [1, 0.2, 1] }} transition={{ duration: 1.8, repeat: Infinity }} />
+        </div>
+        <span className="label text-[9px]">scroll</span>
+      </motion.div>
+    </section>
+  )
+}
+
+function FloatingChip({
+  chip,
+  sx,
+  sy,
+  depth,
+}: {
+  chip: (typeof CHIPS)[number]
+  sx: ReturnType<typeof useSpring>
+  sy: ReturnType<typeof useSpring>
+  depth: number
+}) {
+  const x = useTransform(sx, (v) => v * depth * -40)
+  const y = useTransform(sy, (v) => v * depth * -40)
+  return (
+    <motion.div className="pointer-events-none absolute z-[5] hidden lg:block" style={{ left: chip.x, top: chip.y, x, y }}>
+      <motion.div
+        initial={{ opacity: 0, scale: 0.6 }}
+        animate={{ opacity: 1, scale: 1, y: [0, -10, 0] }}
+        transition={{ opacity: { delay: chip.d + 0.6 }, scale: { delay: chip.d + 0.6, type: 'spring' }, y: { duration: 4 + depth, repeat: Infinity, ease: 'easeInOut' } }}
+        className="glass rounded-full px-4 py-2 font-mono text-[11px] text-gray-300"
+      >
+        {chip.t}
+      </motion.div>
+    </motion.div>
+  )
+}
+
+function Band() {
+  const names = ['Synapse Adaptive', 'DISCERN', 'NeuroLabs', 'Compliance Watchdog', 'Universal Tech Movement']
+  return (
+    <section className="relative -rotate-2 border-y border-white/[0.06] bg-dark-muted/60 py-6 backdrop-blur">
+      <Marquee baseVelocity={-2.5}>
+        {names.map((n) => (
+          <span key={n} className="flex items-center font-display text-4xl font-semibold tracking-tight text-white md:text-6xl">
+            <span className="px-8">{n}</span>
+            <Sparkles className="text-brand-purple" size={28} />
+          </span>
+        ))}
+      </Marquee>
+      <Marquee baseVelocity={2.5} className="mt-3">
+        {['curious', 'building', 'researching', 'shipping', 'learning', 'breaking things', 'fixing them'].map((n) => (
+          <span key={n} className="text-outline px-8 font-display text-3xl font-semibold tracking-tight md:text-5xl">
+            {n} ·
+          </span>
+        ))}
+      </Marquee>
+    </section>
+  )
+}
+
+function Intro() {
+  return (
+    <section className="px-6 py-32 md:py-44">
+      <div className="mx-auto max-w-5xl">
+        <SectionLabel index="01">Who I am</SectionLabel>
+        <ScrollWords
+          className="font-display text-3xl font-medium leading-[1.25] tracking-tight text-white md:text-5xl"
+          text="I'm a high school student who can't stop building. Right now that means a *startup,* *Stanford* research on why people get stuck, and an app that helps someone through a *seizure.* The thread through all of it? I care about the gap between knowing what to do and actually doing it."
+        />
+      </div>
+    </section>
+  )
+}
+
+function Featured({ onOpen }: { onOpen: (p: Project) => void }) {
+  const synapse = PROJECTS[0]
+  const rest = PROJECTS.slice(1, 3)
+  return (
+    <section className="px-6 pb-32">
+      <div className="mx-auto max-w-7xl">
+        <div className="mb-14 flex flex-col justify-between gap-6 md:flex-row md:items-end">
+          <div>
+            <SectionLabel index="02">Right now</SectionLabel>
+            <h2 className="text-5xl md:text-7xl">
+              <SplitText text="What I'm working on" inView stagger={0.02} />
+            </h2>
+          </div>
+          <Reveal delay={0.2}>
+            <Link to="/projects" className="group inline-flex items-center gap-2 text-sm font-medium text-white">
+              Everything I've done
+              <span className="flex h-9 w-9 items-center justify-center rounded-full border border-white/15 transition-all duration-500 group-hover:rotate-45 group-hover:bg-white group-hover:text-dark-surface">
+                <ArrowUpRight size={16} />
+              </span>
+            </Link>
+          </Reveal>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-6 max-w-7xl mx-auto">
-          {[
-            { 
-              emoji: "🏆", 
-              title: "Strategic Execution", 
-              desc: "Drawing inspiration from elite performance. Vision, timing, and controlled excellence." 
-            },
-            { 
-              emoji: "⚡", 
-              title: "Performance Under Pressure", 
-              desc: "Making crucial decisions when stakes are highest. Real-time optimization at scale." 
-            },
-            { 
-              emoji: "🧮", 
-              title: "Competitive Drive", 
-              desc: "Satisfied with nothing less than excellence in every system I build." 
-            }
-          ].map((item, i) => (
-            <motion.div
-              key={item.title}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.1 }}
-              whileHover={{ y: -4 }}
-              className="p-8 rounded-2xl bg-dark-muted/40 border border-white/5 group hover:border-brand-blue/30 transition-all text-left relative overflow-hidden flex flex-col justify-between h-[300px]"
-            >
-              <motion.div 
-                className="text-5xl opacity-15 group-hover:opacity-40 transition-opacity"
-                whileHover={{ scale: 1.2 }}
-              >
-                {item.emoji}
-              </motion.div>
-              <div>
-                <h3 className="text-lg font-semibold mb-3 text-white">{item.title}</h3>
-                <p className="text-gray-500 leading-relaxed text-sm">{item.desc}</p>
+        {/* Hero card */}
+        <Reveal y={80}>
+          <TiltCard glow={synapse.accent} max={3} onClick={() => onOpen(synapse)} className="card-border cursor-pointer overflow-hidden rounded-[2rem] bg-dark-card/70">
+            <div className="grid items-stretch gap-0 lg:grid-cols-2">
+              <div className="relative flex flex-col justify-between p-8 md:p-12">
+                <div className="absolute -left-20 -top-20 h-64 w-64 rounded-full bg-brand-amber/10 blur-3xl" />
+                <div className="relative">
+                  <div className="flex flex-wrap items-center gap-3">
+                    <StatusPill p={synapse} />
+                    <span className="font-mono text-xs text-gray-500">{synapse.dates}</span>
+                  </div>
+                  <h3 className="mt-6 text-5xl md:text-6xl">{synapse.title}</h3>
+                  <p className="mt-2 font-medium text-brand-amber">Founder</p>
+                  <p className="mt-6 text-2xl leading-snug text-white">{synapse.tagline}</p>
+                  <p className="mt-5 leading-relaxed text-gray-400">{synapse.summary}</p>
+                </div>
+                <div className="relative mt-10 flex items-center gap-3 text-sm font-medium text-white">
+                  Read more
+                  <span className="flex h-10 w-10 items-center justify-center rounded-full bg-white text-dark-surface transition-transform duration-500 group-hover:rotate-45">
+                    <ArrowUpRight size={18} />
+                  </span>
+                </div>
               </div>
-            </motion.div>
+              <div className="h-80 p-3 lg:h-auto lg:min-h-[480px]">
+                <SynapseViz big />
+              </div>
+            </div>
+          </TiltCard>
+        </Reveal>
+
+        <div className="mt-6 grid gap-6 md:grid-cols-2">
+          {rest.map((p, i) => (
+            <ProjectCard key={p.id} p={p} index={i} onOpen={() => onOpen(p)} />
           ))}
         </div>
-      </section>
+      </div>
+    </section>
+  )
+}
 
-      {/* Testimonials Section */}
-      <section className="py-24 px-6 bg-dark-muted/20">
-        <div className="max-w-7xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            className="text-center mb-16"
-          >
-            <h2 className="text-4xl md:text-5xl font-semibold font-display text-white mb-4">What Others <span className="text-gradient">Say</span></h2>
-            <p className="text-gray-400 max-w-2xl mx-auto">Feedback from collaborators and those who've worked with me.</p>
-          </motion.div>
+function Stats() {
+  const stats = [
+    { to: 3000, suffix: '+', label: 'applicants for Ladders for Leaders. I was one of the ones picked.' },
+    { to: 5000, prefix: '$', suffix: '+', label: 'saved at Compliance Watchdog by automating provider checks.' },
+    { to: 50, suffix: '%+', label: 'less time spent on verification once the agent took over.' },
+    { to: 3, label: 'things I\'m building at once. Probably too many. Not stopping.' },
+  ]
+  return (
+    <section className="px-6 pb-32">
+      <div className="mx-auto grid max-w-7xl gap-px overflow-hidden rounded-3xl border border-white/[0.06] bg-white/[0.06] sm:grid-cols-2 lg:grid-cols-4">
+        {stats.map((s, i) => (
+          <Reveal key={i} delay={i * 0.1} y={30} blur={false} className="group relative bg-dark-surface p-8 md:p-10">
+            <div className="absolute inset-0 bg-gradient-to-b from-brand-blue/0 to-brand-purple/0 transition-colors duration-700 group-hover:from-brand-blue/[0.06] group-hover:to-brand-purple/[0.04]" />
+            <div className="relative font-display text-5xl font-bold tracking-tight text-white md:text-6xl">
+              <CountUp to={s.to} prefix={s.prefix} suffix={s.suffix} />
+            </div>
+            <p className="relative mt-4 text-sm leading-relaxed text-gray-500">{s.label}</p>
+          </Reveal>
+        ))}
+      </div>
+    </section>
+  )
+}
 
-          <div className="grid md:grid-cols-3 gap-6 mb-12">
-            {[
-              {
-                quote: "Exceptional ability to translate complex concepts into elegant solutions. A true systems thinker.",
-                author: "Technical Lead",
-                role: "At AI Startup"
-              },
-              {
-                quote: "Brings a unique perspective combining neuroscience with engineering. Incredibly thoughtful and purposeful.",
-                author: "Product Manager",
-                role: "EdTech Company"
-              },
-              {
-                quote: "Problem-solving approach is strategic and meticulous. Always thinking about scalability and real impact.",
-                author: "Co-Founder",
-                role: "Research Initiative"
-              }
-            ].map((testimonial, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.1 }}
-                whileHover={{ y: -4 }}
-                className="p-8 rounded-xl bg-white/[0.02] border border-white/5 hover:border-brand-blue/30 transition-all"
-              >
-                <div className="flex gap-1 mb-4">
-                  {[...Array(5)].map((_, j) => (
-                    <motion.span
-                      key={j}
-                      initial={{ scale: 0 }}
-                      whileInView={{ scale: 1 }}
-                      viewport={{ once: true }}
-                      transition={{ delay: i * 0.1 + j * 0.05 }}
-                      className="text-brand-blue"
-                    >
-                      ★
-                    </motion.span>
-                  ))}
-                </div>
-                <p className="text-gray-400 text-sm leading-relaxed mb-6 italic">"{testimonial.quote}"</p>
-                <div>
-                  <p className="text-white font-semibold text-sm">{testimonial.author}</p>
-                  <p className="text-gray-500 text-xs">{testimonial.role}</p>
-                </div>
-              </motion.div>
-            ))}
-          </div>
+function Journey() {
+  const ref = useRef<HTMLElement>(null)
+  const track = useRef<HTMLDivElement>(null)
+  const [dist, setDist] = useState(0)
+  useEffect(() => {
+    const measure = () => {
+      if (track.current) setDist(Math.max(0, track.current.scrollWidth - window.innerWidth + 48))
+    }
+    measure()
+    window.addEventListener('resize', measure)
+    return () => window.removeEventListener('resize', measure)
+  }, [])
+  const { scrollYProgress } = useScroll({ target: ref, offset: ['start start', 'end end'] })
+  const x = useTransform(scrollYProgress, [0.05, 0.95], [0, -dist])
+  const bar = useTransform(scrollYProgress, [0, 1], [0, 1])
+  return (
+    <section ref={ref} className="relative h-[320vh]">
+      <div className="sticky top-0 flex h-screen flex-col justify-center overflow-hidden">
+        <div className="mx-auto mb-12 w-full max-w-7xl px-6">
+          <SectionLabel index="03">How I got here</SectionLabel>
+          <h2 className="text-5xl md:text-7xl">From Flappy Bird to Stanford</h2>
         </div>
-      </section>
-
-      {/* Featured Work Preview */}
-      <section className="py-24 px-6 bg-dark-muted/20">
-        <div className="max-w-7xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            className="text-center mb-16"
-          >
-            <h2 className="text-4xl md:text-5xl font-semibold font-display text-white mb-4">Featured <span className="text-gradient">Work</span></h2>
-            <p className="text-gray-400 max-w-2xl mx-auto">High-agency systems that drive intellectual growth and real-world expertise.</p>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-            className="relative bg-dark-muted/30 rounded-2xl border border-white/5 overflow-hidden group hover:border-brand-blue/20 transition-colors"
-          >
-            <div className="grid md:grid-cols-3 gap-0">
-              <div className="relative overflow-hidden md:col-span-1 aspect-square">
-                <div className="absolute inset-0 bg-gradient-to-br from-brand-blue/20 to-brand-purple/20 group-hover:scale-110 transition-transform duration-700" />
-                <div className="h-full w-full flex items-center justify-center">
-                  <div className="text-6xl opacity-10">📚</div>
-                </div>
+        <motion.div ref={track} style={{ x }} className="flex w-max gap-6 px-6 md:pl-[max(1.5rem,calc((100vw-80rem)/2+1.5rem))]">
+          {TIMELINE.map((t, i) => (
+            <div key={i} className="card-border group relative flex h-[340px] w-[80vw] shrink-0 flex-col justify-between overflow-hidden rounded-3xl bg-dark-card/70 p-8 sm:w-[420px]">
+              <div className="absolute -right-6 -top-10 font-display text-[9rem] font-bold leading-none text-white/[0.03] transition-colors duration-700 group-hover:text-brand-blue/10">
+                {String(i + 1).padStart(2, '0')}
               </div>
-
-              <div className="md:col-span-2 p-8 md:p-12 flex flex-col justify-center">
-                <div className="inline-block text-xs font-medium text-brand-blue px-3 py-1 rounded bg-brand-blue/10 border border-brand-blue/20 mb-6 w-fit">
-                  FEATURED PROJECT
-                </div>
-                
-                <h3 className="text-3xl md:text-4xl font-semibold font-display mb-4 group-hover:text-brand-blue transition-colors text-white">PyQuest</h3>
-                <p className="text-gray-400 text-base leading-relaxed mb-6">A world-class learning platform that bridges the gap between learning syntax and professional engineering. Features adaptive challenges powered by GPT-4 and real-time performance analysis.</p>
-                
-                <div className="flex flex-wrap gap-2 mb-8">
-                  {["React", "TypeScript", "Node.js", "GPT-4"].map(tag => (
-                    <span key={tag} className="px-3 py-1 bg-white/5 border border-white/10 rounded-full text-xs font-medium text-gray-400">
-                      {tag}
-                    </span>
-                  ))}
-                </div>
-
-                <Link to="/projects" className="inline-flex items-center gap-2 font-semibold text-white hover:text-brand-blue transition-colors group/link">
-                  View full details <span className="group-hover/link:translate-x-2 transition-transform">→</span>
-                </Link>
+              <div className="relative font-mono text-sm text-brand-blue">{t.when}</div>
+              <div className="relative">
+                <h3 className="text-3xl">{t.title}</h3>
+                <p className="mt-4 leading-relaxed text-gray-400">{t.body}</p>
               </div>
             </div>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* CTA Section */}
-      <section className="py-24 px-6">
-        <motion.div 
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="max-w-4xl mx-auto text-center bg-gradient-to-r from-brand-blue/10 via-transparent to-brand-purple/10 border border-white/5 rounded-3xl p-16"
-        >
-          <h2 className="text-4xl md:text-5xl font-semibold mb-6 leading-tight text-white">Ready to work together?</h2>
-          <p className="text-gray-400 text-lg mb-10 leading-relaxed">Whether you're exploring a new idea, building a system, or need strategic guidance—let's talk.</p>
-          <div className="flex flex-wrap justify-center gap-4">
-            <Link to="/contact" className="px-8 py-3 bg-white text-dark-surface font-semibold rounded-lg hover:bg-gray-100 transition-all active:scale-95 hover:scale-105">
-              Start a conversation
-            </Link>
-            <a href="https://github.com/Sashr" target="_blank" rel="noopener noreferrer" className="px-8 py-3 bg-white/[0.03] text-white font-semibold rounded-lg border border-white/10 hover:bg-white/[0.08] transition-all active:scale-95 hover:scale-105">
-              View my GitHub
-            </a>
-          </div>
+          ))}
         </motion.div>
-      </section>
-    </div>
+        <div className="mx-auto mt-12 w-full max-w-7xl px-6">
+          <div className="h-px w-full bg-white/10">
+            <motion.div className="h-px origin-left bg-gradient-to-r from-brand-blue to-brand-purple" style={{ scaleX: bar }} />
+          </div>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+function CTA() {
+  return (
+    <section className="px-6 py-32 md:py-44">
+      <div className="relative mx-auto max-w-6xl overflow-hidden rounded-[2.5rem] border border-white/[0.07] px-6 py-24 text-center md:py-32">
+        <div className="absolute inset-0 -z-10">
+          <div className="absolute left-1/2 top-1/2 h-[600px] w-[600px] -translate-x-1/2 -translate-y-1/2 animate-spin-slow rounded-full bg-[conic-gradient(from_0deg,#6d9cff33,#b477ff33,#ffb36b22,#6d9cff33)] blur-3xl" />
+          <div className="absolute inset-0 grid-bg opacity-50 [mask-image:radial-gradient(circle,black,transparent_70%)]" />
+        </div>
+        <Reveal>
+          <span className="label">Open to collaborations</span>
+        </Reveal>
+        <h2 className="mx-auto mt-6 max-w-4xl text-5xl leading-[1.02] md:text-8xl">
+          <SplitText text="Let's make something" inView stagger={0.025} />{' '}
+          <span className="text-gradient">
+            <SplitText text="real." inView delay={0.5} />
+          </span>
+        </h2>
+        <Reveal delay={0.3}>
+          <p className="mx-auto mt-8 max-w-xl text-lg text-gray-400">Research, a startup idea, an internship, or you just want to nerd out about cognitive science. I'm in.</p>
+        </Reveal>
+        <Reveal delay={0.45} className="mt-12">
+          <Magnetic strength={0.5}>
+            <Link
+              to="/contact"
+              className="group relative inline-flex h-36 w-36 items-center justify-center overflow-hidden rounded-full bg-white text-sm font-semibold text-dark-surface md:h-44 md:w-44"
+            >
+              <span className="absolute inset-0 scale-0 rounded-full bg-gradient-to-br from-brand-blue to-brand-purple transition-transform duration-500 ease-out group-hover:scale-100" />
+              <span className="relative flex flex-col items-center gap-1 transition-colors group-hover:text-white">
+                Get in touch
+                <ArrowUpRight size={20} className="transition-transform duration-500 group-hover:rotate-45" />
+              </span>
+            </Link>
+          </Magnetic>
+        </Reveal>
+      </div>
+    </section>
+  )
+}
+
+export default function Home() {
+  const [open, setOpen] = useState<Project | null>(null)
+  return (
+    <>
+      <Hero />
+      <Band />
+      <Intro />
+      <Featured onOpen={setOpen} />
+      <Stats />
+      <Journey />
+      <CTA />
+      <ProjectModal p={open} onClose={() => setOpen(null)} />
+    </>
   )
 }
