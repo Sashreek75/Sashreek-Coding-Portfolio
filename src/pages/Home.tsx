@@ -4,7 +4,7 @@ import { motion, useScroll, useTransform } from 'framer-motion'
 import { ArrowRight, ArrowUpRight } from 'lucide-react'
 import { Brain } from '../components/Brain'
 import { ProjectTimeline } from '../components/ProjectTimeline'
-import { SplitText, RotatingWords, Magnetic, Marquee, ScrollWords, Reveal, CountUp, SectionLabel, Scramble, EEGStrip } from '../components/motion'
+import { SplitText, HoverLetters, SpotlightGrid, RotatingWords, Magnetic, Marquee, ScrollWords, Reveal, CountUp, SectionLabel, Scramble, EEGStrip } from '../components/motion'
 import { EASE } from '../lib/ease'
 
 /* small live readout in the hero HUD */
@@ -26,7 +26,8 @@ function Hero() {
   const fade = useTransform(scrollYProgress, [0, 0.75], [1, 0])
 
   return (
-    <section ref={ref} className="relative min-h-[100svh] overflow-hidden px-6 pt-28 md:pt-0">
+    <section ref={ref} className="relative min-h-[100svh] overflow-hidden px-6 pt-28 md:pt-20">
+      <SpotlightGrid />
       <div className="mx-auto grid min-h-[100svh] max-w-7xl items-center gap-4 md:grid-cols-12">
         {/* Brain */}
         <motion.div
@@ -83,48 +84,90 @@ function Hero() {
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.1 }}
-            className="mb-6 flex items-center gap-3 font-mono text-xs text-gray-400"
+            className="mb-6 inline-flex items-center gap-3 rounded-full border border-white/10 bg-white/[0.03] px-4 py-1.5 font-mono text-xs text-gray-400 backdrop-blur"
           >
-            <span className="text-brand-mint">{'>'}</span>
-            <Scramble text="hi, i'm sashreek pinjala" delay={200} duration={900} />
+            <span className="relative flex h-2 w-2">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-brand-mint opacity-75" />
+              <span className="relative inline-flex h-2 w-2 rounded-full bg-brand-mint" />
+            </span>
+            <Scramble text="student · founder · researcher" delay={200} duration={900} />
           </motion.div>
 
-          <h1 className="font-display text-[13.5vw] font-bold leading-[0.88] tracking-[-0.045em] text-white sm:text-7xl lg:text-[6.4rem]">
-            <span className="text-gradient">
-              <SplitText text="Neuroscience" delay={0.25} stagger={0.03} />
+          <h1 className="font-display text-[17vw] font-bold leading-[0.9] tracking-[-0.05em] text-white sm:text-8xl md:text-7xl lg:text-[6.5rem] xl:text-[7.5rem]">
+            <HoverLetters text="Hi, I'm" delay={0.2} />
+            <br />
+            <span className="relative inline-block">
+              <span className="text-gradient">
+                <HoverLetters text="Sashreek." delay={0.5} />
+              </span>
+              {/* underline that draws in like a nerve signal */}
+              <svg className="absolute -bottom-3 left-0 h-4 w-full overflow-visible" viewBox="0 0 400 16" preserveAspectRatio="none" aria-hidden>
+                <motion.path
+                  d="M0 8 L120 8 L135 2 L150 14 L165 8 L400 8"
+                  fill="none"
+                  stroke="url(#ul)"
+                  strokeWidth="2"
+                  vectorEffect="non-scaling-stroke"
+                  initial={{ pathLength: 0, opacity: 0 }}
+                  animate={{ pathLength: 1, opacity: 1 }}
+                  transition={{ duration: 1.2, delay: 1.2, ease: EASE }}
+                />
+                <defs>
+                  <linearGradient id="ul" x1="0" x2="1">
+                    <stop offset="0" stopColor="#6d9cff" />
+                    <stop offset="1" stopColor="#5ef2c2" stopOpacity="0" />
+                  </linearGradient>
+                </defs>
+              </svg>
             </span>
-            <br />
-            <span className="text-brand-mint">
-              <SplitText text="×" delay={0.6} />
-            </span>{' '}
-            <SplitText text="Computer" delay={0.65} stagger={0.03} />
-            <br />
-            <SplitText text="Science." delay={0.9} stagger={0.03} />
           </h1>
 
           <motion.p
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 1.2, ease: EASE }}
-            className="mt-8 max-w-xl text-lg leading-snug text-gray-300 md:text-2xl"
+            className="mt-10 max-w-xl text-lg leading-snug text-gray-300 md:text-2xl"
           >
-            I figure out how brains work, then build software for them. It helps people{' '}
+            I study how minds work, then write the code that helps them. Lately that means helping people{' '}
             <RotatingWords
               className="font-semibold text-white"
-              words={['actually follow through.', 'stay calm in an emergency.', "understand why they're stuck.", 'skip the busywork.']}
+              words={['actually follow through.', 'make better decisions.', 'understand their own minds.', 'get unstuck.']}
             />
           </motion.p>
+
+          <motion.div
+            className="mt-7 flex flex-wrap gap-2"
+            initial="hidden"
+            animate="show"
+            variants={{ show: { transition: { staggerChildren: 0.1, delayChildren: 1.45 } } }}
+          >
+            {[
+              ['Cognitive science', '#5ef2c2'],
+              ['Human-centered AI', '#6d9cff'],
+              ['Behavior & decisions', '#b477ff'],
+            ].map(([t, c]) => (
+              <motion.span
+                key={t}
+                variants={{ hidden: { opacity: 0, y: 10, scale: 0.9 }, show: { opacity: 1, y: 0, scale: 1 } }}
+                whileHover={{ y: -2, borderColor: c }}
+                className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.02] px-3 py-1.5 text-xs text-gray-300"
+              >
+                <span className="h-1.5 w-1.5 rounded-full" style={{ background: c, boxShadow: `0 0 8px ${c}` }} />
+                {t}
+              </motion.span>
+            ))}
+          </motion.div>
 
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 1.4, ease: EASE }}
-            className="mt-10 flex flex-wrap items-center gap-4"
+            className="mt-9 flex flex-wrap items-center gap-4"
           >
             <Magnetic>
               <a
                 href="#work"
-                className="group relative inline-flex items-center gap-3 overflow-hidden rounded-full bg-white px-7 py-4 text-sm font-semibold text-dark-surface"
+                className="beam group relative inline-flex items-center gap-3 overflow-hidden rounded-full bg-white px-7 py-4 text-sm font-semibold text-dark-surface shadow-[0_0_40px_-8px_rgba(94,242,194,0.6)]"
               >
                 <span className="absolute inset-0 translate-y-full rounded-full bg-gradient-to-r from-brand-blue to-brand-mint transition-transform duration-500 ease-out group-hover:translate-y-0" />
                 <span className="relative">See my work</span>
@@ -173,7 +216,7 @@ function Intro() {
         <SectionLabel index="01">who i am</SectionLabel>
         <ScrollWords
           className="font-display text-2xl font-medium leading-[1.3] tracking-tight text-white md:text-[2.1rem]"
-          text="I'm a high schooler stuck between two obsessions: how the *brain* works, and how to *build* things. So I do both. Cognitive science research with a *Stanford* professor, a startup that keeps you focused, and an app that walks you through a *seizure.* All of it is about the gap between knowing what to do and actually doing it."
+          text="I'm a high schooler stuck between two obsessions: how the *mind* works, and how to *build* things. I'm drawn to the messy space between them: attention, motivation, decision-making, and why people don't do the things they know they should. I like turning those questions into *models,* and then turning the models into *software* people actually use."
         />
       </div>
     </section>
@@ -192,7 +235,7 @@ function Work() {
             <SplitText text="Follow the signal" inView stagger={0.025} />
           </h2>
           <Reveal delay={0.2}>
-            <p className="mx-auto mt-5 max-w-xl text-lg text-gray-400">Scroll down the axon. Each branch is something I've built, researched, or worked on.</p>
+            <p className="mx-auto mt-5 max-w-xl text-lg text-gray-400">Scroll down the axon. What I'm building comes first, then what I've already built.</p>
           </Reveal>
         </div>
         <ProjectTimeline />

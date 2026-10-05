@@ -3,7 +3,7 @@ import { Link, useLocation } from 'react-router-dom'
 import { motion, AnimatePresence, useScroll, useMotionValueEvent } from 'framer-motion'
 import { Github, Linkedin, Mail } from 'lucide-react'
 import { cn } from '../lib/utils'
-import { Magnetic } from './motion'
+import { Magnetic, ScrambleHover } from './motion'
 import { EASE } from '../lib/ease'
 import { LINKS } from '../data'
 
@@ -92,7 +92,7 @@ export function Navbar() {
                     transition={{ type: 'spring', stiffness: 380, damping: 30 }}
                   />
                 )}
-                <span className="relative">{l.name}</span>
+                <ScrambleHover text={l.name} className="relative" />
                 {pathname === l.path && (
                   <motion.span layoutId="nav-dot" className="absolute -bottom-0.5 left-1/2 h-1 w-1 -translate-x-1/2 rounded-full bg-brand-blue" />
                 )}

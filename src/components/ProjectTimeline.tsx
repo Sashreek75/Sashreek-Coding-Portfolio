@@ -20,6 +20,8 @@ export function ProjectTimeline({ detailed = false }: { detailed?: boolean }) {
   const progress = useSpring(scrollYProgress, { stiffness: 90, damping: 24, mass: 0.4 })
   const clip = useTransform(progress, (v) => `inset(0 0 ${Math.max(0, 100 - v * 100)}% 0)`)
   const tip = useTransform(progress, (v) => `${Math.min(100, v * 100)}%`)
+  const building = PROJECTS.filter((p) => p.phase === 'building')
+  const built = PROJECTS.filter((p) => p.phase === 'built')
 
   return (
     <div ref={ref} className="relative">
@@ -43,17 +45,27 @@ export function ProjectTimeline({ detailed = false }: { detailed?: boolean }) {
         <span className="block h-3.5 w-3.5 rounded-full bg-white shadow-[0_0_20px_6px_rgba(255,255,255,0.55),0_0_50px_16px_rgba(94,242,194,0.25)]" />
       </motion.div>
 
-      {/* origin */}
-      <div className="relative flex items-center pb-16 pl-14 md:justify-center md:pl-0">
-        <span className="absolute left-5 top-1 h-2 w-2 -translate-x-1/2 rounded-full bg-white md:left-1/2" />
-        <span className="relative z-30 mt-6 rounded-full border border-white/10 bg-dark-surface px-4 py-1.5 font-mono text-[11px] uppercase tracking-[0.25em] text-gray-400 md:mt-8">
-          newest first
-        </span>
+      <PhaseHeader
+        kind="building"
+        title="Building"
+        code="// firing now"
+        sub="What I'm working on right now. The signal's still travelling."
+      />
+      <div className="space-y-20 md:space-y-28">
+        {building.map((p, i) => (
+          <Branch key={p.id} p={p} side={i % 2 === 0 ? 'right' : 'left'} detailed={detailed} onOpen={() => setOpen(p)} />
+        ))}
       </div>
 
+      <PhaseHeader
+        kind="built"
+        title="Built"
+        code="// consolidated to long-term memory"
+        sub="Finished work: research, internships, and the projects that got me here."
+      />
       <div className="space-y-20 md:space-y-28">
-        {PROJECTS.map((p, i) => (
-          <Branch key={p.id} p={p} side={i % 2 === 0 ? 'right' : 'left'} detailed={detailed} onOpen={() => setOpen(p)} />
+        {built.map((p, i) => (
+          <Branch key={p.id} p={p} side={(i + building.length) % 2 === 0 ? 'right' : 'left'} detailed={detailed} onOpen={() => setOpen(p)} />
         ))}
       </div>
 
@@ -72,6 +84,52 @@ export function ProjectTimeline({ detailed = false }: { detailed?: boolean }) {
 
       <ProjectModal p={open} onClose={() => setOpen(null)} />
     </div>
+  )
+}
+
+function PhaseHeader({ kind, title, code, sub }: { kind: 'building' | 'built'; title: string; code: string; sub: string }) {
+  const live = kind === 'building'
+  const color = live ? '#5ef2c2' : '#6d9cff'
+  return (
+    <motion.div
+      className="relative py-20 pl-14 md:pl-0 md:text-center"
+      initial="hidden"
+      whileInView="show"
+      viewport={{ once: true, margin: '-20% 0px -20% 0px' }}
+    >
+      {/* soma: a larger node where the phase begins */}
+      <motion.span
+        className="absolute left-5 top-[92px] z-30 flex h-7 w-7 -translate-x-1/2 items-center justify-center rounded-full border-2 bg-dark-surface md:left-1/2 md:top-[86px]"
+        style={{ borderColor: color, boxShadow: `0 0 24px ${color}66` }}
+        variants={{ hidden: { scale: 0 }, show: { scale: 1, transition: { type: 'spring', stiffness: 400, damping: 14 } } }}
+      >
+        <span className="h-2.5 w-2.5 rounded-full" style={{ background: color }} />
+        {[0, 1].map((k) => (
+          <motion.span
+            key={k}
+            className="absolute inset-0 rounded-full"
+            style={{ border: `1px solid ${color}` }}
+            animate={{ scale: [1, live ? 2.8 : 2], opacity: [0.7, 0] }}
+            transition={{ duration: live ? 1.4 : 3, repeat: Infinity, delay: k * (live ? 0.7 : 1.5), ease: 'easeOut' }}
+          />
+        ))}
+      </motion.span>
+      <motion.div
+        className="relative z-20 inline-block rounded-3xl bg-dark-surface/90 px-6 py-4 backdrop-blur md:mt-10"
+        variants={{ hidden: { opacity: 0, y: 30, filter: 'blur(10px)' }, show: { opacity: 1, y: 0, filter: 'blur(0px)', transition: { duration: 0.9, ease: EASE, delay: 0.2 } } }}
+      >
+        <div className="font-mono text-xs" style={{ color }}>
+          {code}
+        </div>
+        <h3 className="mt-2 font-display text-5xl font-bold tracking-tight md:text-7xl">
+          {title}
+          {live && (
+            <motion.span className="ml-2 inline-block h-3 w-3 rounded-full align-middle" style={{ background: color }} animate={{ opacity: [1, 0.2, 1] }} transition={{ duration: 1, repeat: Infinity }} />
+          )}
+        </h3>
+        <p className="mt-3 max-w-md text-gray-400 md:mx-auto">{sub}</p>
+      </motion.div>
+    </motion.div>
   )
 }
 
@@ -138,6 +196,10 @@ function Branch({ p, side, detailed, onOpen }: { p: Project; side: 'left' | 'rig
           vectorEffect="non-scaling-stroke"
           variants={{ hidden: { pathLength: 0 }, show: { pathLength: 1, transition: { duration: 0.5, delay: 0.6 } } }}
         />
+        {/* signal travelling from the stem into the card */}
+        <circle r="3.5" fill="white" style={{ filter: `drop-shadow(0 0 6px ${p.accent})` }}>
+          <animateMotion dur="2.4s" repeatCount="indefinite" path="M0 0 C 40 0, 45 60, 100 60" keyPoints="0;1" keyTimes="0;1" calcMode="spline" keySplines="0.4 0 0.2 1" />
+        </circle>
         <motion.circle
           cx="100"
           cy="60"
@@ -166,10 +228,23 @@ function Branch({ p, side, detailed, onOpen }: { p: Project; side: 'left' | 'rig
           show: { opacity: 1, x: 0, filter: 'blur(0px)', transition: { duration: 0.9, ease: EASE, delay: 0.45 } },
         }}
       >
-        <TiltCard glow={p.accent} max={4} onClick={onOpen} className="card-border cursor-pointer overflow-hidden rounded-3xl bg-dark-card/80">
+        <TiltCard glow={p.accent} max={4} onClick={onOpen} className="beam beam-hover card-border cursor-pointer overflow-hidden rounded-3xl bg-dark-card/80" style={{ ['--beam-color' as string]: p.accent }}>
           {/* generated image */}
           <div className="relative aspect-[16/10] overflow-hidden">
-            <img src={p.image} alt="" loading="lazy" className="h-full w-full object-cover transition-transform duration-[1.2s] ease-out group-hover:scale-110" />
+            <div className="h-full w-full transition-transform duration-[1.2s] ease-out group-hover:scale-110">
+            <motion.img
+              src={p.image}
+              alt=""
+              loading="lazy"
+              className="h-full w-full object-cover"
+              variants={{
+                hidden: { clipPath: 'inset(0 100% 0 0)', scale: 1.25 },
+                show: { clipPath: 'inset(0 0% 0 0)', scale: 1, transition: { duration: 1.2, ease: EASE, delay: 0.55 } },
+              }}
+            />
+            </div>
+            {/* fine scanlines for a screen-like texture */}
+            <div className="pointer-events-none absolute inset-0 bg-[repeating-linear-gradient(0deg,rgba(255,255,255,0.03)_0px,rgba(255,255,255,0.03)_1px,transparent_1px,transparent_3px)]" />
             <div className="absolute inset-0 bg-gradient-to-t from-dark-card via-dark-card/10 to-transparent" />
             {/* scan line on hover */}
             <div
@@ -199,7 +274,22 @@ function Branch({ p, side, detailed, onOpen }: { p: Project; side: 'left' | 'rig
               {p.org && <span className="text-gray-500"> · {p.org}</span>}
             </div>
             <p className="mt-4 text-[15px] leading-relaxed text-gray-300">{p.tagline}</p>
-            {detailed && <p className="mt-3 text-sm leading-relaxed text-gray-500">{p.summary}</p>}
+            <p className="mt-3 text-sm leading-relaxed text-gray-400">{p.summary}</p>
+            {detailed && (
+              <ul className="mt-5 space-y-2.5 border-t border-white/[0.06] pt-5">
+                {p.points.slice(0, 3).map((pt, k) => (
+                  <motion.li
+                    key={k}
+                    className="flex gap-3 text-[13px] leading-relaxed text-gray-400"
+                    variants={{ hidden: { opacity: 0, x: -10 }, show: { opacity: 1, x: 0, transition: { delay: 0.9 + k * 0.1, ease: EASE } } }}
+                  >
+                    <span className="mt-[7px] h-1.5 w-1.5 shrink-0 rounded-full" style={{ background: p.accent, boxShadow: `0 0 8px ${p.accent}` }} />
+                    {pt}
+                  </motion.li>
+                ))}
+                {p.points.length > 3 && <li className="pl-[18px] font-mono text-[11px] text-gray-600">+{p.points.length - 3} more inside →</li>}
+              </ul>
+            )}
             <div className="mt-6 flex items-center justify-between gap-4">
               <div className="flex flex-wrap gap-1.5">
                 {p.tags.slice(0, detailed ? 4 : 3).map((t) => (

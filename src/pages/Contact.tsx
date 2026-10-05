@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import type { ChangeEvent, FormEvent } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { ArrowUpRight, Check, Copy, Github, Linkedin, Mail, Trophy, Send } from 'lucide-react'
+import { ArrowUpRight, Hand, Check, Copy, Github, Linkedin, Mail, Trophy, Send } from 'lucide-react'
 import { SplitText, Reveal, Magnetic } from '../components/motion'
 import { EASE } from '../lib/ease'
 import { LINKS } from '../data'
@@ -68,7 +68,7 @@ export default function Contact() {
             animate={{ opacity: 1, scale: 1, rotate: [0, 18, -8, 18, -4, 10, 0] }}
             transition={{ opacity: { delay: 0.6 }, scale: { delay: 0.6, type: 'spring' }, rotate: { delay: 1, duration: 1.6, repeat: Infinity, repeatDelay: 2.5 } }}
           >
-            👋
+            <Hand className="inline h-[0.7em] w-[0.7em] text-brand-amber" strokeWidth={1.8} />
           </motion.span>
         </h1>
         <Reveal delay={0.4}>

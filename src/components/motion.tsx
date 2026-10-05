@@ -385,3 +385,76 @@ export function EEGStrip({ className, color = '#6d9cff' }: { className?: string;
     </svg>
   )
 }
+
+/* ───────────────── Letters that react when you hover them ───────────────── */
+export function HoverLetters({ text, className, delay = 0, hoverColor = '#5ef2c2' }: { text: string; className?: string; delay?: number; hoverColor?: string }) {
+  return (
+    <span className={cn('inline-block whitespace-nowrap', className)} aria-label={text}>
+      {text.split('').map((ch, i) => (
+        <span key={i} className="inline-block overflow-hidden align-bottom pb-[0.12em] -mb-[0.12em]" aria-hidden>
+          <motion.span
+            className="inline-block cursor-default"
+            initial={{ y: '115%', rotate: 10 }}
+            animate={{ y: '0%', rotate: 0 }}
+            transition={{ duration: 0.9, ease: EASE, delay: delay + i * 0.045 }}
+            whileHover={{ y: '-14%', color: hoverColor, transition: { type: 'spring', stiffness: 500, damping: 12 } }}
+          >
+            {ch === ' ' ? ' ' : ch}
+          </motion.span>
+        </span>
+      ))}
+    </span>
+  )
+}
+
+/* ───────────────── Text that decodes on hover (nav links etc.) ───────────────── */
+export function ScrambleHover({ text, className }: { text: string; className?: string }) {
+  const [out, setOut] = useState(text)
+  const raf = useRef(0)
+  const run = () => {
+    cancelAnimationFrame(raf.current)
+    const start = performance.now()
+    const tick = (now: number) => {
+      const t = Math.min(1, (now - start) / 380)
+      const reveal = Math.floor(t * text.length)
+      setOut(text.split('').map((ch, i) => (ch === ' ' || i < reveal ? ch : GLYPHS[Math.floor(Math.random() * GLYPHS.length)])).join(''))
+      if (t < 1) raf.current = requestAnimationFrame(tick)
+    }
+    raf.current = requestAnimationFrame(tick)
+  }
+  useEffect(() => () => cancelAnimationFrame(raf.current), [])
+  return (
+    <span onMouseEnter={run} onFocus={run} className={className} aria-label={text}>
+      <span aria-hidden>{out}</span>
+    </span>
+  )
+}
+
+/* ───────────────── Cursor-following grid spotlight ───────────────── */
+export function SpotlightGrid({ className }: { className?: string }) {
+  const ref = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    const el = ref.current
+    if (!el) return
+    const move = (e: PointerEvent) => {
+      const r = el.getBoundingClientRect()
+      el.style.setProperty('--mx', `${e.clientX - r.left}px`)
+      el.style.setProperty('--my', `${e.clientY - r.top}px`)
+    }
+    window.addEventListener('pointermove', move)
+    return () => window.removeEventListener('pointermove', move)
+  }, [])
+  return (
+    <div
+      ref={ref}
+      aria-hidden
+      className={cn('pointer-events-none absolute inset-0 grid-bg', className)}
+      style={{
+        maskImage: 'radial-gradient(260px circle at var(--mx, 50%) var(--my, 40%), black, transparent 75%)',
+        WebkitMaskImage: 'radial-gradient(260px circle at var(--mx, 50%) var(--my, 40%), black, transparent 75%)',
+        backgroundSize: '44px 44px',
+        opacity: 0.9,
+      }}
+    />
+  )
+}

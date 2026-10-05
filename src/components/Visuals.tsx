@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Check, ShieldCheck, Clock, Camera, Phone } from 'lucide-react'
 import type { Visual } from '../data'
@@ -381,6 +381,102 @@ export function UtmViz() {
   )
 }
 
+
+/* ───────────── PyQuest: code, XP, level up ───────────── */
+const CODE = ['for level in quest:', '    solve(level.challenge)', '    xp += level.reward', 'print("level up!")']
+export function PyQuestViz() {
+  const step = useCycle(6, 1000)
+  const lines = Math.min(step, CODE.length)
+  return (
+    <div className="relative flex h-full w-full flex-col justify-center overflow-hidden rounded-2xl border border-white/[0.07] bg-[#07101a] p-6 font-mono">
+      <div className="mb-3 flex gap-1.5">
+        {['#ff5f57', '#febc2e', '#28c840'].map((c) => (
+          <span key={c} className="h-2.5 w-2.5 rounded-full" style={{ background: `${c}cc` }} />
+        ))}
+      </div>
+      <div className="space-y-1.5 text-[12px]">
+        {CODE.slice(0, lines).map((l, i) => (
+          <motion.div key={i} initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }} className="whitespace-pre text-sky-200">
+            <span className="mr-3 text-gray-600">{i + 1}</span>
+            {l}
+          </motion.div>
+        ))}
+      </div>
+      <div className="mt-5 flex items-center gap-3">
+        <span className="text-[10px] uppercase tracking-widest text-gray-500">xp</span>
+        <div className="h-2 flex-1 overflow-hidden rounded-full bg-white/10">
+          <motion.div className="h-full bg-gradient-to-r from-sky-300 to-amber-300" animate={{ width: `${(lines / CODE.length) * 100}%` }} transition={{ duration: 0.6 }} />
+        </div>
+      </div>
+      <AnimatePresence>
+        {step >= CODE.length && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.6, y: 10 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0 }}
+            transition={{ type: 'spring', stiffness: 400, damping: 14 }}
+            className="absolute right-6 top-6 rounded-lg border border-amber-300/60 px-3 py-1 text-xs font-bold uppercase tracking-widest text-amber-300"
+          >
+            Level up
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  )
+}
+
+/* ───────────── Epilepsy research: same model, shifted data ───────────── */
+export function EegShiftViz() {
+  const shifted = useCycle(2, 2600) === 1
+  const ref = useRef<SVGGElement>(null)
+  useEffect(() => {
+    let raf = 0
+    let ph = 0
+    const draw = () => {
+      ph += 0.04
+      const g = ref.current
+      if (g) {
+        Array.from(g.children).forEach((path, c) => {
+          let d = ''
+          for (let x = 0; x <= 400; x += 3) {
+            const burst = Math.exp(-Math.pow(((x / 400 + ph * 0.05) % 1) - 0.55, 2) / 0.006)
+            const noise = shifted ? (Math.random() - 0.5) * 7 : (Math.random() - 0.5) * 1.5
+            const amp = shifted ? 0.6 + (c % 3) * 0.5 : 1
+            const y = 20 + c * 26 + Math.sin(x * 0.09 + ph * 3 + c) * 3 * amp + burst * Math.sin(x * 0.5) * 9 * amp + noise
+            d += `${x ? 'L' : 'M'}${x} ${y.toFixed(1)}`
+          }
+          path.setAttribute('d', d)
+        })
+      }
+      raf = requestAnimationFrame(draw)
+    }
+    draw()
+    return () => cancelAnimationFrame(raf)
+  }, [shifted])
+  return (
+    <div className="relative h-full w-full overflow-hidden rounded-2xl border border-white/[0.07] bg-[#0d0714]">
+      <div className="absolute inset-0 grid-bg opacity-30" />
+      <svg viewBox="0 0 400 220" preserveAspectRatio="none" className="absolute inset-x-0 top-10 h-[70%] w-full">
+        <g ref={ref}>
+          {Array.from({ length: 7 }).map((_, i) => (
+            <path key={i} fill="none" stroke={shifted ? '#ff8fb1' : '#c084fc'} strokeOpacity={0.75} strokeWidth="1.2" vectorEffect="non-scaling-stroke" />
+          ))}
+        </g>
+      </svg>
+      <div className="absolute left-4 top-4 flex gap-2 font-mono text-[10px] uppercase tracking-widest">
+        <span className={`rounded-full px-2.5 py-1 transition-colors duration-500 ${!shifted ? 'bg-purple-400/20 text-purple-200' : 'text-gray-600'}`}>train domain</span>
+        <span className={`rounded-full px-2.5 py-1 transition-colors duration-500 ${shifted ? 'bg-rose-400/20 text-rose-200' : 'text-gray-600'}`}>shifted domain</span>
+      </div>
+      <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between font-mono text-[10px] text-gray-500">
+        <span>new patients · new dataset · new environment</span>
+        <motion.span key={String(shifted)} initial={{ opacity: 0 }} animate={{ opacity: 1 }} className={shifted ? 'text-rose-300' : 'text-purple-300'}>
+          {shifted ? 'model output: ?' : 'model output: stable'}
+        </motion.span>
+      </div>
+    </div>
+  )
+}
+
 export function ProjectVisual({ kind, big }: { kind: Visual; big?: boolean }) {
   switch (kind) {
     case 'synapse':
@@ -393,5 +489,9 @@ export function ProjectVisual({ kind, big }: { kind: Visual; big?: boolean }) {
       return <VerifyViz />
     case 'utm':
       return <UtmViz />
+    case 'pyquest':
+      return <PyQuestViz />
+    case 'eeg':
+      return <EegShiftViz />
   }
 }

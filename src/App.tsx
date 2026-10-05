@@ -4,7 +4,7 @@ import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-route
 import { motion, AnimatePresence, MotionConfig } from 'framer-motion'
 import { Navbar } from './components/Navbar'
 import { Footer } from './components/Footer'
-import { Cursor, Preloader, ScrollProgress, Ambient } from './components/Chrome'
+import { Cursor, NeuronTrail, Preloader, ScrollProgress, Ambient } from './components/Chrome'
 import Home from './pages/Home'
 import Projects from './pages/Projects'
 import Skills from './pages/Skills'
@@ -102,6 +102,7 @@ export default function App() {
       <Router>
         <AnimatePresence>{loading && <Preloader key="pre" onDone={done} />}</AnimatePresence>
         <Ambient />
+        <NeuronTrail />
         <Cursor />
         <ScrollProgress />
         <div className="relative flex min-h-screen flex-col text-gray-300">

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { motion, AnimatePresence, useMotionValue, useSpring, useScroll } from 'framer-motion'
 import { ArrowUp } from 'lucide-react'
 import { Scramble } from './motion'
@@ -74,6 +74,73 @@ export function Cursor() {
       />
     </>
   )
+}
+
+/* ───────────────── Neuron trail behind the cursor ───────────────── */
+export function NeuronTrail() {
+  const ref = useRef<HTMLCanvasElement>(null)
+  useEffect(() => {
+    const fine = window.matchMedia('(pointer: fine)').matches
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    const canvas = ref.current
+    if (!fine || reduce || !canvas) return
+    const ctx = canvas.getContext('2d')
+    if (!ctx) return
+    type Pt = { x: number; y: number; t: number }
+    let pts: Pt[] = []
+    let raf = 0
+    const resize = () => {
+      const dpr = Math.min(window.devicePixelRatio || 1, 2)
+      canvas.width = innerWidth * dpr
+      canvas.height = innerHeight * dpr
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
+    }
+    const move = (e: PointerEvent) => {
+      const last = pts[pts.length - 1]
+      if (!last || Math.hypot(e.clientX - last.x, e.clientY - last.y) > 14) pts.push({ x: e.clientX, y: e.clientY, t: performance.now() })
+    }
+    const LIFE = 650
+    const draw = (now: number) => {
+      ctx.clearRect(0, 0, innerWidth, innerHeight)
+      pts = pts.filter((p) => now - p.t < LIFE)
+      ctx.globalCompositeOperation = 'lighter'
+      for (let i = 1; i < pts.length; i++) {
+        const a = pts[i - 1]
+        const b = pts[i]
+        const life = 1 - (now - b.t) / LIFE
+        ctx.strokeStyle = `rgba(94,242,194,${life * 0.45})`
+        ctx.lineWidth = life * 1.6
+        ctx.beginPath()
+        ctx.moveTo(a.x, a.y)
+        ctx.lineTo(b.x, b.y)
+        ctx.stroke()
+        // small dendrite twigs
+        if (i % 3 === 0) {
+          const ang = Math.atan2(b.y - a.y, b.x - a.x) + (i % 2 ? 1.1 : -1.1)
+          ctx.strokeStyle = `rgba(109,156,255,${life * 0.3})`
+          ctx.beginPath()
+          ctx.moveTo(b.x, b.y)
+          ctx.lineTo(b.x + Math.cos(ang) * 10 * life, b.y + Math.sin(ang) * 10 * life)
+          ctx.stroke()
+        }
+        ctx.fillStyle = `rgba(220,255,245,${life * 0.8})`
+        ctx.beginPath()
+        ctx.arc(b.x, b.y, life * 1.8, 0, Math.PI * 2)
+        ctx.fill()
+      }
+      raf = requestAnimationFrame(draw)
+    }
+    resize()
+    raf = requestAnimationFrame(draw)
+    window.addEventListener('resize', resize)
+    window.addEventListener('pointermove', move)
+    return () => {
+      cancelAnimationFrame(raf)
+      window.removeEventListener('resize', resize)
+      window.removeEventListener('pointermove', move)
+    }
+  }, [])
+  return <canvas ref={ref} className="pointer-events-none fixed inset-0 z-[99] h-full w-full" aria-hidden />
 }
 
 /* ───────────────── Preloader: an EEG trace boots the site ───────────────── */
@@ -159,7 +226,7 @@ export function Preloader({ onDone }: { onDone: () => void }) {
         animate={{ opacity: 1, letterSpacing: '0.45em' }}
         transition={{ delay: 1.1, duration: 1 }}
       >
-        neuroscience <span className="text-brand-mint">×</span> computer science
+        minds <span className="text-brand-mint">·</span> code <span className="text-brand-mint">·</span> people
       </motion.div>
 
       {/* boot log */}

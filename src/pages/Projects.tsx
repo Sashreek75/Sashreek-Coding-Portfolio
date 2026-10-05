@@ -23,7 +23,7 @@ export default function Projects() {
           </div>
           <Reveal delay={0.5} className="md:col-span-4">
             <p className="text-lg leading-relaxed text-gray-400">
-              Stanford research, a startup, an emergency app, and two internships. Scroll down the stem, and click any card to dig in.
+              What I'm building now sits at the top, and what I've already built is further down the stem. Click any card to dig in.
             </p>
           </Reveal>
         </div>

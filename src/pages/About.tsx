@@ -104,9 +104,9 @@ export default function About() {
                   I'm Sashreek. I started coding in 2022 with a Flappy Bird clone that barely worked, and I've been building ever since. Somewhere along the way I realized the thing I actually care about isn't code. It's people, and why they do (or don't do) what they set out to do.
                 </p>
                 <p className="text-gray-400">
-                  That's why I'm researching self-regulation with Stanford professor Ashish Mehta. It's why I started Synapse, because I get distracted way too easily myself. And it's why NeuroLabs exists: in an emergency, knowing what to do isn't enough if you freeze.
+                  What pulls me in is where the brain and software overlap: attention, motivation, habits, and how people make decisions under pressure. I read about cognitive science the way some people follow sports, and then I try to build something with what I learn.
                 </p>
-                <p className="text-gray-400">This summer I also got my first real taste of industry, building agentic AI for healthcare credentialing and learning sales and business from people who've launched 100+ startups.</p>
+                <p className="text-gray-400">I care about technology that respects how people actually think. It should be honest, calm when things get stressful, and earn its place in someone's day. Lately I've also gotten into the business side: how ideas become products, and how products become companies.</p>
               </div>
             </Reveal>
             <Reveal delay={0.55} className="md:col-span-5">
@@ -114,10 +114,10 @@ export default function About() {
                 <div className="label mb-6">Quick facts</div>
                 <dl className="space-y-5">
                   {[
-                    ['Building', 'Synapse Adaptive'],
-                    ['Researching', 'Stanford cog-sci (DISCERN)'],
-                    ['Shipping', 'NeuroLabs'],
-                    ['Interning', 'Universal Tech Movement'],
+                    ['Into', 'Cognitive science'],
+                    ['Also into', 'Human-centered AI'],
+                    ['Thinking about', 'Attention & motivation'],
+                    ['Building with', 'TypeScript & Python'],
                     ['Certified', 'PCEP (Python Institute)'],
                     ['Off-screen', 'Basketball'],
                   ].map(([k, v], i) => (
