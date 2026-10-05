@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion'
+import { BrainCircuit } from 'lucide-react'
 import { SplitText, Reveal, TiltCard, Marquee } from '../components/motion'
 import { EASE } from '../lib/ease'
 import { SKILLS } from '../data'
@@ -19,7 +20,7 @@ function Orbit() {
           animate={{ boxShadow: ['0 0 30px #6d9cff55', '0 0 70px #b477ff88', '0 0 30px #6d9cff55'] }}
           transition={{ duration: 3, repeat: Infinity }}
         >
-          SP
+          <BrainCircuit size={40} strokeWidth={1.6} />
         </motion.div>
       </div>
       {ORBITS.map((o, oi) => (

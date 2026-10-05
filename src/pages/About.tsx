@@ -91,7 +91,7 @@ export default function About() {
           <Reveal y={16}>
             <span className="label">About</span>
           </Reveal>
-          <h1 className="mt-6 max-w-5xl text-6xl leading-[0.95] md:text-8xl">
+          <h1 className="mt-6 max-w-5xl text-5xl leading-[0.95] md:text-7xl">
             <SplitText text="The longer" stagger={0.03} />{' '}
             <span className="text-gradient">
               <SplitText text="version." delay={0.3} stagger={0.04} />
@@ -99,7 +99,7 @@ export default function About() {
           </h1>
           <div className="mt-16 grid gap-10 md:grid-cols-12">
             <Reveal delay={0.4} className="md:col-span-7">
-              <div className="space-y-6 text-lg leading-relaxed text-gray-300 md:text-xl">
+              <div className="space-y-5 text-base leading-relaxed text-gray-300 md:text-[17px]">
                 <p>
                   I'm Sashreek. I started coding in 2022 with a Flappy Bird clone that barely worked, and I've been building ever since. Somewhere along the way I realized the thing I actually care about isn't code. It's people, and why they do (or don't do) what they set out to do.
                 </p>
@@ -115,7 +115,7 @@ export default function About() {
                 <dl className="space-y-5">
                   {[
                     ['Building', 'Synapse Adaptive'],
-                    ['Researching', 'DISCERN · Stanford'],
+                    ['Researching', 'Stanford cog-sci (DISCERN)'],
                     ['Shipping', 'NeuroLabs'],
                     ['Interning', 'Universal Tech Movement'],
                     ['Certified', 'PCEP (Python Institute)'],

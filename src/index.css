@@ -1,10 +1,10 @@
-@import url('https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Sora:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
 
 @import "tailwindcss";
 
 @theme {
-  --font-sans: "Geist", system-ui, -apple-system, sans-serif;
-  --font-display: "Sora", "Geist", system-ui, sans-serif;
+  --font-sans: "Manrope", system-ui, -apple-system, sans-serif;
+  --font-display: "Space Grotesk", "Manrope", system-ui, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, monospace;
 
   --color-brand-blue: #6d9cff;
@@ -28,6 +28,11 @@
   100% { transform: translate3d(-5%, 5%, 0) scale(0.95) rotate(-8deg); }
 }
 
+@keyframes scan {
+  from { transform: translateY(-100%); }
+  to   { transform: translateY(600%); }
+}
+
 @keyframes shine {
   from { background-position: 200% center; }
   to   { background-position: -200% center; }
@@ -44,7 +49,7 @@
 
   h1, h2, h3, h4, h5, h6 {
     @apply font-display text-white font-semibold;
-    letter-spacing: -0.03em;
+    letter-spacing: -0.035em;
   }
 
   ::selection {
@@ -109,6 +114,13 @@
       linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px),
       linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px);
     background-size: 64px 64px;
+  }
+
+  .circuit-bg {
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='320' height='320' fill='none' stroke='white' stroke-opacity='0.035' stroke-width='1'><path d='M0 40h60l20 20h80M160 60v60l20 20h140M40 0v80l40 40v60M240 0v40l-20 20h-40M320 200h-80l-20-20h-60l-20 20v80M0 260h100l20-20v-40M200 320v-40l20-20h40l20-20M120 320v-30'/><circle cx='160' cy='60' r='3'/><circle cx='80' cy='180' r='3'/><circle cx='160' cy='200' r='3'/><circle cx='120' cy='200' r='3'/><circle cx='260' cy='260' r='3'/><circle cx='120' cy='290' r='3'/></svg>");
+    background-size: 320px 320px;
+    -webkit-mask-image: radial-gradient(ellipse at center, black 30%, transparent 80%);
+    mask-image: radial-gradient(ellipse at center, black 30%, transparent 80%);
   }
 
   .noise {

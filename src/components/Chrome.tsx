@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { motion, AnimatePresence, useMotionValue, useSpring, useScroll } from 'framer-motion'
 import { ArrowUp } from 'lucide-react'
-import { EASE } from '../lib/ease'
+import { Scramble } from './motion'
 
 /* ───────────────── Custom cursor (desktop only) ───────────────── */
 export function Cursor() {
@@ -76,56 +76,103 @@ export function Cursor() {
   )
 }
 
-/* ───────────────── Preloader ───────────────── */
+/* ───────────────── Preloader: an EEG trace boots the site ───────────────── */
+// A heartbeat/EEG-ish path across a 1000×120 box
+const EEG =
+  'M0 60 L120 60 L150 58 L170 62 L190 60 L250 60 L265 52 L280 66 L295 60 L380 60 L395 20 L410 104 L425 8 L440 92 L455 44 L470 60 L560 60 L575 54 L590 64 L605 60 L700 60 L712 34 L724 86 L736 60 L820 60 L835 56 L850 63 L865 60 L1000 60'
+
+const BOOT = ['booting cortex', 'mapping synapses', 'linking neurons ↔ circuits', 'ready']
+
 export function Preloader({ onDone }: { onDone: () => void }) {
-  const [n, setN] = useState(0)
+  const [line, setLine] = useState(0)
   useEffect(() => {
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
     if (reduce) {
       onDone()
       return
     }
-    let raf = 0
-    const start = performance.now()
-    const dur = 1500
-    const tick = (t: number) => {
-      const p = Math.min(1, (t - start) / dur)
-      setN(Math.round((1 - Math.pow(1 - p, 3)) * 100))
-      if (p < 1) raf = requestAnimationFrame(tick)
-      else setTimeout(onDone, 250)
+    const timers = BOOT.map((_, i) => setTimeout(() => setLine(i + 1), 250 + i * 420))
+    const end = setTimeout(onDone, 2350)
+    return () => {
+      timers.forEach(clearTimeout)
+      clearTimeout(end)
     }
-    raf = requestAnimationFrame(tick)
-    return () => cancelAnimationFrame(raf)
   }, [onDone])
 
-  const words = ['curious', 'building', 'shipping', 'hi.']
-  const wi = Math.min(words.length - 1, Math.floor(n / 26))
   return (
     <motion.div
-      className="fixed inset-0 z-[200] flex flex-col items-center justify-center bg-[#05060a]"
-      exit={{ clipPath: 'inset(0 0 100% 0)' }}
-      initial={{ clipPath: 'inset(0 0 0% 0)' }}
-      transition={{ duration: 0.9, ease: [0.76, 0, 0.24, 1] }}
+      className="fixed inset-0 z-[200] flex flex-col items-center justify-center overflow-hidden bg-[#030407]"
+      initial={{ clipPath: 'inset(0% 0 0% 0)' }}
+      exit={{ clipPath: 'inset(50% 0 50% 0)' }}
+      transition={{ duration: 0.85, ease: [0.76, 0, 0.24, 1] }}
     >
-      <div className="relative flex h-16 items-center overflow-hidden">
-        <AnimatePresence mode="popLayout">
-          <motion.span
-            key={wi}
-            initial={{ y: 60, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            exit={{ y: -60, opacity: 0 }}
-            transition={{ duration: 0.4, ease: EASE }}
-            className="font-display text-4xl font-semibold text-white md:text-5xl"
-          >
-            {words[wi]}
-          </motion.span>
-        </AnimatePresence>
+      <div className="absolute inset-0 grid-bg opacity-40 [mask-image:radial-gradient(circle,black,transparent_65%)]" />
+
+      <div className="relative mb-6 font-display text-3xl font-bold tracking-[0.18em] text-white sm:text-5xl">
+        <Scramble text="SASHREEK PINJALA" delay={300} duration={1100} />
       </div>
-      <div className="mt-8 h-px w-56 overflow-hidden bg-white/10">
-        <motion.div className="h-full bg-gradient-to-r from-brand-blue to-brand-purple" style={{ width: `${n}%` }} />
+
+      {/* EEG trace */}
+      <div className="relative w-[88vw] max-w-4xl">
+        <svg viewBox="0 0 1000 120" className="h-24 w-full overflow-visible sm:h-28" preserveAspectRatio="none">
+          <defs>
+            <linearGradient id="eeg-g" x1="0" x2="1">
+              <stop offset="0" stopColor="#6d9cff" stopOpacity="0" />
+              <stop offset="0.25" stopColor="#6d9cff" />
+              <stop offset="0.7" stopColor="#b477ff" />
+              <stop offset="1" stopColor="#5ef2c2" />
+            </linearGradient>
+            <filter id="eeg-glow" x="-10%" y="-50%" width="120%" height="200%">
+              <feGaussianBlur stdDeviation="4" result="b" />
+              <feMerge>
+                <feMergeNode in="b" />
+                <feMergeNode in="SourceGraphic" />
+              </feMerge>
+            </filter>
+          </defs>
+          <line x1="0" y1="60" x2="1000" y2="60" stroke="rgba(255,255,255,0.06)" strokeWidth="1" vectorEffect="non-scaling-stroke" />
+          <motion.path
+            d={EEG}
+            fill="none"
+            stroke="url(#eeg-g)"
+            strokeWidth="2"
+            strokeLinejoin="round"
+            vectorEffect="non-scaling-stroke"
+            filter="url(#eeg-glow)"
+            initial={{ pathLength: 0 }}
+            animate={{ pathLength: 1 }}
+            transition={{ duration: 1.6, ease: [0.45, 0, 0.2, 1], delay: 0.2 }}
+          />
+        </svg>
+        {/* travelling impulse */}
+        <motion.div
+          className="absolute top-1/2 h-3 w-3 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white shadow-[0_0_18px_6px_rgba(94,242,194,0.7)]"
+          initial={{ left: '0%', opacity: 0 }}
+          animate={{ left: '100%', opacity: [0, 1, 1, 0] }}
+          transition={{ duration: 1.6, ease: [0.45, 0, 0.2, 1], delay: 0.2 }}
+        />
       </div>
-      <div className="absolute bottom-8 right-8 font-display text-7xl font-bold text-white/10 md:text-9xl">{n}</div>
-      <div className="absolute bottom-10 left-8 label">Sashreek Pinjala</div>
+
+      <motion.div
+        className="relative mt-6 font-mono text-[10px] uppercase tracking-[0.45em] text-gray-500 sm:text-xs"
+        initial={{ opacity: 0, letterSpacing: '0.2em' }}
+        animate={{ opacity: 1, letterSpacing: '0.45em' }}
+        transition={{ delay: 1.1, duration: 1 }}
+      >
+        neuroscience <span className="text-brand-mint">×</span> computer science
+      </motion.div>
+
+      {/* boot log */}
+      <div className="absolute bottom-8 left-6 space-y-1 font-mono text-[11px] text-gray-500 sm:left-10">
+        {BOOT.slice(0, line).map((b, i) => (
+          <motion.div key={b} initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }} className="flex gap-2">
+            <span className="text-brand-mint">{'>'}</span>
+            {b}
+            <span className={i === BOOT.length - 1 ? 'text-brand-mint' : 'text-gray-700'}>{i === BOOT.length - 1 ? '✓' : '...ok'}</span>
+          </motion.div>
+        ))}
+      </div>
+      <div className="absolute bottom-8 right-6 font-mono text-[11px] text-gray-700 sm:right-10">v2026.10</div>
     </motion.div>
   )
 }
@@ -135,35 +182,26 @@ export function ScrollProgress() {
   const { scrollYProgress, scrollY } = useScroll()
   const scaleX = useSpring(scrollYProgress, { stiffness: 120, damping: 25 })
   const [show, setShow] = useState(false)
-  useEffect(() => scrollY.on('change', (v) => setShow(v > 600)), [scrollY])
+  useEffect(() => scrollY.on('change', (v) => setShow(v > 800)), [scrollY])
   return (
     <>
       <motion.div
-        className="fixed left-0 right-0 top-0 z-[70] h-[2px] origin-left bg-gradient-to-r from-brand-blue via-brand-purple to-brand-amber"
+        className="fixed left-0 right-0 top-0 z-[70] h-[2px] origin-left bg-gradient-to-r from-brand-blue via-brand-purple to-brand-mint"
         style={{ scaleX }}
       />
       <AnimatePresence>
         {show && (
           <motion.button
-            initial={{ opacity: 0, scale: 0, rotate: -90 }}
-            animate={{ opacity: 1, scale: 1, rotate: 0 }}
-            exit={{ opacity: 0, scale: 0, rotate: 90 }}
-            whileHover={{ scale: 1.12, y: -3 }}
-            whileTap={{ scale: 0.9 }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 20 }}
+            whileHover={{ y: -3 }}
+            whileTap={{ scale: 0.92 }}
             onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-            className="glass fixed bottom-6 right-6 z-40 flex h-12 w-12 items-center justify-center rounded-full text-white"
+            className="glass fixed bottom-6 right-6 z-40 flex h-11 w-11 items-center justify-center rounded-full text-white"
             aria-label="Back to top"
           >
-            <svg className="absolute inset-0 -rotate-90" viewBox="0 0 48 48">
-              <motion.circle cx="24" cy="24" r="22" fill="none" stroke="url(#pg)" strokeWidth="2" style={{ pathLength: scrollYProgress }} />
-              <defs>
-                <linearGradient id="pg">
-                  <stop offset="0" stopColor="#6d9cff" />
-                  <stop offset="1" stopColor="#b477ff" />
-                </linearGradient>
-              </defs>
-            </svg>
-            <ArrowUp size={18} />
+            <ArrowUp size={17} />
           </motion.button>
         )}
       </AnimatePresence>
@@ -171,15 +209,16 @@ export function ScrollProgress() {
   )
 }
 
-/* ───────────────── Ambient background ───────────────── */
+/* ───────────────── Ambient background: faint circuitry + neural glow ───────────────── */
 export function Ambient() {
   return (
     <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden" aria-hidden>
-      <div className="absolute -left-[20%] -top-[20%] h-[70vmax] w-[70vmax] animate-aurora rounded-full bg-[radial-gradient(circle,rgba(109,156,255,0.13),transparent_60%)]" />
+      <div className="absolute -left-[20%] -top-[20%] h-[70vmax] w-[70vmax] animate-aurora rounded-full bg-[radial-gradient(circle,rgba(109,156,255,0.10),transparent_60%)]" />
       <div
-        className="absolute -bottom-[25%] -right-[15%] h-[65vmax] w-[65vmax] animate-aurora rounded-full bg-[radial-gradient(circle,rgba(180,119,255,0.12),transparent_60%)]"
+        className="absolute -bottom-[25%] -right-[15%] h-[65vmax] w-[65vmax] animate-aurora rounded-full bg-[radial-gradient(circle,rgba(94,242,194,0.07),transparent_60%)]"
         style={{ animationDelay: '-9s' }}
       />
+      <div className="circuit-bg absolute inset-0 opacity-[0.5]" />
       <div className="absolute inset-0 noise opacity-[0.035] mix-blend-overlay" />
     </div>
   )

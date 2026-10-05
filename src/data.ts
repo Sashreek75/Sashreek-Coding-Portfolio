@@ -22,12 +22,65 @@ export interface Project {
   tags: string[]
   accent: string
   visual: Visual
+  image: string
+  kicker: string
+  badge?: string
   note?: string
 }
 
 export const PROJECTS: Project[] = [
   {
+    id: 'neurolabs',
+    image: '/projects/neuro.jpg',
+    kicker: 'Mobile app',
+    title: 'NeuroLabs',
+    role: 'Creator',
+    dates: 'Oct 2026',
+    category: 'Building',
+    status: 'Shipping',
+    tagline: 'Know what to do when a seizure happens.',
+    summary:
+      "When someone has a seizure, the people next to them have seconds to get it right, and most have no idea what to do. NeuroLabs turns a phone into a calm guide. One huge button starts seizure mode, a timer starts running, and clear first-aid steps walk you through it.",
+    points: [
+      "One tap into seizure mode: accurate timer, quick camera capture, and button-only questions. Nobody should be typing during an emergency.",
+      'Tells you when it\'s time to call for help, like when a seizure goes past 5 minutes.',
+      'Recovery mode, history, and an event report you can export as a PDF for a neurologist.',
+      'Works fully offline with no login. No AI makes emergency calls. The steps are fixed and based on Epilepsy Foundation, CDC and ILAE guidance.',
+      'Built for the Congressional App Challenge.',
+    ],
+    tags: ['React Native', 'Expo', 'TypeScript', 'Offline-first'],
+    accent: '#ff6b8b',
+    visual: 'neuro',
+    note: "NeuroLabs isn't a medical device and doesn't replace emergency services or a doctor.",
+  },
+  {
+    id: 'discern',
+    image: '/projects/discern.jpg',
+    kicker: 'Research',
+    badge: 'Stanford',
+    title: 'Stanford Cognitive Science Research',
+    role: 'DISCERN',
+    org: 'under Prof. Ashish Mehta, Stanford',
+    dates: 'Sep 2026 — now',
+    category: 'Research',
+    status: 'Researching',
+    tagline: "Figure out why someone's stuck before deciding how to help.",
+    summary:
+      "Most productivity advice hands everyone the same fix. DISCERN starts with a different question: what's actually holding this person back? Unclear goals, too much on their plate, distraction, bad timing, competing priorities, or not learning from what happened last time. Then it picks the intervention that fits.",
+    points: [
+      'Framed adaptive intervention selection as a sequential decision problem.',
+      "Built a synthetic benchmark where the real bottleneck is known, so the framework can be checked, and can genuinely fail.",
+      'Preregistered the experiment before running it, and kept the results that didn\'t go my way.',
+      'Working on it under Stanford professor Ashish Mehta.',
+    ],
+    tags: ['Python', 'Computational modeling', 'Simulation', 'Cognitive science'],
+    accent: '#5ef2c2',
+    visual: 'discern',
+  },
+  {
     id: 'synapse',
+    image: '/projects/synapse.jpg',
+    kicker: 'Startup',
     title: 'Synapse Adaptive',
     role: 'Founder',
     dates: 'Jul 2026 — now',
@@ -47,50 +100,30 @@ export const PROJECTS: Project[] = [
     visual: 'synapse',
   },
   {
-    id: 'discern',
-    title: 'DISCERN',
-    role: 'Cognitive science research',
-    org: 'with Stanford professor Ashish Mehta',
-    dates: '2026 — now',
-    category: 'Research',
-    status: 'Researching',
-    tagline: "Figure out why someone's stuck before deciding how to help.",
+    id: 'utm',
+    image: '/projects/utm.jpg',
+    kicker: 'Internships',
+    title: 'Universal Tech Movement',
+    role: 'Business Intern + Tech Intern',
+    dates: 'Jun 2026 — now',
+    category: 'Work',
+    status: 'Ongoing',
+    tagline: 'Picked out of 3,000+ applicants. Stayed for two jobs.',
     summary:
-      "Most productivity advice hands everyone the same fix. DISCERN starts with a different question: what's actually holding this person back? Unclear goals, too much on their plate, distraction, bad timing, competing priorities, or not learning from what happened last time. Then it picks the intervention that fits.",
+      "I got into the Ladders for Leaders program, which put me next to Devin Voorsanger learning how real businesses get built and sold. A month in, I joined the Web Application Team too.",
     points: [
-      'Framed adaptive intervention selection as a sequential decision problem.',
-      "Built a synthetic benchmark where the real bottleneck is known, so the framework can be checked, and can genuinely fail.",
-      'Preregistered the experiment before running it, and kept the results that didn\'t go my way.',
-      'Working on it under Stanford professor Ashish Mehta.',
+      'Business: learned practical business, communication and sales from Devin Voorsanger. UTM has raised $32M, created 400+ jobs and launched 100+ startups.',
+      'Tech: built an internal operations platform for UTM Technology & Service that pulls workflows, check-ins and customer service into one place.',
+      'Watching people juggle all of that is a big part of what got me building Synapse.',
     ],
-    tags: ['Python', 'Computational modeling', 'Simulation', 'Cognitive science'],
-    accent: '#5ef2c2',
-    visual: 'discern',
-  },
-  {
-    id: 'neurolabs',
-    title: 'NeuroLabs',
-    role: 'Creator',
-    dates: '2026',
-    category: 'Building',
-    status: 'Shipping',
-    tagline: 'Know what to do when a seizure happens.',
-    summary:
-      "When someone has a seizure, the people next to them have seconds to get it right, and most have no idea what to do. NeuroLabs turns a phone into a calm guide. One huge button starts seizure mode, a timer starts running, and clear first-aid steps walk you through it.",
-    points: [
-      "One tap into seizure mode: accurate timer, quick camera capture, and button-only questions. Nobody should be typing during an emergency.",
-      'Tells you when it\'s time to call for help, like when a seizure goes past 5 minutes.',
-      'Recovery mode, history, and an event report you can export as a PDF for a neurologist.',
-      'Works fully offline with no login. No AI makes emergency calls. The steps are fixed and based on Epilepsy Foundation, CDC and ILAE guidance.',
-      'Built for the Congressional App Challenge.',
-    ],
-    tags: ['React Native', 'Expo', 'TypeScript', 'Offline-first'],
-    accent: '#ff6b8b',
-    visual: 'neuro',
-    note: "NeuroLabs isn't a medical device and doesn't replace emergency services or a doctor.",
+    tags: ['Web apps', 'Operations', 'Sales', 'Ladders for Leaders'],
+    accent: '#b477ff',
+    visual: 'utm',
   },
   {
     id: 'compliance',
+    image: '/projects/verify.jpg',
+    kicker: 'Internship',
     title: 'Compliance Watchdog',
     role: 'AI Intern',
     dates: 'Jun — Jul 2026',
@@ -108,25 +141,6 @@ export const PROJECTS: Project[] = [
     tags: ['Agentic AI', 'Orchestration', 'Healthcare'],
     accent: '#6d9cff',
     visual: 'verify',
-  },
-  {
-    id: 'utm',
-    title: 'Universal Tech Movement',
-    role: 'Business Intern + Tech Intern',
-    dates: 'Jun 2026 — now',
-    category: 'Work',
-    status: 'Ongoing',
-    tagline: 'Picked out of 3,000+ applicants. Stayed for two jobs.',
-    summary:
-      "I got into the Ladders for Leaders program, which put me next to Devin Voorsanger learning how real businesses get built and sold. A month in, I joined the Web Application Team too.",
-    points: [
-      'Business: learned practical business, communication and sales from Devin Voorsanger. UTM has raised $32M, created 400+ jobs and launched 100+ startups.',
-      'Tech: built an internal operations platform for UTM Technology & Service that pulls workflows, check-ins and customer service into one place.',
-      'Watching people juggle all of that is a big part of what got me building Synapse.',
-    ],
-    tags: ['Web apps', 'Operations', 'Sales', 'Ladders for Leaders'],
-    accent: '#b477ff',
-    visual: 'utm',
   },
 ]
 

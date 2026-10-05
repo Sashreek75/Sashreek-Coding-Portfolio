@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { ArrowUpRight, X } from 'lucide-react'
 import type { Project } from '../data'
 import { ProjectVisual } from './Visuals'
+import { InstitutionMark } from './InstitutionMark'
 import { TiltCard } from './motion'
 import { EASE } from '../lib/ease'
 
@@ -104,6 +105,7 @@ export function ProjectModal({ p, onClose }: { p: Project | null; onClose: () =>
             <div className="p-6 md:p-10">
               <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="flex flex-wrap items-center gap-3">
                 <StatusPill p={p} />
+                {p.badge && <InstitutionMark name={p.badge} src="/logos/stanford.png" />}
                 <span className="font-mono text-xs text-gray-500">{p.dates}</span>
               </motion.div>
               <motion.h2 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="mt-4 text-4xl md:text-5xl">

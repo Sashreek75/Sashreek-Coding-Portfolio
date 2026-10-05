@@ -238,7 +238,6 @@ export function Marquee({ children, baseVelocity = 3, className }: { children: R
   const scrollVelocity = useVelocity(scrollY)
   const smoothVelocity = useSpring(scrollVelocity, { damping: 50, stiffness: 400 })
   const velocityFactor = useTransform(smoothVelocity, [0, 1000], [0, 4], { clamp: false })
-  const skew = useTransform(smoothVelocity, [-2000, 0, 2000], [-6, 0, 6])
   const x = useTransform(baseX, (v) => `${wrap(-25, 0, v)}%`)
   const dir = useRef(1)
   useAnimationFrame((_, delta) => {
@@ -251,7 +250,7 @@ export function Marquee({ children, baseVelocity = 3, className }: { children: R
   })
   return (
     <div className={cn('flex overflow-hidden whitespace-nowrap', className)}>
-      <motion.div className="flex flex-nowrap gap-0" style={{ x, skewX: skew }}>
+      <motion.div className="flex flex-nowrap gap-0" style={{ x }}>
         {[0, 1, 2, 3].map((k) => (
           <span key={k} className="flex shrink-0 items-center">
             {children}
@@ -292,11 +291,12 @@ function Word({ children, progress, range }: { children: string; progress: Motio
   )
 }
 
-/* ───────────────── Section label ───────────────── */
+/* ───────────────── Section label (code-comment style) ───────────────── */
 export function SectionLabel({ index, children }: { index: string; children: ReactNode }) {
   return (
-    <Reveal y={16} className="mb-6 flex items-center gap-3">
-      <span className="font-mono text-xs text-brand-blue">{index}</span>
+    <Reveal y={16} className="mb-6 flex items-center gap-3 font-mono text-xs">
+      <span className="text-brand-mint">{'//'}</span>
+      <span className="text-brand-blue">{index}</span>
       <motion.span
         className="h-px w-12 origin-left bg-gradient-to-r from-brand-blue to-transparent"
         initial={{ scaleX: 0 }}
@@ -304,7 +304,84 @@ export function SectionLabel({ index, children }: { index: string; children: Rea
         viewport={{ once: true }}
         transition={{ duration: 1, ease: EASE, delay: 0.2 }}
       />
-      <span className="label">{children}</span>
+      <span className="uppercase tracking-[0.2em] text-gray-500">{children}</span>
     </Reveal>
+  )
+}
+
+/* ───────────────── Scramble / decode text ───────────────── */
+const GLYPHS = '01<>/{}[]#$%&*+=?ΔΣΨΩ'
+export function Scramble({ text, delay = 0, duration = 900, className, inView = false }: { text: string; delay?: number; duration?: number; className?: string; inView?: boolean }) {
+  const ref = useRef<HTMLSpanElement>(null)
+  const seen = useInView(ref, { once: true })
+  const go = inView ? seen : true
+  const [out, setOut] = useState(() => text.replace(/\S/g, ' '))
+  useEffect(() => {
+    if (!go) return
+    let raf = 0
+    let start = 0
+    const tick = (now: number) => {
+      if (!start) start = now
+      const t = (now - start - delay) / duration
+      if (t < 0) {
+        raf = requestAnimationFrame(tick)
+        return
+      }
+      const reveal = Math.floor(Math.min(1, t) * text.length)
+      setOut(
+        text
+          .split('')
+          .map((ch, i) => (ch === ' ' ? ' ' : i < reveal ? ch : GLYPHS[Math.floor(Math.random() * GLYPHS.length)]))
+          .join(''),
+      )
+      if (t < 1) raf = requestAnimationFrame(tick)
+    }
+    raf = requestAnimationFrame(tick)
+    return () => cancelAnimationFrame(raf)
+  }, [go, text, delay, duration])
+  return (
+    <span ref={ref} className={className} aria-label={text}>
+      <span aria-hidden className="whitespace-pre">{out}</span>
+    </span>
+  )
+}
+
+/* ───────────────── Live EEG strip (section divider) ───────────────── */
+export function EEGStrip({ className, color = '#6d9cff' }: { className?: string; color?: string }) {
+  const ref = useRef<SVGPathElement>(null)
+  useEffect(() => {
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    let raf = 0
+    let ph = 0
+    const draw = () => {
+      ph += 0.035
+      let d = ''
+      for (let x = 0; x <= 1200; x += 6) {
+        const spike = Math.exp(-Math.pow(((x / 1200 + ph * 0.08) % 1) - 0.5, 2) / 0.0015)
+        const y =
+          30 +
+          Math.sin(x * 0.045 + ph * 3) * 4 +
+          Math.sin(x * 0.11 - ph * 5) * 2.5 +
+          Math.sin(x * 0.013 + ph) * 3 +
+          spike * Math.sin(x * 0.35) * 18
+        d += `${x === 0 ? 'M' : 'L'}${x} ${y.toFixed(1)}`
+      }
+      ref.current?.setAttribute('d', d)
+      if (!reduce) raf = requestAnimationFrame(draw)
+    }
+    draw()
+    return () => cancelAnimationFrame(raf)
+  }, [])
+  return (
+    <svg viewBox="0 0 1200 60" preserveAspectRatio="none" className={cn('h-14 w-full', className)} aria-hidden>
+      <defs>
+        <linearGradient id={`eeg-${color}`} x1="0" x2="1">
+          <stop offset="0" stopColor={color} stopOpacity="0" />
+          <stop offset="0.5" stopColor={color} stopOpacity="0.9" />
+          <stop offset="1" stopColor={color} stopOpacity="0" />
+        </linearGradient>
+      </defs>
+      <path ref={ref} fill="none" stroke={`url(#eeg-${color})`} strokeWidth="1.5" vectorEffect="non-scaling-stroke" />
+    </svg>
   )
 }
