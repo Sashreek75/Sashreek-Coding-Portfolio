@@ -53,7 +53,7 @@ export function ProjectTimeline({ detailed = false }: { detailed?: boolean }) {
       />
       <div className="space-y-20 md:space-y-28">
         {building.map((p, i) => (
-          <Branch key={p.id} p={p} side={i % 2 === 0 ? 'right' : 'left'} detailed={detailed} onOpen={() => setOpen(p)} />
+          <Branch key={p.id} p={p} fig={i + 1} side={i % 2 === 0 ? 'right' : 'left'} detailed={detailed} onOpen={() => setOpen(p)} />
         ))}
       </div>
 
@@ -65,7 +65,7 @@ export function ProjectTimeline({ detailed = false }: { detailed?: boolean }) {
       />
       <div className="space-y-20 md:space-y-28">
         {built.map((p, i) => (
-          <Branch key={p.id} p={p} side={(i + building.length) % 2 === 0 ? 'right' : 'left'} detailed={detailed} onOpen={() => setOpen(p)} />
+          <Branch key={p.id} p={p} fig={i + 1 + building.length} side={(i + building.length) % 2 === 0 ? 'right' : 'left'} detailed={detailed} onOpen={() => setOpen(p)} />
         ))}
       </div>
 
@@ -133,7 +133,7 @@ function PhaseHeader({ kind, title, code, sub }: { kind: 'building' | 'built'; t
   )
 }
 
-function Branch({ p, side, detailed, onOpen }: { p: Project; side: 'left' | 'right'; detailed: boolean; onOpen: () => void }) {
+function Branch({ p, fig, side, detailed, onOpen }: { p: Project; fig: number; side: 'left' | 'right'; detailed: boolean; onOpen: () => void }) {
   const right = side === 'right'
   return (
     <motion.div
@@ -222,13 +222,13 @@ function Branch({ p, side, detailed, onOpen }: { p: Project; side: 'left' | 'rig
 
       {/* card */}
       <motion.div
-        className={cn('pl-14', right ? 'md:col-start-2 md:row-start-1 md:pl-24' : 'md:col-start-1 md:row-start-1 md:pl-0 md:pr-24')}
+        className={cn('min-w-0 pl-14', right ? 'md:col-start-2 md:row-start-1 md:pl-24' : 'md:col-start-1 md:row-start-1 md:pl-0 md:pr-24')}
         variants={{
           hidden: { opacity: 0, x: right ? 60 : -60, filter: 'blur(12px)' },
           show: { opacity: 1, x: 0, filter: 'blur(0px)', transition: { duration: 0.9, ease: EASE, delay: 0.45 } },
         }}
       >
-        <TiltCard glow={p.accent} max={4} onClick={onOpen} className="beam beam-hover card-border cursor-pointer overflow-hidden rounded-3xl bg-dark-card/80" style={{ ['--beam-color' as string]: p.accent }}>
+        <TiltCard glow={p.accent} max={4} onClick={onOpen} className="card-border cursor-pointer overflow-hidden rounded-xl bg-dark-card/80">
           {/* generated image */}
           <div className="relative aspect-[16/10] overflow-hidden">
             <div className="h-full w-full transition-transform duration-[1.2s] ease-out group-hover:scale-110">
@@ -252,7 +252,7 @@ function Branch({ p, side, detailed, onOpen }: { p: Project; side: 'left' | 'rig
               style={{ background: `linear-gradient(to bottom, transparent, ${p.accent}33, transparent)` }}
             />
             <div className="absolute left-4 top-4 flex flex-wrap gap-2">
-              <span className="rounded-full border border-white/15 bg-black/50 px-3 py-1 font-mono text-[10px] uppercase tracking-widest text-gray-200 backdrop-blur">
+              <span className="rounded-sm border border-white/15 bg-black/60 px-2.5 py-1 font-mono text-[10px] uppercase tracking-widest text-gray-200 backdrop-blur">
                 {p.kicker}
               </span>
               {p.badge && <InstitutionMark name={p.badge} src="/logos/stanford.png" />}
@@ -264,6 +264,10 @@ function Branch({ p, side, detailed, onOpen }: { p: Project; side: 'left' | 'rig
             </div>
           </div>
 
+          <div className="flex items-baseline gap-2 border-b border-white/[0.06] px-6 py-2.5 font-mono text-[10.5px] text-gray-500 md:px-7">
+            <span className="shrink-0 whitespace-nowrap" style={{ color: p.accent }}>fig. {String(fig).padStart(2, '0')}</span>
+            <span className="min-w-0 truncate">{p.figure}</span>
+          </div>
           <div className="relative p-6 md:p-7">
             <div className="mb-3">
               <StatusPill p={p} />
@@ -293,12 +297,12 @@ function Branch({ p, side, detailed, onOpen }: { p: Project; side: 'left' | 'rig
             <div className="mt-6 flex items-center justify-between gap-4">
               <div className="flex flex-wrap gap-1.5">
                 {p.tags.slice(0, detailed ? 4 : 3).map((t) => (
-                  <span key={t} className="rounded-full border border-white/[0.08] px-2.5 py-1 font-mono text-[10px] text-gray-500">
+                  <span key={t} className="rounded-sm border border-white/[0.08] px-2 py-1 font-mono text-[10px] text-gray-500">
                     {t}
                   </span>
                 ))}
               </div>
-              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-white/10 text-white transition-all duration-500 group-hover:rotate-45 group-hover:border-transparent group-hover:bg-white group-hover:text-dark-surface">
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md border border-white/10 text-white transition-colors duration-200 group-hover:border-transparent group-hover:bg-brand-mint group-hover:text-dark-surface">
                 <ArrowUpRight size={18} />
               </span>
             </div>

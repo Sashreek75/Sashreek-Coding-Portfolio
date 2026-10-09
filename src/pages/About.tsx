@@ -1,16 +1,41 @@
 import { useRef } from 'react'
 import { Link } from 'react-router-dom'
 import { motion, useScroll, useTransform, useSpring } from 'framer-motion'
-import { ArrowUpRight, Target, Hammer, Brain, Repeat } from 'lucide-react'
+import { ArrowUpRight } from 'lucide-react'
+import { FigReceptiveField, FigReflexArc, FigRaster, FigDendrites } from '../components/NeuroFigures'
 import { SplitText, Reveal, TiltCard, SectionLabel, Magnetic } from '../components/motion'
 import { EASE } from '../lib/ease'
 import { TIMELINE } from '../data'
 
 const BELIEFS = [
-  { icon: Target, color: '#6d9cff', title: 'Start with a real problem', body: "Every project I'm proud of started because something annoyed me or someone I knew was struggling. Never because a framework looked cool." },
-  { icon: Hammer, color: '#ffb36b', title: 'Build it, then learn', body: 'Tutorials only got me so far. Shipping something broken and fixing it taught me more than anything else.' },
-  { icon: Brain, color: '#5ef2c2', title: 'Be honest about results', body: "In research and in products. If something didn't work, I'd rather know, and say so, than pretend it did." },
-  { icon: Repeat, color: '#b477ff', title: 'Stay curious', body: "Cognitive science, AI, business, sales. I'm into way too many things, and that's how the best ideas end up connecting." },
+  {
+    Fig: FigReceptiveField,
+    color: '#6d9cff',
+    title: 'Watch before you judge',
+    body: "Understand what someone is actually doing before deciding what's wrong. The same behavior can be a distraction for one person and deep focus for another.",
+    cap: 'receptive field: the center only fires on what lands inside',
+  },
+  {
+    Fig: FigReflexArc,
+    color: '#ffb36b',
+    title: 'Deterministic where it matters',
+    body: "When the stakes are high, I don't want a clever model improvising. Fixed rules on the critical path, flexibility everywhere else.",
+    cap: 'reflex arc: same input, same pathway, every time',
+  },
+  {
+    Fig: FigRaster,
+    color: '#5ef2c2',
+    title: 'Let ideas fail honestly',
+    body: "I'd rather build a test my idea can genuinely fail than one that's rigged to pass. Negative results are still results.",
+    cap: 'spike raster: the silent trial stays in the data',
+  },
+  {
+    Fig: FigDendrites,
+    color: '#b477ff',
+    title: 'Everything connects',
+    body: "Cognitive science, AI, business, sales. I'm into too many things, and my best ideas come from where the branches touch.",
+    cap: 'dendritic tree: growth until two branches meet',
+  },
 ]
 
 function Timeline() {
@@ -55,23 +80,26 @@ function Timeline() {
 }
 
 function Basketball() {
+  // a bounce, plotted: each arc a little lower than the last
+  const path = 'M10 110 Q 45 -10, 80 110 Q 108 20, 136 110 Q 158 50, 180 110 Q 196 75, 212 110 Q 222 95, 232 110'
   return (
-    <div className="relative h-40 w-40">
-      <motion.div
-        className="absolute left-1/2 top-0 h-16 w-16 -translate-x-1/2 rounded-full bg-gradient-to-br from-[#ff9a4d] to-[#c4561c] shadow-[0_0_40px_rgba(255,154,77,0.35)]"
-        animate={{ y: [0, 88, 0], scaleY: [1, 1, 0.8, 1], scaleX: [1, 1, 1.15, 1], rotate: [0, 180, 360] }}
-        transition={{ duration: 1.1, repeat: Infinity, ease: [0.33, 0, 0.67, 1], times: [0, 0.48, 0.5, 1] }}
-      >
-        <svg viewBox="0 0 64 64" className="h-full w-full opacity-60">
-          <path d="M32 0v64M0 32h64M10 10c12 12 12 32 0 44M54 10c-12 12-12 32 0 44" stroke="#3a1a08" strokeWidth="2" fill="none" />
-        </svg>
-      </motion.div>
-      <motion.div
-        className="absolute bottom-2 left-1/2 h-3 w-16 -translate-x-1/2 rounded-full bg-black/60 blur-sm"
-        animate={{ scaleX: [0.5, 1, 0.5], opacity: [0.3, 0.8, 0.3] }}
-        transition={{ duration: 1.1, repeat: Infinity, ease: [0.33, 0, 0.67, 1] }}
+    <svg viewBox="0 0 240 130" className="h-36 w-64" aria-hidden>
+      <line x1="4" x2="236" y1="111" y2="111" stroke="rgba(255,255,255,0.2)" strokeDasharray="3 4" />
+      <motion.path
+        d={path}
+        fill="none"
+        stroke="rgba(255,179,107,0.45)"
+        strokeWidth="1.5"
+        initial={{ pathLength: 0 }}
+        whileInView={{ pathLength: 1 }}
+        viewport={{ once: true }}
+        transition={{ duration: 2.2, ease: 'easeOut' }}
       />
-    </div>
+      <circle r="7" fill="#ff9a4d" style={{ filter: 'drop-shadow(0 0 8px rgba(255,154,77,0.6))' }}>
+        <animateMotion dur="3.2s" repeatCount="indefinite" path={path} />
+      </circle>
+      <text x="6" y="126" className="fill-gray-500 font-mono text-[9px]">t →</text>
+    </svg>
   )
 }
 
@@ -110,7 +138,7 @@ export default function About() {
               </div>
             </Reveal>
             <Reveal delay={0.55} className="md:col-span-5">
-              <div className="card-border relative overflow-hidden rounded-3xl bg-dark-card/70 p-8">
+              <div className="card-border relative overflow-hidden rounded-xl bg-dark-card/70 p-8">
                 <div className="label mb-6">Quick facts</div>
                 <dl className="space-y-5">
                   {[
@@ -160,19 +188,22 @@ export default function About() {
           </h2>
           <div className="grid gap-6 md:grid-cols-2">
             {BELIEFS.map((b, i) => (
-              <Reveal key={b.title} delay={i * 0.08} y={50}>
-                <TiltCard glow={b.color} className="card-border h-full overflow-hidden rounded-3xl bg-dark-card/70 p-8 md:p-10">
-                  <motion.div
-                    className="mb-8 flex h-14 w-14 items-center justify-center rounded-2xl"
-                    style={{ background: `${b.color}18`, color: b.color }}
-                    whileHover={{ rotate: [0, -12, 12, 0], scale: 1.1 }}
-                    transition={{ duration: 0.6 }}
-                  >
-                    <b.icon size={24} />
-                  </motion.div>
-                  <h3 className="text-2xl">{b.title}</h3>
-                  <p className="mt-3 leading-relaxed text-gray-400">{b.body}</p>
-                  <div className="absolute bottom-6 right-8 font-display text-6xl font-bold text-white/[0.03]">0{i + 1}</div>
+              <Reveal key={b.title} delay={i * 0.08} y={50} className="min-w-0">
+                <TiltCard glow={b.color} max={4} className="card-border h-full overflow-hidden rounded-xl bg-dark-card/70">
+                  <div className="relative h-48 border-b border-white/[0.06] bg-[#090b11] px-6 py-4">
+                    <div className="absolute inset-0 grid-bg opacity-40" />
+                    <div className="relative h-full">
+                      <b.Fig color={b.color} />
+                    </div>
+                  </div>
+                  <div className="flex items-baseline gap-2 border-b border-white/[0.06] px-7 py-2.5 font-mono text-[10.5px] text-gray-500">
+                    <span className="shrink-0 whitespace-nowrap" style={{ color: b.color }}>fig. {String.fromCharCode(65 + i)}</span>
+                    <span className="min-w-0 truncate">{b.cap}</span>
+                  </div>
+                  <div className="p-7 md:p-8">
+                    <h3 className="text-2xl">{b.title}</h3>
+                    <p className="mt-3 leading-relaxed text-gray-400">{b.body}</p>
+                  </div>
                 </TiltCard>
               </Reveal>
             ))}
@@ -183,8 +214,7 @@ export default function About() {
       {/* Off the keyboard */}
       <section className="px-6 py-24">
         <Reveal className="mx-auto max-w-7xl">
-          <div className="card-border relative grid items-center gap-10 overflow-hidden rounded-[2rem] bg-dark-card/70 p-10 md:grid-cols-[auto_1fr] md:p-14">
-            <div className="absolute -right-24 -top-24 h-72 w-72 rounded-full bg-brand-amber/10 blur-3xl" />
+          <div className="card-border relative grid items-center gap-10 overflow-hidden rounded-xl bg-dark-card/70 p-10 md:grid-cols-[auto_1fr] md:p-14">
             <div className="mx-auto">
               <Basketball />
             </div>
@@ -192,7 +222,7 @@ export default function About() {
               <span className="label">Off the keyboard</span>
               <h3 className="mt-4 text-4xl md:text-5xl">Usually on a basketball court.</h3>
               <p className="mt-4 max-w-xl text-lg leading-relaxed text-gray-400">
-                It's where I go to think less. Also where I learned that showing up when you don't feel like it is most of the game.
+                It's where I go to think less.
               </p>
             </div>
           </div>
@@ -206,12 +236,12 @@ export default function About() {
           <p className="mt-4 text-lg text-gray-400">Now come see the stuff.</p>
           <div className="mt-10 flex flex-wrap justify-center gap-4">
             <Magnetic>
-              <Link to="/projects" className="group inline-flex items-center gap-2 rounded-full bg-white px-7 py-4 text-sm font-semibold text-dark-surface">
+              <Link to="/projects" className="group inline-flex min-h-12 items-center gap-2 rounded-md bg-white px-6 py-3.5 text-sm font-semibold text-dark-surface transition-colors hover:bg-brand-mint">
                 See my work <ArrowUpRight size={16} className="transition-transform duration-500 group-hover:rotate-45" />
               </Link>
             </Magnetic>
             <Magnetic>
-              <Link to="/contact" className="inline-flex items-center rounded-full border border-white/15 px-7 py-4 text-sm font-semibold text-white hover:bg-white/5">
+              <Link to="/contact" className="inline-flex min-h-12 items-center rounded-md border border-white/15 px-6 py-3.5 text-sm font-semibold text-white transition-colors hover:border-white/40">
                 Say hi
               </Link>
             </Magnetic>

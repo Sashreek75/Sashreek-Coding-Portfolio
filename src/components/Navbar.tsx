@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { motion, AnimatePresence, useScroll, useMotionValueEvent } from 'framer-motion'
-import { Github, Linkedin, Mail } from 'lucide-react'
+import { ArrowUpRight } from 'lucide-react'
 import { cn } from '../lib/utils'
-import { Magnetic, ScrambleHover } from './motion'
+import { ScrambleHover } from './motion'
+import { NeuronMark } from './NeuronMark'
 import { EASE } from '../lib/ease'
 import { LINKS } from '../data'
 
@@ -21,6 +22,7 @@ export function Navbar() {
   const [hidden, setHidden] = useState(false)
   const [scrolled, setScrolled] = useState(false)
   const [hovered, setHovered] = useState<string | null>(null)
+  const [logoHover, setLogoHover] = useState(false)
   const { scrollY } = useScroll()
 
   useMotionValueEvent(scrollY, 'change', (v) => {
@@ -45,78 +47,54 @@ export function Navbar() {
       >
         <div className="mx-auto flex max-w-7xl items-center justify-between">
           {/* Logo */}
-          <Magnetic strength={0.25}>
-            <Link to="/" className="group flex items-center gap-3" aria-label="Home">
-              <motion.div
-                className="relative flex h-10 w-10 items-center justify-center overflow-hidden rounded-xl bg-gradient-to-br from-brand-blue to-brand-purple font-display text-sm font-bold text-dark-surface"
-                whileHover={{ rotate: -8, scale: 1.08 }}
-                transition={{ type: 'spring', stiffness: 400, damping: 12 }}
-              >
-                <motion.span
-                  className="absolute inset-0 bg-[linear-gradient(120deg,transparent_30%,rgba(255,255,255,0.7)_50%,transparent_70%)]"
-                  initial={{ x: '-120%' }}
-                  animate={{ x: '120%' }}
-                  transition={{ duration: 1.6, repeat: Infinity, repeatDelay: 3.5, ease: 'easeInOut' }}
-                />
-                <span className="relative">SP</span>
-              </motion.div>
-              <span className="relative hidden h-6 overflow-hidden font-display text-base font-semibold leading-6 text-white sm:block">
-                <span className="block transition-transform duration-500 ease-[cubic-bezier(.22,1,.36,1)] group-hover:-translate-y-full">Sashreek</span>
-                <span className="block text-brand-blue transition-transform duration-500 ease-[cubic-bezier(.22,1,.36,1)] group-hover:-translate-y-full">Pinjala</span>
-              </span>
-            </Link>
-          </Magnetic>
+          <Link to="/" className="flex items-center gap-2.5" aria-label="Home" onMouseEnter={() => setLogoHover(true)} onMouseLeave={() => setLogoHover(false)}>
+            <NeuronMark size={34} hover={logoHover} />
+            <span className="hidden font-display text-[17px] font-semibold tracking-tight text-white sm:block">
+              sashreek<span className="text-brand-mint">.</span>
+            </span>
+          </Link>
 
-          {/* Desktop pill nav */}
+          {/* Desktop nav */}
           <nav
             className={cn(
-              'hidden items-center gap-1 rounded-full p-1.5 transition-colors duration-500 md:flex',
-              scrolled ? 'glass shadow-[0_10px_40px_-10px_rgba(0,0,0,0.6)]' : 'border border-white/[0.06] bg-white/[0.02]',
+              'hidden items-center gap-1 rounded-xl px-2 py-1 transition-colors duration-500 md:flex',
+              scrolled && 'bg-[#07080c]/80 ring-1 ring-white/[0.06] backdrop-blur-xl',
             )}
             onMouseLeave={() => setHovered(null)}
           >
-            {NAV.map((l) => (
+            {NAV.map((l, i) => (
               <Link
                 key={l.path}
                 to={l.path}
                 onMouseEnter={() => setHovered(l.path)}
                 className={cn(
-                  'relative rounded-full px-4 py-2 text-sm font-medium transition-colors duration-300',
-                  active === l.path ? 'text-white' : 'text-gray-400 hover:text-white',
+                  'relative flex items-baseline gap-1.5 px-3 py-2 text-sm font-medium transition-colors duration-200',
+                  pathname === l.path ? 'text-white' : 'text-gray-400 hover:text-white',
                 )}
               >
+                <span className={cn('font-mono text-[10px]', pathname === l.path ? 'text-brand-mint' : 'text-gray-600')}>0{i + 1}</span>
+                <ScrambleHover text={l.name} />
                 {active === l.path && (
                   <motion.span
-                    layoutId="nav-pill"
-                    className="absolute inset-0 rounded-full bg-white/[0.08] ring-1 ring-white/10"
-                    transition={{ type: 'spring', stiffness: 380, damping: 30 }}
+                    layoutId="nav-line"
+                    className="absolute inset-x-3 -bottom-0.5 h-px bg-brand-mint shadow-[0_0_8px_#5ef2c2]"
+                    transition={{ type: 'spring', stiffness: 380, damping: 32 }}
                   />
-                )}
-                <ScrambleHover text={l.name} className="relative" />
-                {pathname === l.path && (
-                  <motion.span layoutId="nav-dot" className="absolute -bottom-0.5 left-1/2 h-1 w-1 -translate-x-1/2 rounded-full bg-brand-blue" />
                 )}
               </Link>
             ))}
           </nav>
 
-          <div className="hidden md:block">
-            <Magnetic>
-              <a
-                href={`mailto:${LINKS.email}`}
-                className="group relative flex items-center gap-2 overflow-hidden rounded-full bg-white px-5 py-2.5 text-sm font-semibold text-dark-surface"
-              >
-                <span className="absolute inset-0 translate-y-full rounded-full bg-gradient-to-r from-brand-blue to-brand-purple transition-transform duration-500 ease-out group-hover:translate-y-0" />
-                <span className="relative flex items-center gap-2 transition-colors duration-300 group-hover:text-white">
-                  <span className="relative flex h-2 w-2">
-                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
-                    <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
-                  </span>
-                  Say hi
-                </span>
-              </a>
-            </Magnetic>
-          </div>
+          <a
+            href={`mailto:${LINKS.email}`}
+            className="group hidden items-center gap-2 font-mono text-xs text-gray-300 transition-colors hover:text-white md:flex"
+          >
+            <span className="relative">
+              get in touch
+              <span className="absolute -bottom-1 left-0 h-px w-full origin-right scale-x-0 bg-brand-mint transition-transform duration-300 group-hover:origin-left group-hover:scale-x-100" />
+            </span>
+            <ArrowUpRight size={14} className="transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+          </a>
 
           {/* Mobile toggle */}
           <button
@@ -168,15 +146,15 @@ export function Navbar() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.5 }}
-              className="flex gap-3"
+              className="flex flex-wrap gap-x-6 gap-y-2 font-mono text-sm text-gray-400"
             >
               {[
-                { icon: Github, href: LINKS.github },
-                { icon: Linkedin, href: LINKS.linkedin },
-                { icon: Mail, href: `mailto:${LINKS.email}` },
-              ].map(({ icon: Icon, href }) => (
-                <a key={href} href={href} target="_blank" rel="noopener noreferrer" className="glass flex h-12 w-12 items-center justify-center rounded-full text-white">
-                  <Icon size={18} />
+                { label: 'github', href: LINKS.github },
+                { label: 'linkedin', href: LINKS.linkedin },
+                { label: 'email', href: `mailto:${LINKS.email}` },
+              ].map(({ label, href }) => (
+                <a key={href} href={href} target="_blank" rel="noopener noreferrer" className="flex min-h-11 items-center gap-1 text-white">
+                  {label} <ArrowUpRight size={14} className="text-brand-mint" />
                 </a>
               ))}
             </motion.div>

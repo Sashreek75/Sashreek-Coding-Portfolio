@@ -8,12 +8,12 @@ export function Cursor() {
   const [enabled] = useState(
     () => typeof window !== 'undefined' && window.matchMedia('(pointer: fine)').matches && !window.matchMedia('(prefers-reduced-motion: reduce)').matches,
   )
-  const [mode, setMode] = useState<'default' | 'hover' | 'open'>('default')
+  const [mode, setMode] = useState<'default' | 'hover' | 'open' | 'fire'>('default')
   const [down, setDown] = useState(false)
   const x = useMotionValue(-100)
   const y = useMotionValue(-100)
-  const rx = useSpring(x, { stiffness: 350, damping: 30, mass: 0.6 })
-  const ry = useSpring(y, { stiffness: 350, damping: 30, mass: 0.6 })
+  const rx = useSpring(x, { stiffness: 500, damping: 35, mass: 0.4 })
+  const ry = useSpring(y, { stiffness: 500, damping: 35, mass: 0.4 })
 
   useEffect(() => {
     if (!enabled) return
@@ -22,9 +22,9 @@ export function Cursor() {
       x.set(e.clientX)
       y.set(e.clientY)
       const t = e.target as HTMLElement | null
-      const open = t?.closest('[data-cursor="open"]')
-      const hov = t?.closest('a, button, input, textarea, [data-cursor]')
-      setMode(open ? 'open' : hov ? 'hover' : 'default')
+      const tagged = t?.closest('[data-cursor]')?.getAttribute('data-cursor')
+      const hov = t?.closest('a, button, input, textarea, label')
+      setMode(tagged === 'open' ? 'open' : tagged === 'fire' ? 'fire' : hov ? 'hover' : 'default')
     }
     const d = () => setDown(true)
     const u = () => setDown(false)
@@ -40,38 +40,45 @@ export function Cursor() {
   }, [x, y, enabled])
 
   if (!enabled) return null
-  const size = mode === 'open' ? 84 : mode === 'hover' ? 54 : 34
+  const gap = mode === 'default' ? 7 : mode === 'hover' ? 12 : 16
+  const label = mode === 'open' ? 'open' : mode === 'fire' ? 'click to fire' : ''
   return (
     <>
+      {/* reticle: four ticks around the pointer, like a microscope crosshair */}
       <motion.div
-        className="pointer-events-none fixed left-0 top-0 z-[100] flex items-center justify-center rounded-full border border-white/40 mix-blend-difference"
-        style={{ x: rx, y: ry, translateX: '-50%', translateY: '-50%' }}
-        animate={{
-          width: size,
-          height: size,
-          scale: down ? 0.8 : 1,
-          backgroundColor: mode === 'open' ? 'rgba(255,255,255,1)' : 'rgba(255,255,255,0)',
-        }}
-        transition={{ type: 'spring', stiffness: 300, damping: 24 }}
+        className="pointer-events-none fixed left-0 top-0 z-[100] mix-blend-difference"
+        style={{ x: rx, y: ry }}
+        animate={{ rotate: mode === 'default' ? 0 : 45, scale: down ? 0.75 : 1 }}
+        transition={{ type: 'spring', stiffness: 400, damping: 22 }}
       >
-        <AnimatePresence>
-          {mode === 'open' && (
-            <motion.span
-              initial={{ opacity: 0, scale: 0.5 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.5 }}
-              className="font-mono text-[10px] font-medium uppercase tracking-widest text-black"
-            >
-              Open
-            </motion.span>
-          )}
-        </AnimatePresence>
+        {[0, 90, 180, 270].map((r) => (
+          <motion.span
+            key={r}
+            className="absolute left-0 top-0 h-px w-[7px] origin-left bg-white"
+            style={{ rotate: r }}
+            animate={{ x: Math.cos((r * Math.PI) / 180) * gap - (r === 180 ? 0 : 0), y: Math.sin((r * Math.PI) / 180) * gap }}
+            transition={{ type: 'spring', stiffness: 400, damping: 24 }}
+          />
+        ))}
       </motion.div>
       <motion.div
-        className="pointer-events-none fixed left-0 top-0 z-[101] h-1.5 w-1.5 rounded-full bg-white mix-blend-difference"
-        style={{ x, y, translateX: '-50%', translateY: '-50%' }}
-        animate={{ opacity: mode === 'open' ? 0 : 1 }}
+        className="pointer-events-none fixed left-0 top-0 z-[101] h-1 w-1 -translate-x-1/2 -translate-y-1/2 rounded-full bg-brand-mint"
+        style={{ x, y }}
       />
+      <AnimatePresence>
+        {label && (
+          <motion.div
+            key={label}
+            className="pointer-events-none fixed left-0 top-0 z-[101] whitespace-nowrap font-mono text-[10px] uppercase tracking-widest text-brand-mint"
+            style={{ x: rx, y: ry }}
+            initial={{ opacity: 0, translateX: 18, translateY: 14 }}
+            animate={{ opacity: 1, translateX: 24, translateY: 18 }}
+            exit={{ opacity: 0 }}
+          >
+            {label}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </>
   )
 }
@@ -280,11 +287,7 @@ export function ScrollProgress() {
 export function Ambient() {
   return (
     <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden" aria-hidden>
-      <div className="absolute -left-[20%] -top-[20%] h-[70vmax] w-[70vmax] animate-aurora rounded-full bg-[radial-gradient(circle,rgba(109,156,255,0.10),transparent_60%)]" />
-      <div
-        className="absolute -bottom-[25%] -right-[15%] h-[65vmax] w-[65vmax] animate-aurora rounded-full bg-[radial-gradient(circle,rgba(94,242,194,0.07),transparent_60%)]"
-        style={{ animationDelay: '-9s' }}
-      />
+      <div className="absolute inset-x-0 top-0 h-[60vh] bg-[radial-gradient(ellipse_at_top,rgba(109,156,255,0.07),transparent_70%)]" />
       <div className="circuit-bg absolute inset-0 opacity-[0.5]" />
       <div className="absolute inset-0 noise opacity-[0.035] mix-blend-overlay" />
     </div>

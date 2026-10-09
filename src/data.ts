@@ -26,6 +26,7 @@ export interface Project {
   image: string
   kicker: string
   phase: Phase
+  figure: string
   badge?: string
   note?: string
 }
@@ -33,6 +34,7 @@ export interface Project {
 export const PROJECTS: Project[] = [
   {
     id: 'neurolabs',
+    figure: 'Multichannel EEG with an ictal burst crossing the event marker.',
     phase: 'building',
     image: '/projects/neuro.jpg',
     kicker: 'Mobile app',
@@ -59,6 +61,7 @@ export const PROJECTS: Project[] = [
   },
   {
     id: 'epilepsy',
+    figure: 'Spectrogram and channel traces across a seizure window.',
     phase: 'building',
     image: '/projects/eeg.jpg',
     kicker: 'Research',
@@ -83,6 +86,7 @@ export const PROJECTS: Project[] = [
   },
   {
     id: 'synapse',
+    figure: 'Attention drifting, then pulled back to a single point of focus.',
     phase: 'building',
     image: '/projects/synapse.jpg',
     kicker: 'Startup',
@@ -107,6 +111,7 @@ export const PROJECTS: Project[] = [
   },
   {
     id: 'discern',
+    figure: 'Six layers of candidate states, with one diagnosed path lit.',
     phase: 'built',
     image: '/projects/discern.jpg',
     kicker: 'Research',
@@ -133,6 +138,7 @@ export const PROJECTS: Project[] = [
   },
   {
     id: 'utm',
+    figure: '3,000+ applicants, one selected node.',
     phase: 'built',
     image: '/projects/utm.jpg',
     kicker: 'Internships',
@@ -155,6 +161,7 @@ export const PROJECTS: Project[] = [
   },
   {
     id: 'compliance',
+    figure: 'Verification traces converging on a verified provider.',
     phase: 'built',
     image: '/projects/verify.jpg',
     kicker: 'Internship',
@@ -177,6 +184,7 @@ export const PROJECTS: Project[] = [
   },
   {
     id: 'pyquest',
+    figure: 'A level path: six solved, three to go.',
     phase: 'built',
     image: '/projects/pyquest.jpg',
     kicker: 'App',

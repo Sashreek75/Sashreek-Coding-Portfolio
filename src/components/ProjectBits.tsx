@@ -9,7 +9,7 @@ import { EASE } from '../lib/ease'
 
 export function StatusPill({ p }: { p: Project }) {
   return (
-    <span className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-black/30 px-3 py-1 font-mono text-[10px] uppercase tracking-widest text-gray-300 backdrop-blur">
+    <span className="inline-flex items-center gap-2 rounded-sm border border-white/10 bg-black/30 px-2.5 py-1 font-mono text-[10px] uppercase tracking-widest text-gray-300 backdrop-blur">
       <span className="relative flex h-1.5 w-1.5">
         {p.status !== 'Done' && <span className="absolute inline-flex h-full w-full animate-ping rounded-full opacity-75" style={{ background: p.accent }} />}
         <span className="relative inline-flex h-1.5 w-1.5 rounded-full" style={{ background: p.accent }} />
@@ -85,7 +85,7 @@ export function ProjectModal({ p, onClose }: { p: Project | null; onClose: () =>
             role="dialog"
             aria-modal
             aria-label={p.title}
-            className="card-border relative max-h-[92vh] w-full max-w-4xl overflow-y-auto rounded-t-3xl bg-[#0c0e15] md:rounded-3xl"
+            className="card-border relative max-h-[92vh] w-full max-w-4xl overflow-y-auto rounded-t-xl bg-[#0c0e15] md:rounded-xl"
             initial={{ y: 120, opacity: 0, scale: 0.94, rotateX: 10 }}
             animate={{ y: 0, opacity: 1, scale: 1, rotateX: 0 }}
             exit={{ y: 80, opacity: 0, scale: 0.96 }}
@@ -134,7 +134,7 @@ export function ProjectModal({ p, onClose }: { p: Project | null; onClose: () =>
               </ul>
               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.6 }} className="mt-8 flex flex-wrap gap-2">
                 {p.tags.map((t) => (
-                  <span key={t} className="rounded-full border border-white/10 px-3 py-1 text-xs text-gray-400">
+                  <span key={t} className="rounded-sm border border-white/10 px-2.5 py-1 font-mono text-[11px] text-gray-400">
                     {t}
                   </span>
                 ))}

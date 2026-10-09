@@ -1,17 +1,17 @@
 import { useState } from 'react'
 import type { ChangeEvent, FormEvent } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { ArrowUpRight, Hand, Check, Copy, Github, Linkedin, Mail, Trophy, Send } from 'lucide-react'
+import { ArrowUpRight, Check, Copy, Send } from 'lucide-react'
 import { SplitText, Reveal, Magnetic } from '../components/motion'
 import { EASE } from '../lib/ease'
 import { LINKS } from '../data'
 import { cn } from '../lib/utils'
 
 const ROWS = [
-  { icon: Mail, label: 'Email', value: LINKS.email, href: `mailto:${LINKS.email}`, color: '#6d9cff' },
-  { icon: Linkedin, label: 'LinkedIn', value: 'sashreek-pinjala', href: LINKS.linkedin, color: '#b477ff' },
-  { icon: Github, label: 'GitHub', value: 'Sashreek75', href: LINKS.github, color: '#5ef2c2' },
-  { icon: Trophy, label: 'Devpost', value: 'sashforapps', href: LINKS.devpost, color: '#ffb36b' },
+  { label: 'Email', value: LINKS.email, href: `mailto:${LINKS.email}`, color: '#6d9cff' },
+  { label: 'LinkedIn', value: 'sashreek-pinjala', href: LINKS.linkedin, color: '#b477ff' },
+  { label: 'GitHub', value: 'Sashreek75', href: LINKS.github, color: '#5ef2c2' },
+  { label: 'Devpost', value: 'sashforapps', href: LINKS.devpost, color: '#ffb36b' },
 ]
 
 export default function Contact() {
@@ -62,14 +62,6 @@ export default function Contact() {
           <span className="text-gradient">
             <SplitText text="hi." delay={0.2} stagger={0.06} />
           </span>
-          <motion.span
-            className="ml-4 inline-block origin-[70%_70%]"
-            initial={{ opacity: 0, scale: 0 }}
-            animate={{ opacity: 1, scale: 1, rotate: [0, 18, -8, 18, -4, 10, 0] }}
-            transition={{ opacity: { delay: 0.6 }, scale: { delay: 0.6, type: 'spring' }, rotate: { delay: 1, duration: 1.6, repeat: Infinity, repeatDelay: 2.5 } }}
-          >
-            <Hand className="inline h-[0.7em] w-[0.7em] text-brand-amber" strokeWidth={1.8} />
-          </motion.span>
         </h1>
         <Reveal delay={0.4}>
           <p className="mt-8 max-w-xl text-xl leading-relaxed text-gray-400">
@@ -96,8 +88,8 @@ export default function Contact() {
                   style={{ background: `linear-gradient(90deg, ${r.color}14, transparent)` }}
                 />
                 <div className="relative flex min-w-0 items-center gap-4 transition-transform duration-500 group-hover:translate-x-4 md:gap-5">
-                  <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-white/10 transition-colors duration-500" style={{ color: r.color }}>
-                    <r.icon size={20} />
+                  <span className="w-8 shrink-0 font-mono text-xs" style={{ color: r.color }}>
+                    0{i + 1}
                   </span>
                   <div className="min-w-0">
                     <div className="label text-[10px]">{r.label}</div>
@@ -111,7 +103,7 @@ export default function Contact() {
                         e.preventDefault()
                         copy()
                       }}
-                      className="hidden h-11 w-11 items-center justify-center rounded-full border border-white/10 text-gray-400 sm:flex transition-colors hover:text-white"
+                      className="hidden h-11 w-11 items-center justify-center rounded-md border border-white/10 text-gray-400 sm:flex transition-colors hover:text-white"
                       aria-label="Copy email"
                     >
                       <AnimatePresence mode="wait" initial={false}>
@@ -127,7 +119,7 @@ export default function Contact() {
                       </AnimatePresence>
                     </button>
                   )}
-                  <span className="flex h-11 w-11 items-center justify-center rounded-full bg-white/[0.04] text-white transition-all duration-500 group-hover:rotate-45 group-hover:bg-white group-hover:text-dark-surface">
+                  <span className="flex h-11 w-11 items-center justify-center rounded-md bg-white/[0.04] text-white transition-colors duration-200 group-hover:bg-brand-mint group-hover:text-dark-surface">
                     <ArrowUpRight size={18} />
                   </span>
                 </div>
@@ -142,8 +134,7 @@ export default function Contact() {
             transition={{ duration: 0.9, delay: 0.7, ease: EASE }}
             className="min-w-0 lg:col-span-5"
           >
-            <form onSubmit={onSubmit} className="card-border relative overflow-hidden rounded-3xl bg-dark-card/70 p-8" noValidate>
-              <div className="absolute -right-20 -top-20 h-56 w-56 rounded-full bg-brand-purple/10 blur-3xl" />
+            <form onSubmit={onSubmit} className="card-border relative overflow-hidden rounded-xl bg-dark-card/70 p-8" noValidate>
               <h3 className="relative text-2xl">Or write it here</h3>
               <p className="relative mt-1 text-sm text-gray-500">It'll open your email app with this filled in.</p>
               <div className="relative mt-8 space-y-6">
@@ -178,10 +169,9 @@ export default function Contact() {
                 </Field>
               </div>
               <Magnetic className="relative mt-8 w-full" strength={0.15}>
-                <button type="submit" className="group relative flex w-full items-center justify-center gap-2 overflow-hidden rounded-full bg-white py-4 text-sm font-semibold text-dark-surface">
-                  <span className="absolute inset-0 -translate-x-full bg-gradient-to-r from-brand-blue to-brand-purple transition-transform duration-500 ease-out group-hover:translate-x-0" />
-                  <span className="relative transition-colors group-hover:text-white">Send it</span>
-                  <Send size={15} className="relative transition-all duration-500 group-hover:translate-x-1 group-hover:-translate-y-1 group-hover:text-white" />
+                <button type="submit" className="group relative flex min-h-12 w-full items-center justify-center gap-2 rounded-md bg-white py-4 text-sm font-semibold text-dark-surface transition-colors duration-200 hover:bg-brand-mint">
+                  <span className="relative">Send it</span>
+                  <Send size={15} className="relative transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1" />
                 </button>
               </Magnetic>
               <AnimatePresence>
